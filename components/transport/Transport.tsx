@@ -3,36 +3,62 @@
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { TipButton } from '@/components/ui/TipButton';
 import { Panel } from '@/components/ui/Panel';
-import type { AudioEngine } from '@/lib/audio/engine';
+import type { AudioEngine, PlayState } from '@/lib/audio/engine';
 import { isMac } from '@/lib/platform';
 
 interface Props {
   engine: AudioEngine | null;
-  playing: boolean;
+  state: PlayState;
   loading: boolean;
   loadError: string | null;
-  onPlay(): void;
+  /** Play, or pause while playing. */
+  onToggle(): void;
+  /** Run the changed code without stopping. */
+  onUpdate(): void;
+  /** Stop and go back to bar 1. */
   onStop(): void;
   /** Tempo control, supplied by the page once the code is parsed. */
   tempo?: ReactNode;
 }
 
-/** Play / Stop and the current position (1 cycle = 1 bar of 4 beats). */
-export function Transport({ engine, playing, loading, loadError, onPlay, onStop, tempo }: Props) {
+/** Play/Pause, Update, Stop and the current position (1 cycle = 1 bar of 4 beats). */
+export function Transport({ engine, state, loading, loadError, onToggle, onUpdate, onStop, tempo }: Props) {
   const position = usePosition(engine);
-  const mod = useIsMacKeyboard() ? '⌘' : 'Ctrl+';
+  const mac = useIsMacKeyboard();
+  const mod = mac ? '⌘' : 'Ctrl+';
+  const playing = state === 'playing';
+  const pausedBar = state === 'paused' ? engine?.pausedBar() : undefined;
   return (
     <Panel className="flex-row flex-wrap items-center gap-3">
       <TipButton
         size="sm"
         className="bg-success text-success-foreground"
-        onPress={onPlay}
+        onPress={onToggle}
         isDisabled={!engine}
-        tip={engine ? `Run the code (${mod}Enter)` : 'Loading the audio engine…'}
+        tip={
+          !engine
+            ? 'Loading the audio engine…'
+            : playing
+              ? `Pause (${mod}Enter). Play continues from the same beat`
+              : pausedBar
+                ? `Continue from bar ${pausedBar} (${mod}Enter)`
+                : `Run the code (${mod}Enter)`
+        }
       >
-        {playing ? '⟳ Update' : '▶ Play'} <ShortcutKey>{mod}↵</ShortcutKey>
+        {playing ? '❚❚ Pause' : '▶ Play'} <ShortcutKey>{mod}↵</ShortcutKey>
       </TipButton>
-      <TipButton size="sm" variant="secondary" onPress={onStop} isDisabled={!playing} tip={playing ? `Stop (${mod}.)` : 'Nothing is playing'}>
+      {state !== 'stopped' && (
+        <TipButton size="sm" variant="secondary" onPress={onUpdate} tip="Run the changed code without stopping">
+          ⟳ Update <ShortcutKey>{mac ? '⇧⌘↵' : 'Ctrl+Shift+↵'}</ShortcutKey>
+        </TipButton>
+      )}
+      <TipButton
+        size="sm"
+        variant="secondary"
+        onPress={onStop}
+        isDisabled={state === 'stopped'}
+        tip={state === 'stopped' ? 'Nothing is playing' : `Stop and go back to bar 1 (${mod}.)`}
+      >
         ■ Stop <ShortcutKey>{mod}.</ShortcutKey>
       </TipButton>
       {tempo}
@@ -43,7 +69,9 @@ export function Transport({ engine, playing, loading, loadError, onPlay, onStop,
             ? 'loading sounds…'
             : playing && position
               ? `bar ${position.bar} · beat ${position.beat}`
-              : 'stopped'}
+              : pausedBar
+                ? `paused · bar ${pausedBar}`
+                : 'stopped'}
       </span>
     </Panel>
   );

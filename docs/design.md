@@ -541,7 +541,7 @@ The footer appears on every page and links to the source and the license.
 ```
 
 - **Mobile:** single column with tabs (Lesson / Code / Controls). The transport is pinned at the bottom.
-- **Keyboard:** Ctrl/Cmd+Enter evaluates; Ctrl/Cmd+. stops; Alt+Enter evaluates and keeps playing.
+- **Keyboard:** Ctrl/Cmd+Enter plays or pauses (pause freezes the sound; play continues from the same beat, re-running the code first if it changed); Shift+Ctrl/Cmd+Enter or Alt+Enter re-runs the code while playing; Ctrl/Cmd+. stops at once, clears effect tails and goes back to bar 1.
 - **Errors:** eval errors underline the line (from acorn `.loc` or the mini error position) and show plain-English help ("A quote is missing"). Runtime errors from the `strudel.log` event show as a toast, e.g. "sound 'bdd' not found: did you mean 'bd'?" (fuzzy match against loaded sound names).
 
 ### 5.3 Library view

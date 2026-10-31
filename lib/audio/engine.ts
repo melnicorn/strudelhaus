@@ -27,12 +27,16 @@ export interface StrudelHap {
 }
 
 interface Repl {
-  scheduler: { now(): number; cps: number; started: boolean; pattern?: StrudelPattern };
+  /** `lastEnd` is the cycle the scheduler will continue from after a pause (0 after a stop). */
+  scheduler: { now(): number; cps: number; started: boolean; lastEnd: number; pattern?: StrudelPattern };
   evaluate(code: string, autostart?: boolean): Promise<StrudelPattern | undefined>;
   stop(): void;
-  start(): void;
+  start(): Promise<void>;
+  pause(): void;
   state: { started: boolean; miniLocations: [number, number][] };
 }
+
+export type PlayState = 'playing' | 'paused' | 'stopped';
 
 type Listener<T> = (value: T) => void;
 
@@ -66,7 +70,7 @@ async function create() {
   await core.evalScope(core, mini, tonal, webaudio, draw);
 
   const logs = emitter<LogMessage>();
-  const playState = emitter<boolean>();
+  const playState$ = emitter<boolean>();
   const triggers = emitter<TriggerEvent>();
   const evaluated = emitter<{ code: string; pattern: StrudelPattern; miniLocations: [number, number][] }>();
 
@@ -78,6 +82,7 @@ async function create() {
 
   let lastEvalError: unknown;
   let triggerCount = 0;
+  let lastCode: string | undefined;
 
   const repl: Repl = webaudio.webaudioRepl({
     transpiler: transpilerMod.transpiler,
@@ -91,9 +96,10 @@ async function create() {
       lastEvalError = err;
     },
     afterEval: ({ code, pattern, meta }: { code: string; pattern: StrudelPattern; meta?: { miniLocations?: [number, number][] } }) => {
+      lastCode = code;
       evaluated.emit({ code, pattern, miniLocations: meta?.miniLocations ?? [] });
     },
-    onToggle: (started: boolean) => playState.emit(started),
+    onToggle: (started: boolean) => playState$.emit(started),
     setInterval: workerTimers.setInterval,
     clearInterval: workerTimers.clearInterval,
   });
@@ -111,6 +117,26 @@ async function create() {
 
   let audioReady: Promise<void> | null = null;
 
+  // The master gain, for cutting the sound at once. Pause and stop fade it over 30 ms (no click);
+  // play brings it back. Superdough rebuilds the node on resetGlobalEffects, so look it up each time.
+  const master = (): GainNode | undefined => webaudio.getSuperdoughAudioController().output?.destinationGain ?? undefined;
+  const FADE = 0.03;
+  const fade = (to: number) => {
+    const ctx: AudioContext = webaudio.getAudioContext();
+    const g = master()?.gain;
+    if (!g) return;
+    g.cancelScheduledValues(ctx.currentTime);
+    g.setValueAtTime(g.value, ctx.currentTime);
+    g.linearRampToValueAtTime(to, ctx.currentTime + FADE);
+  };
+  // Pause and stop finish their work after the fade; a play in between cancels it.
+  let settle = 0;
+  const afterFade = (fn: () => void) => {
+    const token = ++settle;
+    setTimeout(() => token === settle && !repl.scheduler.started && fn(), FADE * 1000 + 20);
+  };
+  const playState = (): PlayState => (repl.scheduler.started ? 'playing' : repl.scheduler.lastEnd > 0 ? 'paused' : 'stopped');
+
   return {
     /** Must be called from a user gesture (click / keydown) before the first play. */
     async unlock() {
@@ -119,6 +145,8 @@ async function create() {
       if (ctx.state !== 'running') await ctx.resume();
       audioReady ??= webaudio.initAudio();
       await audioReady;
+      settle++;
+      fade(1);
     },
 
     async evaluate(code: string): Promise<EvalResult> {
@@ -129,9 +157,31 @@ async function create() {
       return { ok: true, pattern };
     },
 
+    /** Stops at once and goes back to bar 1; effect tails are cleared so nothing bleeds into the next play. */
     stop() {
+      const wasPaused = playState() === 'paused';
+      fade(0);
       repl.stop();
+      afterFade(() => webaudio.resetGlobalEffects());
+      if (wasPaused) playState$.emit(false);
     },
+    /** Freezes the sound where it is; play (or update) continues from the same beat. */
+    pause() {
+      if (!repl.scheduler.started) return;
+      fade(0);
+      repl.pause();
+      afterFade(() => void (webaudio.getAudioContext() as AudioContext).suspend());
+    },
+    /** Continues after a pause with the pattern that was playing. */
+    async resume() {
+      await this.unlock();
+      if (playState() === 'paused') await repl.start();
+    },
+    playState,
+    /** The code of the last successful evaluation (to tell whether an update is needed). */
+    lastCode: () => lastCode,
+    /** The bar the music is paused at (1-based). */
+    pausedBar: () => Math.floor(repl.scheduler.lastEnd) + 1,
     isPlaying: () => repl.scheduler.started,
     getCycle: () => repl.scheduler.now(),
     getCps: () => repl.scheduler.cps,
@@ -139,7 +189,7 @@ async function create() {
     triggerCount: () => triggerCount,
 
     onLog: logs.on,
-    onPlayState: playState.on,
+    onPlayState: playState$.on,
     onTrigger: triggers.on,
     onEvaluated: evaluated.on,
 

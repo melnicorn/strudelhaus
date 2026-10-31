@@ -17,7 +17,7 @@ export const beginner: Lesson[] = [
 
 \`s("bd")\` means "play the sound called **bd**" (bass drum, the kick) once per cycle. In this workshop one cycle is one **bar** of music: four beats, the length of counting "1 2 3 4".
 
-Press **▶ Play** (or Ctrl/Cmd+Enter in the editor). Change the code and press it again: the music updates without stopping. **■ Stop** (or Ctrl/Cmd+.) stops it.`,
+Press **▶ Play** (or Ctrl/Cmd+Enter in the editor); the same key pauses. Change the code and press **⟳ Update** (Shift+Ctrl/Cmd+Enter): the music updates without stopping. **■ Stop** (or Ctrl/Cmd+.) stops it and goes back to bar 1.`,
     starter: `s("bd")`,
     tasks: [
       {
@@ -28,7 +28,7 @@ Press **▶ Play** (or Ctrl/Cmd+Enter in the editor). Change the code and press 
       },
       {
         text: 'Change bd to sd (a snare drum) and run it again.',
-        hint: 'Edit the text inside the quotes so it reads s("sd"), then press Play again.',
+        hint: 'Edit the text inside the quotes so it reads s("sd"), then press Update (or Play if it is stopped).',
         check: (c) => eventsOf(c, 'sd').length >= 1,
       },
     ],

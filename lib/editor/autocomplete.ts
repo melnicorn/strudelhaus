@@ -1,6 +1,6 @@
 // The autocomplete popup: CodeMirror's, fed by lib/editor/completions (loaded on first use) and
 // styled like the editor. Enter accepts, Esc closes, Ctrl-Space opens it by hand; Tab still indents
-// and ⌘↵ still plays (that keymap is registered ahead of this one). Wrapped in a compartment so
+// and ⌘↵ still plays/pauses (that keymap is registered ahead of this one). Wrapped in a compartment so
 // the setting can switch it off live.
 import { autocompletion, type Completion, type CompletionContext } from '@codemirror/autocomplete';
 import { Compartment, type Extension } from '@codemirror/state';

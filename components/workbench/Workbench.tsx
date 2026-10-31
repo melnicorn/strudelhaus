@@ -6,7 +6,7 @@ import { CodeEditor } from '@/components/editor/CodeEditor';
 import { ErrorPanel } from '@/components/errors/ErrorPanel';
 import { TempoControl } from '@/components/transport/TempoControl';
 import { Transport } from '@/components/transport/Transport';
-import { useEngine, usePlaying } from '@/components/transport/useEngine';
+import { useEngine, usePlayState } from '@/components/transport/useEngine';
 import type { StrudelPattern } from '@/lib/audio/engine';
 import { setErrorLine } from '@/lib/editor/errorLine';
 import { showActiveHaps, updateMiniLocations } from '@/lib/editor/playingHighlight';
@@ -28,7 +28,8 @@ interface Props {
 /** Transport + code editor + errors: the core of the lesson and sandbox views. */
 export function Workbench({ initialCode, onEvaluated, panels, children }: Props) {
   const { engine, loadError } = useEngine();
-  const playing = usePlaying(engine);
+  const playState = usePlayState(engine);
+  const playing = playState === 'playing';
   const [error, setError] = useState<FriendlyError | null>(null);
   const [runtimeError, setRuntimeError] = useState<FriendlyError | null>(null);
   const onEvaluatedRef = useRef(onEvaluated);
@@ -54,6 +55,14 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
   }, [engine]);
 
   const stop = useCallback(() => engine?.stop(), [engine]);
+  // ⌘↵: pause while playing; otherwise play. After a pause, unchanged code continues where it
+  // was; changed code is re-run (also from where it was).
+  const toggle = useCallback(async () => {
+    if (!engine) return;
+    if (engine.isPlaying()) return engine.pause();
+    if (engine.playState() === 'paused' && engine.lastCode() === useEditorStore.getState().code) return engine.resume();
+    await evaluate();
+  }, [engine, evaluate]);
 
   // GUI edits re-run the code while it's playing, so changes are heard straight away.
   useEffect(() => {
@@ -97,14 +106,14 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
     };
   }, [engine]);
 
-  // Ctrl/Cmd+Enter runs and Ctrl/Cmd+. stops from anywhere on the page (the editor has its own
-  // bindings, so skip events coming from it).
+  // Ctrl/Cmd+Enter plays or pauses, with Shift it updates, and Ctrl/Cmd+. stops, from anywhere on
+  // the page (the editor has its own keymap for the same keys).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!(e.ctrlKey || e.metaKey) || (e.target as HTMLElement)?.closest?.('.cm-editor')) return;
       if (e.key === 'Enter') {
         e.preventDefault();
-        void evaluate();
+        void (e.shiftKey ? evaluate() : toggle());
       } else if (e.key === '.') {
         e.preventDefault();
         stop();
@@ -112,7 +121,7 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [evaluate, stop]);
+  }, [evaluate, toggle, stop]);
 
   // Stop when leaving the page (also runs when Next hides the page with <Activity>).
   useEffect(() => () => void engine?.stop(), [engine]);
@@ -132,14 +141,15 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
       <div className="sticky top-2 flex min-w-0 flex-col gap-3 max-[960px]:static">
         <Transport
           engine={engine}
-          playing={playing}
+          state={playState}
           loading={!engine && !loadError}
           loadError={loadError}
-          onPlay={evaluate}
+          onToggle={toggle}
+          onUpdate={evaluate}
           onStop={stop}
           tempo={<TempoControl />}
         />
-        <CodeEditor initialCode={initialCode} onEvaluate={evaluate} onStop={stop} />
+        <CodeEditor initialCode={initialCode} onToggle={toggle} onUpdate={evaluate} onStop={stop} />
         <div className="-mt-1.5 flex justify-end">
           <Checkbox isSelected={autocomplete} onChange={(on) => setSetting('autocomplete', on)}>
             <Checkbox.Content>

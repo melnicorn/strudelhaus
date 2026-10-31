@@ -24,20 +24,22 @@ import { useSettingsStore } from '@/lib/stores/settings';
 
 interface Props {
   initialCode: string;
-  /** Ctrl/Cmd+Enter or Alt+Enter. */
-  onEvaluate(): void;
-  /** Ctrl/Cmd+. */
+  /** Ctrl/Cmd+Enter: play or pause. */
+  onToggle(): void;
+  /** Shift+Ctrl/Cmd+Enter or Alt+Enter: run the changed code without stopping. */
+  onUpdate(): void;
+  /** Ctrl/Cmd+.: stop and go back to bar 1. */
   onStop(): void;
   ariaLabel?: string;
 }
 
 /** The Strudel code editor. Registers its view with the editor store. */
-export function CodeEditor({ initialCode, onEvaluate, onStop, ariaLabel = 'Strudel code' }: Props) {
+export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel = 'Strudel code' }: Props) {
   const host = useRef<HTMLDivElement>(null);
   // Keep the latest callbacks without recreating the editor.
-  const handlers = useRef({ onEvaluate, onStop });
+  const handlers = useRef({ onToggle, onUpdate, onStop });
   useEffect(() => {
-    handlers.current = { onEvaluate, onStop };
+    handlers.current = { onToggle, onUpdate, onStop };
   });
 
   const completions = useSettingsStore((s) => s.settings.autocomplete);
@@ -47,12 +49,8 @@ export function CodeEditor({ initialCode, onEvaluate, onStop, ariaLabel = 'Strud
 
   useEffect(() => {
     const { setView, setCode } = useEditorStore.getState();
-    const run = () => {
-      handlers.current.onEvaluate();
-      return true;
-    };
-    const stop = () => {
-      handlers.current.onStop();
+    const bind = (name: 'onToggle' | 'onUpdate' | 'onStop') => () => {
+      handlers.current[name]();
       return true;
     };
     const view = new EditorView({
@@ -62,9 +60,10 @@ export function CodeEditor({ initialCode, onEvaluate, onStop, ariaLabel = 'Strud
         extensions: [
           Prec.highest(
             keymap.of([
-              { key: 'Mod-Enter', run },
-              { key: 'Alt-Enter', run },
-              { key: 'Mod-.', run: stop },
+              { key: 'Shift-Mod-Enter', run: bind('onUpdate') },
+              { key: 'Mod-Enter', run: bind('onToggle') },
+              { key: 'Alt-Enter', run: bind('onUpdate') },
+              { key: 'Mod-.', run: bind('onStop') },
             ]),
           ),
           lineNumbers(),
