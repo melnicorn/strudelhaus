@@ -11,7 +11,7 @@ npm test           # Vitest: sync layer, storage, lessons, reference examples
 npm run build
 ```
 
-Set `NEXT_PUBLIC_SOURCE_URL` to the public repository URL when deploying (the footer links to it, as the AGPL requires).
+The footer links to the source at <https://github.com/melnicorn/strudelhaus>, as the AGPL requires. If you deploy a modified fork, set `NEXT_PUBLIC_SOURCE_URL` to your own repository.
 
 ## How it's put together
 
