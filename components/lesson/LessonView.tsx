@@ -192,7 +192,7 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
               ✦ <i>Challenge:</i> {inline(lesson.challenge.text)}{' '}
               {challengePassed && (
                 <Chip size="sm" color="success" className="align-middle">
-                  done
+                  passed
                 </Chip>
               )}
               <Button size="sm" variant="ghost" className={inlineBtn} onPress={() => setShowHint(showHint === 'challenge' ? null : 'challenge')}>
