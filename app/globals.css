@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+@import '@heroui/styles';
+
+/*
+ * Theme: HeroUI's semantic variables set to the workshop palette (warm greys, orange accent).
+ * Light is the default; the `.dark` class on <html> (set from the system setting by the script
+ * in app/layout.tsx) switches to dark. Use the Tailwind names in components: bg-background,
+ * bg-surface, bg-default, text-foreground, text-muted, border-border, bg-accent, text-success…
+ */
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    --field-radius: 0.375rem;
+    --field-border-width: 1px;
+
+    --accent: #d9480f;
+    --accent-foreground: #ffffff;
+    --success: #2b8a3e;
+    --success-foreground: #ffffff;
+
+    --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    --font-sans: var(--font-geist-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+
+  :root,
+  .light {
+    --background: #f4f3ef;
+    --foreground: #1d1d1b;
+    --surface: #ffffff;
+    --surface-secondary: #f4f3ef;
+    --surface-tertiary: #ebe9e3;
+    --overlay: #ffffff;
+    --muted: #6b6a66;
+    --default: #ebe9e3;
+    --default-foreground: #1d1d1b;
+    --field-background: #ffffff;
+    --field-foreground: #1d1d1b;
+    --field-border: #d4d2cb;
+    --segment: #ffffff;
+    --border: #d4d2cb;
+    --separator: #e2e0d9;
+    --warning: #b08900;
+    --warning-foreground: #ffffff;
+    --danger: #c92a2a;
+    --danger-foreground: #ffffff;
+    --custom: #6741d9;
+    --custom-foreground: #ffffff;
+    --accent-soft-bg: #ffe3d3;
+  }
+
+  .dark {
+    --background: #161614;
+    --foreground: #ecebe6;
+    --surface: #22221f;
+    --surface-secondary: #1c1c1a;
+    --surface-tertiary: #2c2c28;
+    --overlay: #2a2a26;
+    --muted: #9a9890;
+    --default: #2c2c28;
+    --default-foreground: #ecebe6;
+    --field-background: #1c1c1a;
+    --field-foreground: #ecebe6;
+    --field-border: #3c3b37;
+    --segment: #3c3b37;
+    --border: #3c3b37;
+    --separator: #33322e;
+    --accent: #ff8a4c;
+    --accent-foreground: #161614;
+    --success: #69db7c;
+    --success-foreground: #161614;
+    --warning: #ffd43b;
+    --warning-foreground: #161614;
+    --danger: #ff8787;
+    --danger-foreground: #161614;
+    --custom: #b197fc;
+    --custom-foreground: #161614;
+    --accent-soft-bg: #4a2412;
+  }
+}
+
+/* Workshop-only colours, as Tailwind utilities (bg-custom, text-code-string, …). */
+@theme inline {
+  --color-custom: var(--custom);
+  --color-custom-foreground: var(--custom-foreground);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* The code editor and code bars are always dark. */
+  --color-code: #1e1e1e;
+  --color-code-foreground: #e6e6e6;
+  --animate-flash: flash 1.2s ease-out;
+
+  @keyframes flash {
+    from {
+      background-color: rgb(255 170 60 / 0.45);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
+}
+
+@layer base {
+  html,
+  body {
+    @apply bg-background text-foreground font-sans text-sm leading-normal;
+  }
+  code,
+  kbd,
+  pre {
+    @apply font-mono;
+  }
+  code {
+    @apply text-[0.92em];
+  }
+}
+
+/* CodeMirror: the GUI-edit flash (lib/editor/guiEdits.ts adds .cm-gui-changed). */
+@keyframes cm-gui-flash {
+  from {
+    background-color: rgb(255 170 60 / 0.5);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+/* Dictionary words light up while ⌘/Ctrl is held (components/dictionary/TermHover.tsx). */
+.terms-on [data-term],
+.terms-on [data-code] {
+  text-decoration: underline dotted var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  cursor: help;
+}

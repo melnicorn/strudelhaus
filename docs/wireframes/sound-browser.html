@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sound Browser Wireframe</title>
+<style>
+  :root {
+    --bg: #f4f3ef; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #c9c7c0;
+    --soft: #ebe9e3; --accent: #d9480f; --accent-soft: #ffe3d3; --play: #2b8a3e; --play-soft: #d3f9d8;
+    --warn: #b08900; --warn-soft: #fff3bf;
+    --code-bg: #1e1e1e; --code-ink: #e6e6e6; --code-str: #ce9178; --code-fn: #dcdcaa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28;
+      --accent: #ff8a4c; --accent-soft: #4a2412; --play: #69db7c; --play-soft: #173b20; --warn: #ffd43b; --warn-soft: #3d3310;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28;
+    --accent: #ff8a4c; --accent-soft: #4a2412; --play: #69db7c; --play-soft: #173b20; --warn: #ffd43b; --warn-soft: #3d3310;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  code, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+  header.top { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); padding: 10px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  header.top h1 { font-size: 15px; margin: 0; }
+  nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  nav.tabs button { border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 4px 10px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px; }
+  nav.tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  main { padding: 16px; max-width: 1280px; margin: 0 auto; }
+  section.screen { display: none; }
+  section.screen.active { display: block; }
+  .note { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 8px 12px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .anno { color: var(--accent); font-size: 12px; font-style: italic; }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 0; }
+  .box h3 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn { border: 1px solid var(--line); background: var(--soft); color: var(--ink); padding: 5px 10px; border-radius: 6px; font: inherit; font-size: 13px; cursor: pointer; }
+  .btn.primary { background: var(--play); color: #fff; border-color: var(--play); }
+  .btn.small { padding: 2px 7px; font-size: 12px; }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); background: var(--soft); white-space: nowrap; cursor: pointer; }
+  .chip.sel { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  input[type=text], select { font: inherit; font-size: 13px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--ink); }
+
+  .browser { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 12px; }
+  .sources { max-height: 560px; overflow-y: auto; }
+  .sources .grp { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 4px; }
+  .sources .grp:first-child { margin-top: 0; }
+  .src { display: flex; justify-content: space-between; gap: 6px; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+  .src:hover { background: var(--soft); }
+  .src.sel { background: var(--accent-soft); }
+  .src .meta { color: var(--muted); font-size: 12px; }
+  .star { color: var(--accent); }
+
+  .inst { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .inst:last-child { border-bottom: 0; }
+  .inst .name { font-family: ui-monospace, monospace; font-size: 13px; }
+  .inst .name span { color: var(--muted); font-family: system-ui, sans-serif; }
+  .vars { display: flex; gap: 4px; flex-wrap: wrap; }
+  .var { width: 30px; height: 26px; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); color: var(--ink); font: 12px ui-monospace, monospace; cursor: pointer; padding: 0; }
+  .var:hover { border-color: var(--accent); }
+  .var.sel { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .keys { display: flex; position: relative; height: 110px; user-select: none; }
+  .key { width: 38px; height: 110px; border: 1px solid var(--line); background: #fff; border-radius: 0 0 4px 4px; cursor: pointer; display: flex; align-items: flex-end; justify-content: center; font: 11px ui-monospace, monospace; color: #888; padding-bottom: 4px; }
+  .key.black { position: absolute; width: 26px; height: 68px; background: #222; border-color: #222; color: #aaa; z-index: 2; }
+  .key.sel { background: var(--accent); color: #fff; }
+
+  .codebar { position: sticky; bottom: 0; margin-top: 12px; background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 10px 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .codebar code { font-size: 14px; flex: 1; min-width: 200px; }
+  .codebar .btn { background: #333; color: #eee; border-color: #555; }
+  .t-str { color: var(--code-str); } .t-fn { color: var(--code-fn); }
+  .flash { animation: flash 1.2s ease-out; }
+  @keyframes flash { from { background: rgba(255,170,60,.45); } to { background: transparent; } }
+
+  .drawer-demo { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 12px; }
+  .editor { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 10px 14px; font: 13px/1.7 ui-monospace, monospace; white-space: pre; overflow-x: auto; }
+  .steps { display: grid; grid-template-columns: 58px repeat(16, 1fr); gap: 3px; align-items: center; font: 12px ui-monospace, monospace; }
+  .steps i { height: 20px; border: 1px solid var(--line); border-radius: 3px; background: var(--soft); }
+  .steps i.on { background: var(--accent); border-color: var(--accent); }
+  .menu { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); box-shadow: 0 6px 18px rgba(0,0,0,.15); width: 190px; font-size: 13px; padding: 4px 0; }
+  .menu div { padding: 3px 10px; }
+  .menu .hr { border-top: 1px solid var(--line); margin: 4px 0; padding: 0; }
+  .menu .act { color: var(--accent); }
+
+  .term { cursor: help; }
+  body.cmd .term { text-decoration: underline dotted var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .tip { position: absolute; z-index: 20; background: var(--ink); color: var(--bg); padding: 8px 10px; border-radius: 6px; font-size: 13px; max-width: 300px; box-shadow: 0 6px 18px rgba(0,0,0,.2); display: none; }
+  .tip b { display: block; margin-bottom: 2px; }
+  .tip .more { opacity: .7; font-size: 12px; margin-top: 4px; }
+  .kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; font: 12px ui-monospace, monospace; background: var(--soft); }
+  .gloss { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 12px; }
+  .gloss dl { margin: 0; }
+  .gloss dt { font-weight: 600; margin-top: 12px; }
+  .gloss dt:first-child { margin-top: 0; }
+  .gloss dd { margin: 2px 0 0; color: var(--ink); }
+  .gloss dd .see { color: var(--muted); font-size: 12px; }
+  .letters { display: flex; flex-wrap: wrap; gap: 4px; }
+  .letters span { width: 24px; text-align: center; border-radius: 4px; background: var(--soft); font-size: 12px; cursor: pointer; }
+  @media (max-width: 860px) {
+    .gloss { grid-template-columns: minmax(0, 1fr); }
+    .browser, .drawer-demo { grid-template-columns: minmax(0, 1fr); }
+    .sources { max-height: 220px; }
+    .inst { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Sound browser &amp; dictionary · wireframes</h1>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+</header>
+<main>
+
+<div class="note">Low-fidelity wireframe for review before building. Click machines, variant numbers and keys to see which code the browser shows. There's no audio here; the real page plays each sound as you click it, over whatever is already playing. Orange italic text is an annotation, not UI.</div>
+
+<!-- ============ A. SOUNDS PAGE ============ -->
+<section class="screen" data-title="Sounds page">
+  <div class="row" style="margin-bottom:10px">
+    <h2 style="margin:0;font-size:18px">Sounds</h2>
+    <span class="mono" style="color:var(--muted)">/sounds</span>
+    <input type="text" placeholder="Search: 909, clap, saw…" style="margin-left:auto;width:220px">
+  </div>
+  <div class="row" style="margin-bottom:12px" id="filters">
+    <span class="chip sel">★ 90s house &amp; techno</span>
+    <span class="chip">All</span>
+    <span class="chip">Drum machines</span>
+    <span class="chip">Synths</span>
+    <span class="chip">Keys</span>
+    <span class="anno">★ is a short hand-picked list; "All" shows every machine (about 70 after merging the alias names).</span>
+  </div>
+
+  <div class="browser">
+    <div class="box sources" id="sources"></div>
+    <div class="stack-v">
+      <div class="box" id="detail"></div>
+      <div class="codebar">
+        <code id="code"></code>
+        <button class="btn small" id="replay">▶ again</button>
+        <button class="btn small">Copy</button>
+        <button class="btn small">Open in sandbox ↗</button>
+      </div>
+      <p class="anno" style="margin-top:6px">The code bar always shows the exact Strudel code for the last sound you clicked. "Open in sandbox" adds it as a new part in your current project (a normal GUI edit, highlighted).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B. FROM A PART ============ -->
+<section class="screen" data-title="From a part">
+  <p style="margin-top:0">The browser is also reachable from the part you're editing, so you can swap a sound without leaving the code. It opens as a side drawer, already showing the part's own bank, and "Use" writes into that part.</p>
+  <div class="drawer-demo">
+    <div class="stack-v">
+      <div class="editor"><span>const drums = <span class="t-fn">s</span>(<span class="t-str">"bd*4, ~ cp ~ cp"</span>)</span>
+<span>  .<span class="t-fn">bank</span>(<span class="t-str" id="bankText">"RolandTR909"</span>)</span></div>
+      <div class="box" style="margin-top:12px">
+        <h3>drums</h3>
+        <div class="steps">
+          <span>bd ▾</span><i class="on"></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i>
+          <span>cp ▾</span><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <span class="mono">.bank</span> <select><option>RolandTR909</option></select>
+          <button class="btn small">Browse…</button>
+          <span class="anno">opens the drawer on this bank</span>
+        </div>
+        <div class="row" style="margin-top:10px;align-items:flex-start">
+          <div class="menu">
+            <div>bd - kick</div><div>sd - snare</div><div>cp - clap</div><div>…</div>
+            <div class="hr"></div>
+            <div class="act">Browse sounds…</div>
+          </div>
+          <span class="anno">the row ▾ list gets a last entry that opens the drawer on this row's sound</span>
+        </div>
+      </div>
+    </div>
+    <div class="box">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">Sounds</h3><button class="btn small">✕</button></div>
+      <div class="row" style="margin:8px 0">
+        <select><option>Roland TR-909</option><option>Roland TR-808</option><option>Korg M1</option></select>
+      </div>
+      <div id="drawerList"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn small primary" id="useBank">Use TR-808 for this part</button>
+      </div>
+      <p class="anno">Picking another machine and pressing Use changes only the <code>.bank("…")</code> text; the bank string flashes in the code. Variant buttons in the drawer write <code>bd:2</code> into the row.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ C. DICTIONARY ============ -->
+<section class="screen" data-title="Dictionary">
+  <div class="note">Try it: <b>hold <span class="kbd">⌘</span> (or <span class="kbd">Ctrl</span>)</b> and every dictionary word on the page gets a dotted underline. Hover one to see its definition. Without the key held, the text reads normally, with no clutter.</div>
+  <div class="box" style="max-width:720px">
+    <h3>In a lesson</h3>
+    <p style="margin-top:0">An <span class="term" data-t="acid">acid</span> line is a <span class="term" data-t="sawtooth">sawtooth</span> wave through a <span class="term" data-t="low-pass filter">low-pass filter</span> with lots of <span class="term" data-t="resonance">resonance</span>. Each note's <span class="term" data-t="envelope">envelope</span> opens the filter, and an <span class="term" data-t="accent">accent</span> opens it further.</p>
+    <p>Set the tempo to 126 <span class="term" data-t="BPM">BPM</span> and put the <span class="term" data-t="kick">kick</span> on every beat: <span class="term" data-t="four on the floor">four on the floor</span>.</p>
+    <p class="anno">Terms are matched in lesson text, task hints, the reference page, sound-browser blurbs and control labels. Only the first mention per paragraph is marked, so a paragraph full of "kick" doesn't turn into a sea of dots.</p>
+  </div>
+  <div class="box" style="max-width:720px;margin-top:12px">
+    <h3>In the code</h3>
+    <div class="editor">note(<span class="t-str">"c2 c3 eb2 c3"</span>).s(<span class="t-str term" data-t="sawtooth">"sawtooth"</span>).<span class="term" data-t="lpf">lpf</span>(800).<span class="term" data-t="resonance">lpq</span>(18)</div>
+    <p class="anno">With ⌘ held, function names and sound names in the editor are underlined too, and hovering explains them (the musical meaning, then a link to the Reference entry for the code details). ⌘-click opens the definition in the dictionary.</p>
+  </div>
+
+  <h2 style="font-size:18px;margin:24px 0 4px">Dictionary page <span class="mono" style="color:var(--muted);font-size:13px;font-weight:normal">/dictionary</span></h2>
+  <div class="gloss">
+    <div class="box">
+      <input type="text" placeholder="Search terms…" style="width:100%">
+      <div class="letters" style="margin-top:10px"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>H</span><span>K</span><span>L</span><span>O</span><span>P</span><span>R</span><span>S</span><span>T</span><span>V</span></div>
+      <div style="margin-top:12px;font-size:13px">
+        <div class="row"><input type="checkbox" checked> Rhythm</div>
+        <div class="row"><input type="checkbox" checked> Sound &amp; synthesis</div>
+        <div class="row"><input type="checkbox" checked> Drums</div>
+        <div class="row"><input type="checkbox" checked> Harmony</div>
+        <div class="row"><input type="checkbox" checked> Mixing &amp; effects</div>
+        <div class="row"><input type="checkbox" checked> Song structure</div>
+        <div class="row"><input type="checkbox"> Strudel code</div>
+      </div>
+      <p class="anno">"Strudel code" terms (pattern, cycle, mini-notation) cross-link to the Reference page instead of duplicating it.</p>
+    </div>
+    <div class="box"><dl id="glossList"></dl></div>
+  </div>
+</section>
+
+</main>
+<div class="tip" id="tip"></div>
+
+<script>
+const MACHINES = [
+  { id: 'RolandTR909', name: 'Roland TR-909', year: 1983, star: true, blurb: 'The house and techno drum machine: punchy kick, crisp sampled hats and cymbals.', inst: { bd: 4, sd: 4, lt: 3, mt: 3, ht: 3, rim: 1, cp: 2, hh: 2, oh: 2, cr: 2, rd: 2 } },
+  { id: 'RolandTR808', name: 'Roland TR-808', year: 1980, star: true, blurb: 'Deep boomy kick and the famous cowbell and clap. All over Detroit techno and early house.', inst: { bd: 6, sd: 6, lt: 3, mt: 3, ht: 3, rim: 1, cp: 1, hh: 1, oh: 2, cr: 1, cb: 1, sh: 1 } },
+  { id: 'RolandTR707', name: 'Roland TR-707', year: 1985, star: true, blurb: 'Bright, tight sampled kit; Chicago jack tracks.', inst: { bd: 2, sd: 2, lt: 1, mt: 1, ht: 1, rim: 1, cp: 1, hh: 1, oh: 1, cr: 1, cb: 1, tb: 1 } },
+  { id: 'RolandTR606', name: 'Roland TR-606', year: 1981, star: true, blurb: 'Thin, clicky analog kit; often paired with the TB-303.', inst: { bd: 1, sd: 1, lt: 1, ht: 1, hh: 1, oh: 1, cr: 1 } },
+  { id: 'KorgM1', name: 'Korg M1', year: 1988, star: true, blurb: 'Workstation drums, plus the organ bass and piano of 90s house.', inst: { bd: 3, sd: 4, cp: 1, hh: 2, oh: 1, misc: 8 } },
+  { id: 'AkaiMPC60', name: 'Akai MPC60', year: 1988, star: true, blurb: 'Sampler with legendary swing; gritty 12-bit drums.', inst: { bd: 3, sd: 3, hh: 2, oh: 1, cp: 1 } },
+  { id: 'EmuSP12', name: 'E-mu SP-12', year: 1985, star: false, blurb: 'Crunchy 12-bit sampler drums.', inst: { bd: 4, sd: 5, hh: 2, oh: 1, cp: 1, rim: 1 } },
+  { id: 'LinnDrum', name: 'LinnDrum', year: 1982, star: false, blurb: 'Early sampled kit; 80s pop.', inst: { bd: 1, sd: 3, hh: 3, oh: 1, cp: 1, rim: 1, cb: 1, tb: 1 } },
+];
+const DEFAULT_KIT = { id: '', name: 'Default kit', blurb: 'What plays with no .bank(): a mixed bag from many machines.', inst: { bd: 25, sd: 25, cp: 3, hh: 13, oh: 6, rim: 3, lt: 16, mt: 16, ht: 16, cr: 6, rd: 1, cb: 1, sh: 4, tb: 1, misc: 6 } };
+const SYNTHS = [
+  { id: 'sawtooth', blurb: 'Buzzy and bright: acid lines, basses, supersaw leads. Put an lpf on it.' },
+  { id: 'square', blurb: 'Hollow and woody: organ-ish basses, chiptune.' },
+  { id: 'triangle', blurb: 'Soft, a little brighter than sine: sub basses and pads.' },
+  { id: 'sine', blurb: 'Pure tone: sub bass, 808-style booms.' },
+  { id: 'supersaw', blurb: 'Several detuned saws at once: big trance and rave chords.' },
+  { id: 'pulse', blurb: 'Square with adjustable width: nasal leads.' },
+];
+const NOISE = ['white', 'pink', 'brown', 'crackle'];
+const KEYS = [{ id: 'piano', blurb: 'Sampled grand piano: house piano chords.' }];
+const NAMES = { bd: 'kick', sd: 'snare', cp: 'clap', rim: 'rimshot', hh: 'closed hi-hat', oh: 'open hi-hat', lt: 'low tom', mt: 'mid tom', ht: 'high tom', cr: 'crash', rd: 'ride', cb: 'cowbell', sh: 'shaker', tb: 'tambourine', misc: 'other' };
+
+let sel = { kind: 'machine', id: 'RolandTR909' };
+let code = '';
+
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+function hl(c) {
+  return esc(c).replace(/"([^"]*)"/g, '<span class="t-str">"$1"</span>').replace(/\b(s|note|bank|n)\(/g, '<span class="t-fn">$1</span>(');
+}
+function setCode(c) {
+  code = c;
+  const el = document.getElementById('code');
+  el.innerHTML = hl(c);
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+
+function renderSources() {
+  const src = (s, label, meta) =>
+    `<div class="src${sel.id === s.id && sel.kind === s.kind ? ' sel' : ''}" data-kind="${s.kind}" data-id="${s.id}"><span>${label}</span><span class="meta">${meta ?? ''}</span></div>`;
+  document.getElementById('sources').innerHTML =
+    `<div class="grp">Drum machines</div>` +
+    MACHINES.map((m) => src({ kind: 'machine', id: m.id }, `${m.star ? '<span class="star">★</span> ' : ''}${m.name}`, m.year)).join('') +
+    src({ kind: 'machine', id: '' }, 'Default kit', 'no bank') +
+    `<div class="src meta" style="color:var(--muted)">+ 62 more in "All"</div>` +
+    `<div class="grp">Synths</div>` +
+    SYNTHS.map((s) => src({ kind: 'synth', id: s.id }, `<span class="mono">${s.id}</span>`)).join('') +
+    src({ kind: 'noise', id: 'noise' }, 'noise', 'white · pink · brown') +
+    `<div class="grp">Keys</div>` +
+    KEYS.map((s) => src({ kind: 'synth', id: s.id }, `<span class="mono">${s.id}</span>`, 'samples')).join('');
+  document.querySelectorAll('#sources .src[data-kind]').forEach((el) =>
+    el.addEventListener('click', () => { sel = { kind: el.dataset.kind, id: el.dataset.id }; renderSources(); renderDetail(); }));
+}
+
+function renderDetail() {
+  const d = document.getElementById('detail');
+  if (sel.kind === 'machine') {
+    const m = MACHINES.find((x) => x.id === sel.id) ?? DEFAULT_KIT;
+    const bank = m.id ? `.bank("${m.id}")` : '';
+    d.innerHTML = `
+      <div class="row" style="justify-content:space-between">
+        <div><h2 style="margin:0;font-size:17px">${m.name} <span style="color:var(--muted);font-weight:normal;font-size:13px">${m.year ?? ''}</span></h2>
+        <div style="color:var(--muted)">${m.blurb}</div></div>
+        <button class="btn primary" id="demo">▶ Play a beat</button>
+      </div>
+      <div class="mono" style="margin:6px 0 10px;color:var(--muted)">${m.id ? `.bank("${m.id}")` : 'no .bank()'}</div>
+      <p class="anno" style="margin:0 0 6px">Numbers are variants: <code>bd:0</code>, <code>bd:1</code>… (the same as <code>.n()</code>). Each button plays that sample once.</p>
+      ${Object.entries(m.inst).map(([k, n]) => `
+        <div class="inst">
+          <div class="name">${k} <span>- ${NAMES[k] ?? k}</span></div>
+          <div class="vars">${Array.from({ length: n }, (_, i) => `<button class="var" data-s="${k}" data-n="${i}">${i}</button>`).join('')}</div>
+        </div>`).join('')}`;
+    d.querySelectorAll('.var').forEach((b) => b.addEventListener('click', () => {
+      d.querySelectorAll('.var.sel').forEach((x) => x.classList.remove('sel'));
+      b.classList.add('sel');
+      const s = b.dataset.n === '0' ? b.dataset.s : `${b.dataset.s}:${b.dataset.n}`;
+      setCode(`s("${s}")${bank}`);
+    }));
+    d.querySelector('#demo').addEventListener('click', () => setCode(`s("bd*4, ~ cp ~ cp, [~ hh]*4")${bank}`));
+    setCode(`s("bd")${bank}`);
+  } else if (sel.kind === 'noise') {
+    d.innerHTML = `<h2 style="margin:0;font-size:17px">Noise</h2><div style="color:var(--muted)">Hiss with no pitch: risers, hats you shape with a filter, vinyl crackle.</div>
+      <div class="row" style="margin-top:12px">${NOISE.map((n) => `<button class="btn" data-n="${n}">▶ ${n}</button>`).join('')}</div>`;
+    d.querySelectorAll('[data-n]').forEach((b) => b.addEventListener('click', () => setCode(`s("${b.dataset.n}").decay(.3)`)));
+    setCode(`s("white").decay(.3)`);
+  } else {
+    const s = [...SYNTHS, ...KEYS].find((x) => x.id === sel.id);
+    const notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b', 'c'];
+    let x = 0;
+    const keys = notes.map((n, i) => {
+      const oct = i === 12 ? 4 : 3;
+      if (n.includes('#')) return `<div class="key black" style="left:${x - 13}px" data-note="${n}${oct}"></div>`;
+      const k = `<div class="key" data-note="${n}${oct}">${n}${oct}</div>`;
+      x += 38;
+      return k;
+    }).join('');
+    d.innerHTML = `
+      <h2 style="margin:0;font-size:17px" class="mono">${s.id}</h2>
+      <div style="color:var(--muted);margin-bottom:12px">${s.blurb}</div>
+      <div class="row" style="align-items:flex-start">
+        <div class="keys">${keys}</div>
+        <div style="font-size:13px">
+          <div class="row"><span>Octave</span><button class="btn small">−</button><span class="mono">3</span><button class="btn small">+</button></div>
+          <div class="row" style="margin-top:6px"><span>Play</span>
+            <select id="playmode"><option value="note">one note</option><option value="chord">a chord</option><option value="line">a bassline</option></select></div>
+          <p class="anno">Your computer keyboard plays too: A W S E D F … like a piano.</p>
+        </div>
+      </div>`;
+    const play = (note) => {
+      const mode = d.querySelector('#playmode').value;
+      setCode(mode === 'chord' ? `chord("${note[0].toUpperCase()}${note.includes('#') ? '#' : ''}m7").voicing().s("${s.id}")`
+        : mode === 'line' ? `note("${note.replace(/\d/, '2')} ~ ${note} ${note.replace(/\d/, '2')}").s("${s.id}")`
+        : `note("${note}").s("${s.id}")`);
+    };
+    d.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => {
+      d.querySelectorAll('.key.sel').forEach((x) => x.classList.remove('sel'));
+      k.classList.add('sel');
+      play(k.dataset.note);
+    }));
+    setCode(`note("c3").s("${s.id}")`);
+  }
+}
+
+function renderDrawer() {
+  const m = MACHINES[1];
+  document.getElementById('drawerList').innerHTML = Object.entries(m.inst).slice(0, 7).map(([k, n]) => `
+    <div class="inst" style="grid-template-columns:110px minmax(0,1fr)">
+      <div class="name">${k} <span>- ${NAMES[k]}</span></div>
+      <div class="vars">${Array.from({ length: Math.min(n, 5) }, (_, i) => `<button class="var">${i}</button>`).join('')}</div>
+    </div>`).join('');
+  document.getElementById('useBank').addEventListener('click', () => {
+    const b = document.getElementById('bankText');
+    b.textContent = '"RolandTR808"';
+    b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash');
+  });
+}
+
+document.getElementById('replay').addEventListener('click', () => setCode(code));
+
+const GLOSS = {
+  'accent': ['Rhythm', 'A note played harder than the others. On a 303, accented notes are louder and their filter opens more.', '303 sequencer'],
+  'acid': ['Sound & synthesis', 'The squelchy, rubbery sound of a Roland TB-303 bassline with its filter turned up. The heart of acid house (1987 on).', 'Lesson 18'],
+  'BPM': ['Rhythm', 'Beats per minute: the speed. House sits around 118–128, techno 125–140.', 'setcpm'],
+  'envelope': ['Sound & synthesis', 'How a sound changes over the length of one note: how fast it starts (attack), fades (decay), holds (sustain) and dies away (release).', 'attack, decay'],
+  'four on the floor': ['Rhythm', 'A kick drum on every beat: 1, 2, 3, 4. The foundation of house and techno.', 'Lesson 2'],
+  'kick': ['Drums', 'The bass drum: the deep thump that marks the beat. bd in Strudel.', 'bd'],
+  'low-pass filter': ['Sound & synthesis', 'Cuts the high frequencies and lets the lows through, making a sound darker or muffled. Opening it makes the sound brighter.', 'lpf'],
+  'lpf': ['Strudel code', 'Low-pass filter: .lpf(800) cuts everything above about 800 Hz.', 'low-pass filter'],
+  'resonance': ['Sound & synthesis', 'A boost right at the filter\'s cutoff point. High resonance gives the whistling, squelchy acid sound.', 'lpq'],
+  'sawtooth': ['Sound & synthesis', 'A waveform shaped like saw teeth: it ramps up, then drops. It has lots of harmonics, so it sounds bright and buzzy, perfect for filtering.', 'Sounds page'],
+  'sidechain': ['Mixing & effects', 'Turning one part down every time another plays, like the bass ducking under each kick. It makes the track "pump".', 'duck'],
+  'stab': ['Harmony', 'A short, punchy chord hit, often off the beat.', 'Lesson 21'],
+  'swing': ['Rhythm', 'Delaying every second 16th note a little so the groove shuffles instead of marching.', 'swingBy'],
+};
+const tip = document.getElementById('tip');
+const showCmd = (on) => document.body.classList.toggle('cmd', on);
+addEventListener('keydown', (e) => { if (e.key === 'Meta' || e.key === 'Control') showCmd(true); });
+addEventListener('keyup', (e) => { if (e.key === 'Meta' || e.key === 'Control') { showCmd(false); tip.style.display = 'none'; } });
+addEventListener('blur', () => showCmd(false));
+document.addEventListener('mouseover', (e) => {
+  const t = e.target.closest('.term');
+  if (!t || !document.body.classList.contains('cmd')) return;
+  const [cat, def, see] = GLOSS[t.dataset.t] ?? ['', '', ''];
+  tip.innerHTML = `<b>${t.dataset.t}</b>${def}<div class="more">${cat} · see ${see} · ⌘-click for more</div>`;
+  const r = t.getBoundingClientRect();
+  tip.style.display = 'block';
+  tip.style.left = Math.min(r.left + scrollX, innerWidth - 320) + 'px';
+  tip.style.top = r.bottom + scrollY + 6 + 'px';
+});
+document.addEventListener('mouseout', (e) => { if (e.target.closest('.term')) tip.style.display = 'none'; });
+document.getElementById('glossList').innerHTML = Object.entries(GLOSS).sort(([a], [b]) => a.localeCompare(b, 'en', { sensitivity: 'base' }))
+  .map(([k, [cat, def, see]]) => `<dt>${k} <span class="chip" style="cursor:default">${cat}</span></dt><dd>${def} <span class="see">See also: ${see}</span></dd>`).join('');
+
+const screens = [...document.querySelectorAll('section.screen')];
+const tabs = document.getElementById('tabs');
+screens.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.textContent = s.dataset.title;
+  b.setAttribute('role', 'tab');
+  b.onclick = () => { screens.forEach((x, j) => x.classList.toggle('active', j === i)); [...tabs.children].forEach((t, j) => t.setAttribute('aria-selected', j === i)); };
+  tabs.appendChild(b);
+});
+tabs.children[0].click();
+renderSources();
+renderDetail();
+renderDrawer();
+</script>
+</body>
+</html>

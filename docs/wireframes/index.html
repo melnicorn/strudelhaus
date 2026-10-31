@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strudel Workshop Wireframes</title>
+<style>
+  :root {
+    --bg: #f4f3ef; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #c9c7c0;
+    --soft: #ebe9e3; --accent: #d9480f; --accent-soft: #ffe3d3; --play: #2b8a3e; --play-soft: #d3f9d8;
+    --warn: #b08900; --warn-soft: #fff3bf; --custom: #6741d9; --custom-soft: #e5dbff; --err: #c92a2a; --err-soft: #ffe3e3;
+    --code-bg: #1e1e1e; --code-ink: #e6e6e6; --code-str: #ce9178; --code-fn: #dcdcaa; --code-num: #b5cea8; --code-cm: #6a9955; --code-kw: #569cd6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28;
+      --accent: #ff8a4c; --accent-soft: #4a2412; --play: #69db7c; --play-soft: #173b20; --warn: #ffd43b; --warn-soft: #3d3310;
+      --custom: #b197fc; --custom-soft: #2f2350; --err: #ff8787; --err-soft: #451c1c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28;
+    --accent: #ff8a4c; --accent-soft: #4a2412; --play: #69db7c; --play-soft: #173b20; --warn: #ffd43b; --warn-soft: #3d3310;
+    --custom: #b197fc; --custom-soft: #2f2350; --err: #ff8787; --err-soft: #451c1c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  code, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+  header.top { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); padding: 10px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  header.top h1 { font-size: 15px; margin: 0; white-space: nowrap; }
+  nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  nav.tabs button { border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 4px 10px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px; }
+  nav.tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  main { padding: 16px; max-width: 1280px; margin: 0 auto; }
+  section.screen { display: none; }
+  section.screen.active { display: block; }
+  .screen-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 4px 0 12px; }
+  .screen-title h2 { margin: 0; font-size: 18px; }
+  .screen-title .route { color: var(--muted); }
+  .note { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 8px 12px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .anno { color: var(--accent); font-size: 12px; font-style: italic; }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 0; }
+  .box h3 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .grid2 { display: grid; grid-template-columns: 320px minmax(0,1fr); gap: 12px; }
+  .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .stack-v { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .btn { border: 1px solid var(--line); background: var(--soft); color: var(--ink); padding: 5px 10px; border-radius: 6px; font: inherit; font-size: 13px; cursor: pointer; }
+  .btn.primary { background: var(--play); color: #fff; border-color: var(--play); }
+  .btn.small { padding: 2px 7px; font-size: 12px; }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); background: var(--soft); white-space: nowrap; }
+  .chip.gui { background: var(--play-soft); border-color: var(--play); }
+  .chip.partial { background: var(--warn-soft); border-color: var(--warn); }
+  .chip.custom { background: var(--custom-soft); border-color: var(--custom); color: var(--custom); }
+  .chip.err { background: var(--err-soft); border-color: var(--err); color: var(--err); }
+  select, input[type=text] { font: inherit; font-size: 13px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--ink); }
+  input[type=range] { width: 140px; accent-color: var(--accent); }
+
+  /* code editor mock */
+  .editor { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 10px 0; overflow-x: auto; }
+  .editor .ln { display: flex; white-space: pre; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; line-height: 1.6; }
+  .editor .ln .n { width: 36px; text-align: right; padding-right: 12px; color: #6e6e6e; flex: none; user-select: none; }
+  .editor .ln.errline { background: rgba(255,80,80,.12); }
+  .t-str { color: var(--code-str); } .t-fn { color: var(--code-fn); } .t-num { color: var(--code-num); } .t-cm { color: var(--code-cm); } .t-kw { color: var(--code-kw); }
+  .playing { outline: 1.5px solid #fff; border-radius: 2px; }
+  .changed { background: rgba(255,170,60,.45); border-radius: 2px; transition: background 1.4s ease-out; }
+  .changed.fade { background: transparent; }
+  .squiggle { text-decoration: underline wavy #ff6b6b; }
+
+  /* transport */
+  .transport { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .transport .pos { margin-left: auto; color: var(--muted); }
+
+  /* step grid */
+  .steps { display: grid; grid-template-columns: 56px repeat(4, 1fr); gap: 6px; align-items: center; }
+  .beat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+  .step { height: 22px; min-width: 14px; border: 1px solid var(--line); border-radius: 3px; background: var(--soft); cursor: pointer; padding: 0; }
+  .step.on { background: var(--accent); border-color: var(--accent); }
+  .step.now { box-shadow: 0 0 0 2px var(--play); }
+  .step.ro { cursor: not-allowed; opacity: .7; }
+  .rowlabel { font-family: ui-monospace, monospace; font-size: 12px; color: var(--muted); }
+  .vel { display: grid; grid-template-columns: repeat(4,1fr); gap: 3px; height: 28px; align-items: end; }
+  .vel span { background: var(--muted); opacity: .5; border-radius: 2px 2px 0 0; }
+
+  /* 303 sequencer */
+  .seq303 { display: grid; grid-template-columns: 64px repeat(16, minmax(26px, 1fr)); gap: 3px; font-size: 12px; overflow-x: auto; }
+  .seq303 > div { text-align: center; padding: 3px 0; border-radius: 3px; }
+  .seq303 .h { color: var(--muted); }
+  .seq303 .cell { background: var(--soft); border: 1px solid var(--line); cursor: pointer; }
+  .seq303 .cell.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .seq303 .cell.sl { background: var(--custom); color: #fff; border-color: var(--custom); }
+  .seq303 .lab { text-align: left; color: var(--muted); }
+  .seq303 .beatstart { margin-left: 4px; }
+
+  /* matrix */
+  table.matrix { border-collapse: collapse; width: 100%; font-size: 13px; }
+  .matrix th, .matrix td { border: 1px solid var(--line); padding: 6px; text-align: center; }
+  .matrix th.part { text-align: left; font-family: ui-monospace, monospace; font-weight: normal; }
+  .matrix td.cell { cursor: pointer; }
+  .matrix td.cell.on { background: var(--accent-soft); }
+  .matrix td.cell.on::after { content: "●"; color: var(--accent); }
+  .matrix td.cell.mod { background: var(--custom-soft); }
+  .matrix td.cell.mod::after { content: attr(data-mod); color: var(--custom); font-size: 11px; font-family: ui-monospace, monospace; }
+  .matrix .now { box-shadow: inset 0 -3px 0 var(--play); }
+
+  /* mixer */
+  .mixer { display: flex; gap: 10px; flex-wrap: wrap; }
+  .strip { width: 110px; border: 1px solid var(--line); border-radius: 6px; padding: 8px; text-align: center; background: var(--panel); }
+  .strip .fader { height: 110px; display: flex; justify-content: center; }
+  .strip .fader input { writing-mode: vertical-lr; direction: rtl; width: 24px; height: 100px; }
+  .strip .name { font-family: ui-monospace, monospace; font-weight: 600; }
+
+  /* punchcard */
+  .punch { display: grid; grid-template-columns: 48px 1fr; gap: 4px 8px; font-size: 11px; }
+  .punch .lane { position: relative; height: 12px; background: var(--soft); border-radius: 2px; }
+  .punch .lane i { position: absolute; top: 1px; height: 10px; background: var(--accent); border-radius: 2px; }
+  .punch .lane i.act { background: var(--play); }
+
+  .mobile-frame { width: 375px; max-width: 100%; border: 10px solid var(--ink); border-radius: 28px; overflow: hidden; background: var(--bg); margin: 0 auto; }
+  .mobile-frame .inner { height: 700px; display: flex; flex-direction: column; }
+  .mtabs { display: flex; border-bottom: 1px solid var(--line); background: var(--panel); }
+  .mtabs span { flex: 1; text-align: center; padding: 8px; font-size: 13px; }
+  .mtabs span.sel { border-bottom: 2px solid var(--accent); font-weight: 600; }
+
+  .outline li { list-style: none; padding: 4px 6px; border-radius: 4px; display: flex; justify-content: space-between; gap: 6px; }
+  .outline li:hover { background: var(--soft); }
+  .outline ul { padding-left: 0; margin: 4px 0 10px; }
+  .outline .grp { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-top: 6px; }
+
+  .ref-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ref-table th, .ref-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .tooltip { display: inline-block; background: var(--ink); color: var(--bg); padding: 6px 9px; border-radius: 6px; font-size: 12px; max-width: 280px; }
+
+  @media (max-width: 900px) {
+    .grid2 { grid-template-columns: minmax(0,1fr); }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Strudel Workshop · wireframes</h1>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+</header>
+<main>
+
+<div class="note">Low-fidelity wireframes for review before Phase 3. The point is layout, and which code each control writes. Colours and type are placeholders. <b>The step grids and the arrangement matrix work</b>: click them to see the code change and the changed span highlighted (requirement 4). Orange italic text is an annotation, not UI.</div>
+
+<!-- ============ 1. LESSON ============ -->
+<section class="screen" data-title="Lesson view">
+  <div class="screen-title"><h2>Lesson view</h2><span class="route mono">/learn/02-four-on-the-floor</span></div>
+  <div class="box row" style="margin-bottom:12px">
+    <a class="mono" href="#">◀ Learn</a>
+    <b>Lesson 2 of 33 · Four on the Floor</b>
+    <span class="chip">Beginner</span>
+    <span style="margin-left:auto" class="row"><span class="anno">progress in this tier</span><span class="mono">▓▓░░░░░░░░</span></span>
+  </div>
+  <div class="grid2">
+    <div class="stack-v">
+      <div class="box">
+        <h3>Goal</h3>
+        <p style="margin:0">Make a 909 kick play on every beat at 124 BPM.</p>
+      </div>
+      <div class="box">
+        <h3>Concept</h3>
+        <p style="margin-top:0">Strudel thinks in <b>cycles</b>. Here, one cycle = one bar of four beats. Everything inside the quotes is squeezed into one cycle, so <code>"bd bd bd bd"</code> gives four evenly spaced kicks: "four on the floor".</p>
+        <p style="margin-bottom:0"><code>*4</code> means "repeat 4 times in this step". <code>setcpm(124/4)</code> sets 124 beats per minute.</p>
+      </div>
+      <div class="box">
+        <h3>Task</h3>
+        <div>☑ <s>1. Make the kick play 4 times per bar</s> <span class="chip gui">passed</span></div>
+        <div>☐ 2. Make it sound like a TR-909 with <code>.bank(…)</code></div>
+        <div style="color:var(--muted);font-size:12px;margin:4px 0 8px 18px">Hint: bank names look like <code>"RolandTR909"</code></div>
+        <div>✦ <i>Challenge:</i> write it another way that sounds identical</div>
+        <div class="row" style="margin-top:10px"><button class="btn small">Hint</button><button class="btn small">Show solution</button><button class="btn small">Reset code</button><button class="btn small">Mark done</button></div>
+        <div class="anno" style="margin-top:6px">checks run automatically on each evaluate (queryArc predicates); "Mark done" is the manual override (D7)</div>
+      </div>
+      <div class="box" style="opacity:.55">
+        <h3>You now know <span class="anno">(revealed when the task passes)</span></h3>
+        <div class="row"><code>setcpm</code><code>s</code><code>*</code><code>.bank</code></div>
+      </div>
+    </div>
+
+    <div class="stack-v">
+      <div class="box transport">
+        <button class="btn primary">▶ Play</button><button class="btn">■ Stop</button>
+        <label>Tempo <input type="text" value="124" size="3"> BPM</label>
+        <span class="anno">writes setcpm(124/4) on line 1</span>
+        <span class="pos mono">bar 3 · beat 2</span>
+      </div>
+      <div class="editor" id="lesson-editor"></div>
+      <div class="box" style="border-color:var(--err);background:var(--err-soft)">
+        <b style="color:var(--err)">Error panel</b> <span class="anno">(example state)</span>
+        <div class="mono" style="margin-top:4px">sound "bdd" not found. Did you mean <u>bd</u>?</div>
+        <div style="font-size:12px;color:var(--muted)">Runtime errors arrive from the strudel.log event; syntax errors also underline the line in the editor.</div>
+      </div>
+      <div class="box">
+        <h3>Controls <span class="anno">only what this lesson has introduced</span></h3>
+        <div id="lesson-grid"></div>
+        <div class="row" style="margin-top:10px">
+          <label>bank <select id="lesson-bank"><option>(none)</option><option>RolandTR909</option><option>RolandTR808</option><option>RolandTR707</option></select></label>
+          <span class="anno">adds/edits .bank("…")</span>
+        </div>
+      </div>
+      <div class="box">
+        <h3>Punchcard <span class="anno">from queryArc; green = playing now</span></h3>
+        <div class="punch" id="lesson-punch"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. PART PANELS ============ -->
+<section class="screen" data-title="Part panels">
+  <div class="screen-title"><h2>Part panels (atoms)</h2><span class="route">shown in lessons and sandbox, beside the editor</span></div>
+
+  <div class="stack-v">
+    <div class="box">
+      <div class="row" style="justify-content:space-between">
+        <div class="row"><b class="mono">hats</b><span class="chip gui">GUI</span><span class="chip">drum</span><span class="chip">orbit 1</span></div>
+        <div class="row"><span class="anno">D-a + D-b toggle</span><button class="btn small" style="background:var(--ink);color:var(--bg)">Steps</button><button class="btn small">Mini</button><button class="btn small">▶ solo</button></div>
+      </div>
+      <div style="margin-top:10px" id="part-grid"></div>
+      <div class="rowlabel" style="margin:8px 0 2px">velocity lane <span class="anno">writes .gain("…") as a mini-number pattern</span></div>
+      <div class="steps"><span></span>
+        <div class="vel"><span style="height:60%"></span><span style="height:30%"></span><span style="height:90%"></span><span style="height:30%"></span></div>
+        <div class="vel"><span style="height:60%"></span><span style="height:30%"></span><span style="height:90%"></span><span style="height:30%"></span></div>
+        <div class="vel"><span style="height:60%"></span><span style="height:30%"></span><span style="height:90%"></span><span style="height:30%"></span></div>
+        <div class="vel"><span style="height:60%"></span><span style="height:30%"></span><span style="height:90%"></span><span style="height:30%"></span></div>
+      </div>
+      <div class="editor" style="margin-top:10px" id="part-code"></div>
+    </div>
+
+    <div class="box">
+      <div class="row"><b class="mono">perc</b><span class="chip gui">GUI</span><span class="anno">Mini view (D-b): you type real mini-notation; hover explains each token</span></div>
+      <div class="row" style="margin-top:8px"><input type="text" class="mono" value='rim(3,8,2), cb(5,16)' size="40"><button class="btn small">~ rest</button><button class="btn small">[ ] group</button><button class="btn small">*n</button><button class="btn small">(k,n)</button><button class="btn small">&lt; &gt;</button><button class="btn small">,</button></div>
+      <div style="margin-top:10px" class="row">
+        <div class="mono" style="font-size:12px;line-height:1.7">
+          stack (,)<br>
+          ├─ <b>rim</b> euclid(3 hits, 8 steps, rotate 2)<br>
+          └─ <b>cb</b> euclid(5 hits, 16 steps)
+        </div>
+        <span class="tooltip"><b>(3,8,2)</b>: spread 3 hits as evenly as possible over 8 steps, then rotate 2 steps left.</span>
+      </div>
+      <div class="anno" style="margin-top:6px">Clicking "Steps" on a non-canonical string asks first: "Convert rim(3,8,2) to an editable step pattern? Your notation will be replaced." (never rewrite silently)</div>
+    </div>
+
+    <div class="box">
+      <div class="row" style="justify-content:space-between">
+        <div class="row"><b class="mono">acid</b><span class="chip gui">GUI</span><span class="chip">pitched · absolute notes</span></div>
+        <span class="anno">P-a: 303-style sequencer: note + octave + accent + slide per step</span>
+      </div>
+      <div class="seq303" id="seq303" style="margin-top:10px"></div>
+      <div class="editor" style="margin-top:10px" id="acid-code"></div>
+      <div class="note" style="margin-bottom:0">Slide = <code>penv</code> workaround (research gap G1). The panel labels it "≈ slide" with an info link explaining that Strudel has no true portamento.</div>
+    </div>
+
+    <div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+      <div class="box">
+        <div class="row"><b class="mono">bass</b><span class="chip gui">GUI</span><span class="chip">scale degrees · key C:minor</span></div>
+        <div class="anno" style="margin:4px 0">P-c: degree tracker; follows the project key</div>
+        <div class="row mono" style="gap:4px">
+          <span>step</span>
+          <input type="text" value="~" size="1"><input type="text" value="0" size="1"><input type="text" value="~" size="1"><input type="text" value="0" size="1">
+          <input type="text" value="~" size="1"><input type="text" value="0" size="1"><input type="text" value="~" size="1"><input type="text" value="3" size="1">
+        </div>
+        <div class="editor" style="margin-top:8px"><div class="ln"><span class="n">7</span><span><span class="t-kw">const</span> bass = <span class="t-fn">n</span>(<span class="t-str">"[~ 0]*3 [~ 3]"</span>).<span class="t-fn">scale</span>(key)</span></div><div class="ln"><span class="n">8</span><span>  .<span class="t-fn">s</span>(<span class="t-str">"sawtooth"</span>).<span class="t-fn">octave</span>(<span class="t-num">2</span>)</span></div></div>
+      </div>
+      <div class="box">
+        <div class="row"><b class="mono">stab</b><span class="chip gui">GUI</span><span class="anno">C-c: toggle names ⇄ notes</span></div>
+        <div class="row" style="margin:8px 0"><button class="btn small" style="background:var(--ink);color:var(--bg)">Chord names</button><button class="btn small">Notes</button></div>
+        <div class="row">
+          <div class="box" style="padding:6px 10px">bar 1 <select><option>Cm7</option></select></div>
+          <div class="box" style="padding:6px 10px">bar 2 <select><option>Fm7</option></select></div>
+          <span class="anno">suggestions filtered to C minor</span>
+        </div>
+        <div class="editor" style="margin-top:8px"><div class="ln"><span class="n">9</span><span><span class="t-kw">const</span> stab = <span class="t-fn">chord</span>(<span class="t-str">"&lt;Cm7 Fm7&gt;"</span>).<span class="t-fn">voicing</span>()</span></div></div>
+        <div class="anno" style="margin-top:4px">Notes view shows the same chords as note("&lt;[c3,eb3,g3,bb3] [f3,ab3,c4,eb4]&gt;"). Switching asks before it rewrites.</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">Sound controls (S-a): only the methods present in the code</h3><button class="btn small">+ Add control ▾</button></div>
+      <div class="row" style="margin-top:10px;gap:24px">
+        <label class="mono">lpf <input type="range" min="50" max="8000" value="500"> 500</label>
+        <label class="mono">lpq <input type="range" min="0" max="50" value="12"> 12</label>
+        <label class="mono">decay <input type="range" min="0" max="1" step=".01" value=".15"> .15</label>
+        <label class="mono">sustain <input type="range" min="0" max="1" step=".01" value="0"> 0</label>
+        <label class="mono">gain <span class="chip custom">custom: sine.range(.4,.8)</span></label>
+      </div>
+      <div class="anno" style="margin-top:6px">"+ Add control" lists the allowlisted methods (filter / envelope / FX groups). Picking one inserts e.g. .hpf(200) into the chain, highlighted. In lesson mode the list holds only introduced functions.</div>
+    </div>
+
+    <div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+      <div class="box">
+        <h3>State: grid view-only</h3>
+        <div class="row"><b class="mono">hats</b><span class="chip partial">partial</span><span class="chip custom">.sometimesBy(.2, x =&gt; x.speed(2))</span></div>
+        <p style="font-size:13px">A method that changes timing is present, so the grid shows what plays (queried) but can't be edited. Sound controls still work.</p>
+        <div class="steps"><span class="rowlabel">hh</span>
+          <div class="beat"><button class="step on ro"></button><button class="step on ro"></button><button class="step on ro"></button><button class="step on ro"></button></div>
+          <div class="beat"><button class="step on ro"></button><button class="step on ro"></button><button class="step on ro"></button><button class="step on ro"></button></div>
+          <div class="beat"><button class="step on ro"></button><button class="step on ro"></button><button class="step on ro"></button><button class="step on ro"></button></div>
+          <div class="beat"><button class="step on ro"></button><button class="step on ro"></button><button class="step on ro"></button><button class="step on ro"></button></div>
+        </div>
+      </div>
+      <div class="box">
+        <h3>State: whole part custom</h3>
+        <div class="row"><b class="mono">hats</b><span class="chip custom">custom code</span><button class="btn small">▶ solo</button><button class="btn small">Jump to code</button></div>
+        <div class="editor" style="margin-top:8px"><div class="ln"><span class="n">5</span><span><span class="t-kw">const</span> hats = <span class="t-fn">cat</span>(<span class="t-fn">s</span>(<span class="t-str">"hh*16"</span>), <span class="t-fn">s</span>(<span class="t-str">"hh*8"</span>))</span></div></div>
+        <p style="font-size:13px;margin-bottom:0">The part starts with <code>cat(…)</code>, which the GUI doesn't model, so controls are off. Groups that use <code>hats</code> still work, and the GUI never edits this line.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. MODIFIERS & GROUPS ============ -->
+<section class="screen" data-title="Modifiers & groups">
+  <div class="screen-title"><h2>Modifiers (M-a) &amp; groups (G-a)</h2></div>
+  <div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+    <div class="box">
+      <div class="row"><b class="mono">dubDelay</b><span class="chip gui">GUI</span><span class="chip">modifier</span><span class="chip">orbit 3 (auto)</span></div>
+      <ol style="padding-left:18px;margin:10px 0">
+        <li class="row" style="justify-content:space-between"><span class="mono">delay</span><input type="range" value="40"><span class="mono">.4</span><button class="btn small">✕</button></li>
+        <li class="row" style="justify-content:space-between"><span class="mono">delaysync</span><select class="mono"><option>3/16 (dotted 8th)</option><option>1/8</option><option>1/4</option></select><button class="btn small">✕</button></li>
+        <li class="row" style="justify-content:space-between"><span class="mono">delayfeedback</span><input type="range" value="55"><span class="mono">.55</span><button class="btn small">✕</button></li>
+      </ol>
+      <button class="btn small">+ Add effect ▾</button>
+      <div class="anno" style="margin:6px 0">No reordering: Strudel's effect order is fixed (G5). The panel shows the fixed order as a hint.</div>
+      <div class="editor"><div class="ln"><span class="n">12</span><span><span class="t-kw">const</span> dubDelay = x =&gt; x.<span class="t-fn">delay</span>(<span class="t-num">.4</span>).<span class="t-fn">delaysync</span>(<span class="t-num">3/16</span>)</span></div><div class="ln"><span class="n">13</span><span>  .<span class="t-fn">delayfeedback</span>(<span class="t-num">.55</span>).<span class="t-fn">orbit</span>(<span class="t-num">3</span>)</span></div></div>
+      <div class="row" style="margin-top:8px"><span>Applied to:</span><span class="chip">stab</span><button class="btn small">Apply to… ▾</button><span class="anno">wraps the use site: dubDelay(stab)</span></div>
+    </div>
+
+    <div class="box">
+      <div class="row"><b class="mono">drums</b><span class="chip gui">GUI</span><span class="chip">group</span><button class="btn small">▶ solo group</button></div>
+      <div class="mixer" style="margin-top:10px">
+        <div class="strip"><div class="name">kick</div><div class="fader"><input type="range" value="90"></div><div class="mono">1.0</div><div class="row" style="justify-content:center;gap:4px"><button class="btn small">M</button><button class="btn small">S</button></div><span class="chip">orbit 1</span></div>
+        <div class="strip"><div class="name">clap</div><div class="fader"><input type="range" value="70"></div><div class="mono">.8</div><div class="row" style="justify-content:center;gap:4px"><button class="btn small">M</button><button class="btn small">S</button></div><span class="chip" style="border-color:var(--warn)">orbit 2 ⚠</span></div>
+        <div class="strip"><div class="name">hats</div><div class="fader"><input type="range" value="60"></div><div class="mono">.6</div><div class="row" style="justify-content:center;gap:4px"><button class="btn small">M</button><button class="btn small">S</button></div><span class="chip">orbit 1</span></div>
+        <div class="strip" style="border-style:dashed;display:flex;align-items:center;justify-content:center;color:var(--muted)">+ add part</div>
+      </div>
+      <div class="note">⚠ <b>clap</b> and <b>stab</b> share orbit 2 with different reverb settings. Only one applies. <button class="btn small">Give clap its own orbit</button></div>
+      <div class="editor"><div class="ln"><span class="n">16</span><span><span class="t-kw">const</span> drums = <span class="t-fn">stack</span>(kick, clap.<span class="t-fn">postgain</span>(<span class="t-num">.8</span>), hats.<span class="t-fn">postgain</span>(<span class="t-num">.6</span>))</span></div></div>
+      <div class="anno" style="margin-top:4px">Faders write .postgain() at the use site, never inside the part. M/S are preview-only (they don't edit code); mute in the arrangement is the matrix.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. ARRANGEMENT ============ -->
+<section class="screen" data-title="Arrangement">
+  <div class="screen-title"><h2>Arrangement matrix (A-a)</h2><span class="route">sandbox / capstone</span></div>
+  <div class="box transport" style="margin-bottom:12px">
+    <button class="btn primary">▶ Play</button><button class="btn">■ Stop</button><span class="mono">124 BPM</span>
+    <button class="btn small">▶ from section…</button>
+    <span class="pos mono">drop · bar 7 of 32 · total 0:52 / 4:08</span>
+  </div>
+  <div class="box" style="overflow-x:auto">
+    <table class="matrix" id="matrix"></table>
+    <div class="row" style="margin-top:8px"><button class="btn small">+ section</button><button class="btn small">+ row (part/group)</button><span class="anno">click a cell: off → on → on + modifier (pick) → off. Click a bar count to edit it.</span></div>
+  </div>
+  <div class="editor" style="margin-top:12px" id="arr-code"></div>
+</section>
+
+<!-- ============ 5. LIBRARY ============ -->
+<section class="screen" data-title="Library">
+  <div class="screen-title"><h2>Library</h2><span class="route mono">/library</span></div>
+  <div class="grid2" style="grid-template-columns:220px minmax(0,1fr)">
+    <div class="box">
+      <h3>Filter</h3>
+      <input type="text" placeholder="search…" style="width:100%">
+      <div style="margin-top:10px"><b style="font-size:12px">Kind</b><br>☑ parts ☑ modifiers<br>☑ groups ☐ sections</div>
+      <div style="margin-top:10px"><b style="font-size:12px">Role</b><br><span class="chip">kick</span> <span class="chip">hats</span> <span class="chip">bass</span> <span class="chip">acid</span> <span class="chip">chords</span></div>
+      <div style="margin-top:10px"><b style="font-size:12px">Key</b><br><select><option>any</option><option>C:minor</option></select></div>
+      <div style="margin-top:10px"><b style="font-size:12px">From lesson</b><br><select><option>any</option></select></div>
+      <div class="row" style="margin-top:14px"><button class="btn small">Import JSON</button><button class="btn small">Export all</button></div>
+    </div>
+    <div class="stack-v">
+      <div class="box row"><b>Combine mode</b> <span>2 selected</span><button class="btn small primary">Create group →</button><span class="anno">opens a sandbox project with copies + stack(...)</span></div>
+      <div class="grid-cards">
+        <div class="box">
+          <div class="row" style="justify-content:space-between"><b class="mono">warehouseKick</b><input type="checkbox" checked></div>
+          <div class="row" style="margin:4px 0"><span class="chip">part</span><span class="chip">kick</span><span class="chip">lesson 10</span></div>
+          <div class="punch"><span></span><div class="lane"><i style="left:0;width:5%"></i><i style="left:25%;width:5%"></i><i style="left:50%;width:5%"></i><i style="left:75%;width:5%"></i></div></div>
+          <code style="display:block;margin:8px 0;font-size:12px">s("bd*4").bank("RolandTR909")</code>
+          <div class="row"><button class="btn small">▶</button><button class="btn small">Add to project</button><button class="btn small">⋯</button></div>
+        </div>
+        <div class="box">
+          <div class="row" style="justify-content:space-between"><b class="mono">acid151</b><input type="checkbox" checked></div>
+          <div class="row" style="margin:4px 0"><span class="chip">part</span><span class="chip">acid</span><span class="chip">C:minor</span></div>
+          <div class="punch"><span></span><div class="lane"><i style="left:0;width:4%"></i><i style="left:19%;width:4%"></i><i style="left:37%;width:4%"></i><i style="left:56%;width:4%"></i><i style="left:75%;width:4%"></i><i style="left:88%;width:4%"></i></div></div>
+          <code style="display:block;margin:8px 0;font-size:12px">note("a3 ~ ~ a3 ~ ~ a3 …").s("sawtooth")…</code>
+          <div class="row"><button class="btn small">▶</button><button class="btn small">Add to project</button><button class="btn small">⋯</button></div>
+        </div>
+        <div class="box">
+          <div class="row" style="justify-content:space-between"><b class="mono">dubDelay</b><input type="checkbox"></div>
+          <div class="row" style="margin:4px 0"><span class="chip">modifier</span><span class="chip">fx</span></div>
+          <code style="display:block;margin:8px 0;font-size:12px">x =&gt; x.delay(.4).delaysync(3/16)…</code>
+          <div class="row"><button class="btn small">Add to project</button><button class="btn small">⋯</button></div>
+        </div>
+        <div class="box">
+          <div class="row" style="justify-content:space-between"><b class="mono">deepGroove</b><input type="checkbox"></div>
+          <div class="row" style="margin:4px 0"><span class="chip">group</span><span class="chip">lesson 24</span></div>
+          <code style="display:block;margin:8px 0;font-size:12px">stack(kick, clap, hats, bass)</code>
+          <div style="font-size:12px;color:var(--muted)">requires: kick, clap, hats, bass</div>
+          <div class="row"><button class="btn small">▶</button><button class="btn small">Add to project</button></div>
+        </div>
+      </div>
+      <div class="box">
+        <h3>In a project: copied part with an update available (R1)</h3>
+        <div class="row"><b class="mono">warehouseKick</b><span class="chip gui">GUI</span><span class="chip partial">library v3 available</span><button class="btn small">View diff</button><button class="btn small">Update</button><button class="btn small">Ignore</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. SANDBOX ============ -->
+<section class="screen" data-title="Sandbox">
+  <div class="screen-title"><h2>Sandbox / free play</h2><span class="route mono">/sandbox/[projectId]</span></div>
+  <div class="box transport" style="margin-bottom:12px">
+    <select><option>My acid jam</option></select><button class="btn small">New</button><button class="btn small">Save to library…</button>
+    <button class="btn primary">▶ Play</button><button class="btn">■ Stop</button><span class="mono">124 BPM · C:minor</span>
+    <span class="pos">auto-play GUI edits ☑</span>
+  </div>
+  <div class="grid2" style="grid-template-columns:220px minmax(0,1fr) 340px">
+    <div class="box outline">
+      <h3>Blocks</h3>
+      <div class="grp">setup</div><ul><li><span class="mono">tempo · key</span><span class="chip gui">GUI</span></li></ul>
+      <div class="grp">parts</div>
+      <ul>
+        <li><span class="mono">kick</span><span class="chip gui">GUI</span></li>
+        <li><span class="mono">clap</span><span class="chip gui">GUI</span></li>
+        <li style="background:var(--soft)"><span class="mono">hats</span><span class="chip partial">partial</span></li>
+        <li><span class="mono">bass</span><span class="chip gui">GUI</span></li>
+        <li><span class="mono">acid</span><span class="chip gui">GUI</span></li>
+        <li><span class="mono">noiseRise</span><span class="chip custom">custom</span></li>
+      </ul>
+      <div class="grp">modifiers</div><ul><li><span class="mono">dubDelay</span><span class="chip gui">GUI</span></li></ul>
+      <div class="grp">groups</div><ul><li><span class="mono">drums</span><span class="chip gui">GUI</span></li></ul>
+      <div class="grp">arrangement</div><ul><li><span class="mono">6 sections</span><span class="chip gui">GUI</span></li></ul>
+      <div class="grp">other code</div><ul><li><span class="mono">// comments, helpers</span><span class="chip">untouched</span></li></ul>
+    </div>
+    <div class="stack-v">
+      <div class="editor" id="sandbox-code"></div>
+      <div class="box" style="border-color:var(--err)"><span class="chip err">syntax error</span> line 9: Unexpected token. <b>Controls are paused</b> until it's fixed. <span class="anno">example state</span></div>
+    </div>
+    <div class="stack-v">
+      <div class="box"><h3>Selected: hats</h3>
+        <div class="row"><span class="chip partial">partial</span><span class="chip custom">.sometimesBy(…)</span></div>
+        <p style="font-size:13px">Grid is view-only; gain lane and sound controls are live.</p>
+        <label class="mono">gain lane ▁▃▇▃ ×4</label><br>
+        <label class="mono">hpf <input type="range"> 300</label>
+      </div>
+      <div class="box"><h3>Diagnostics</h3>
+        <div>⚠ bass uses E♮ (not in C minor) <button class="btn small">Transpose to fit</button></div>
+        <div>⚠ clap &amp; stab share orbit 2</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. REFERENCE ============ -->
+<section class="screen" data-title="Reference">
+  <div class="screen-title"><h2>Reference / cheat sheet</h2><span class="route mono">/reference</span></div>
+  <div class="box row" style="margin-bottom:12px"><input type="text" placeholder="search functions…" size="30"><span class="chip">all</span><span class="chip">mini-notation</span><span class="chip">sound</span><span class="chip">filters</span><span class="chip">effects</span><span class="chip">time</span><span class="chip">signals</span><span class="chip">structure</span><label style="margin-left:auto">☐ only what I've learned</label></div>
+  <div class="box" style="overflow-x:auto">
+    <table class="ref-table">
+      <tr><th>Function</th><th>Aliases</th><th>Takes</th><th>What it does</th><th>Try it</th><th>Learned in</th><th>Caveats</th></tr>
+      <tr><td class="mono">.lpf(hz)</td><td class="mono">cutoff, ctf, lp</td><td>Hz 0–20000, or "hz:q"</td><td>Low-pass filter: removes highs above the cutoff</td><td><button class="btn small">▶ note("c2*4").s("sawtooth").lpf(400)</button></td><td>L9</td><td></td></tr>
+      <tr><td class="mono">.room(x)</td><td class="mono"></td><td>0–1 (or "lvl:size")</td><td>Reverb amount</td><td><button class="btn small">▶ s("cp").room(.6)</button></td><td>L20</td><td><span class="chip partial">one per orbit</span></td></tr>
+      <tr><td class="mono">"(k,n,r)"</td><td></td><td>mini-notation</td><td>Euclidean rhythm: k hits spread over n steps</td><td><button class="btn small">▶ s("rim(3,8)")</button></td><td>L12</td><td></td></tr>
+      <tr><td class="mono">.duckorbit(n)</td><td class="mono">duck</td><td>orbit number(s)</td><td>Sidechain: this part ducks orbit n</td><td><button class="btn small">▶ …</button></td><td>L28</td><td></td></tr>
+      <tr><td class="mono">portamento</td><td></td><td>n/a</td><td><i>Not available in Strudel</i>, see the slide workaround</td><td></td><td>L26</td><td><span class="chip err">gap G1</span></td></tr>
+    </table>
+  </div>
+  <div class="anno" style="margin-top:6px">Generated from lib/reference/entries.ts, the same table as the GUI allowlist and the editor hover docs. Every "Try it" example is tested.</div>
+</section>
+
+<!-- ============ 8. LEARN MAP ============ -->
+<section class="screen" data-title="Learn map">
+  <div class="screen-title"><h2>Lesson map &amp; progress</h2><span class="route mono">/learn</span></div>
+  <div class="stack-v">
+    <div class="box"><h3>Beginner · First groove · 3/10</h3>
+      <div class="grid-cards" style="grid-template-columns:repeat(auto-fill,minmax(170px,1fr))">
+        <div class="box">✅ 1 Press Play</div><div class="box">✅ 2 Four on the Floor</div><div class="box" style="border-color:var(--accent)">▶ 3 Steps and Rests <span class="chip">in progress</span></div><div class="box">4 Stacking Parts</div><div class="box">5 The Offbeat Hat</div><div class="box">6 Sixteenths and Dynamics</div><div class="box">7 Drum Machine Shopping</div><div class="box">8 Your First Bassline</div><div class="box">9 Dark and Bright</div><div class="box"><b>10 Project: Warehouse Loop</b></div>
+      </div>
+    </div>
+    <div class="box" style="opacity:.75"><h3>Intermediate · Sound and harmony · 0/14</h3><div style="color:var(--muted)">11 Swing It · 12 Off the Grid · 13 Every Fourth Bar · 14 Keys and Scales · 15 The Minor 7th Stab · 16 Progressions · 17 Waveforms · 18 Envelopes · 19 Squelch · 20 Space · 21 Grit and Width · 22 Movement · 23 Make a Modifier · 24 Project: Deep Groove</div></div>
+    <div class="box" style="opacity:.6"><h3>Expert · The track · 0/9</h3><div style="color:var(--muted)">25–27 Acid I–III · 28 Kick vs Bass · 29 Phrases and Sections · 30 Tension and Release · 31 Never the Same Twice · 32 Mixing in Strudel · 33 Capstone: Acid Warehouse</div></div>
+    <div class="anno">All lessons stay open (no locking). Progress is kept in localStorage (sw:progress:v1).</div>
+  </div>
+</section>
+
+<!-- ============ 9. MOBILE ============ -->
+<section class="screen" data-title="Mobile">
+  <div class="screen-title"><h2>Mobile lesson view</h2><span class="route">375 px</span></div>
+  <div class="mobile-frame"><div class="inner">
+    <div style="padding:10px 12px;background:var(--panel);border-bottom:1px solid var(--line)"><b>2 · Four on the Floor</b></div>
+    <div class="mtabs"><span>Lesson</span><span class="sel">Code</span><span>Controls</span></div>
+    <div style="flex:1;padding:10px;overflow:auto">
+      <div class="editor"><div class="ln"><span class="n">1</span><span><span class="t-fn">setcpm</span>(<span class="t-num">124/4</span>)</span></div><div class="ln"><span class="n">2</span><span><span class="t-fn">s</span>(<span class="t-str">"bd*4"</span>)</span></div><div class="ln"><span class="n">3</span><span>  .<span class="t-fn">bank</span>(<span class="t-str">"RolandTR909"</span>)</span></div></div>
+      <div class="box" style="margin-top:10px">☐ 2. Make it sound like a TR-909 <span class="chip gui">passed</span></div>
+      <div class="anno" style="margin-top:8px">The task strip stays visible above the code. Grids switch to 2 rows of 8 steps.</div>
+    </div>
+    <div style="display:flex;gap:8px;padding:10px;background:var(--panel);border-top:1px solid var(--line)"><button class="btn primary" style="flex:1">▶ Play</button><button class="btn" style="flex:1">■ Stop</button><button class="btn">⟳ Run</button></div>
+  </div></div>
+</section>
+
+</main>
+
+<script>
+// ---------- tabs ----------
+const screens = [...document.querySelectorAll('section.screen')];
+const tabs = document.getElementById('tabs');
+screens.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.textContent = s.dataset.title; b.setAttribute('role', 'tab');
+  b.onclick = () => select(i);
+  tabs.appendChild(b);
+});
+function select(i) {
+  screens.forEach((s, j) => s.classList.toggle('active', i === j));
+  [...tabs.children].forEach((b, j) => b.setAttribute('aria-selected', i === j));
+  try { localStorage.setItem('wf-tab', i); } catch (e) {}
+}
+let start = 0; try { start = +(localStorage.getItem('wf-tab') || 0); } catch (e) {}
+select(Math.min(start, screens.length - 1));
+
+// ---------- tiny code renderer ----------
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function hl(src) {
+  // returns HTML with simple syntax colouring; ⟦…⟧ marks the changed span
+  let out = '';
+  const re = /(⟦[\s\S]*?⟧)|("(?:[^"\\]|\\.)*")|(\/\/.*$)|\b(const)\b|\b(\d*\.?\d+(?:\/\d+)?)\b|([A-Za-z_]\w*)(?=\()/gm;
+  let last = 0, m;
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    if (m[1]) out += '<span class="changed">' + hl(m[1].slice(1, -1)) + '</span>';
+    else if (m[2]) out += '<span class="t-str">' + esc(m[2]) + '</span>';
+    else if (m[3]) out += '<span class="t-cm">' + esc(m[3]) + '</span>';
+    else if (m[4]) out += '<span class="t-kw">const</span>';
+    else if (m[5]) out += '<span class="t-num">' + m[5] + '</span>';
+    else if (m[6]) out += '<span class="t-fn">' + m[6] + '</span>';
+    last = re.lastIndex;
+  }
+  return out + esc(src.slice(last));
+}
+function renderCode(el, lines, startLine = 1) {
+  el.innerHTML = lines.map((l, i) => `<div class="ln"><span class="n">${startLine + i}</span><span>${hl(l)}</span></div>`).join('');
+  el.querySelectorAll('.changed').forEach(c => setTimeout(() => c.classList.add('fade'), 60));
+}
+
+// ---------- grid → canonical mini (design.md §3.2) ----------
+function beatToken(steps, tok) {
+  const t = steps.map(on => on ? tok : '~');
+  if (t.every(x => x === '~')) return '~';
+  if (steps[0] && !steps[1] && !steps[2] && !steps[3]) return tok;
+  if (!steps[1] && !steps[3]) return `[${t[0]} ${t[2]}]`;
+  return `[${t.join(' ')}]`;
+}
+function gridToMini(steps, tok) {
+  const beats = [0, 1, 2, 3].map(b => beatToken(steps.slice(b * 4, b * 4 + 4), tok));
+  if (beats.every(b => b === beats[0])) return beats[0] === '~' ? '~' : `${beats[0]}*4`;
+  return beats.join(' ');
+}
+function makeGrid(container, label, steps, onChange) {
+  const wrap = document.createElement('div'); wrap.className = 'steps';
+  wrap.innerHTML = `<span class="rowlabel">${label}</span>`;
+  for (let b = 0; b < 4; b++) {
+    const beat = document.createElement('div'); beat.className = 'beat';
+    for (let k = 0; k < 4; k++) {
+      const i = b * 4 + k, btn = document.createElement('button');
+      btn.className = 'step' + (steps[i] ? ' on' : ''); btn.title = `step ${i + 1}`;
+      btn.onclick = () => { steps[i] = !steps[i]; btn.classList.toggle('on'); onChange(); };
+      beat.appendChild(btn);
+    }
+    wrap.appendChild(beat);
+  }
+  container.appendChild(wrap);
+}
+
+// ---------- lesson screen ----------
+const lessonSteps = Array.from({ length: 16 }, (_, i) => i % 4 === 0);
+let lessonBank = '(none)';
+function lessonRender(changed) {
+  const mini = `"${gridToMini(lessonSteps, 'bd')}"`;
+  const bank = lessonBank === '(none)' ? '' : `.bank("${lessonBank}")`;
+  const l2 = 's(' + (changed === 'mini' ? `⟦${mini}⟧` : mini) + ')' + (changed === 'bank' && bank ? `⟦${bank}⟧` : bank);
+  renderCode(document.getElementById('lesson-editor'), ['setcpm(124/4)   // 124 BPM · 1 cycle = 1 bar', l2]);
+  const punch = document.getElementById('lesson-punch');
+  punch.innerHTML = '<span class="mono">bd</span><div class="lane">' +
+    lessonSteps.map((on, i) => on ? `<i class="${i === 4 ? 'act' : ''}" style="left:${i / 16 * 100}%;width:4%"></i>` : '').join('') + '</div>';
+}
+makeGrid(document.getElementById('lesson-grid'), 'kick', lessonSteps, () => lessonRender('mini'));
+document.getElementById('lesson-bank').onchange = e => { lessonBank = e.target.value; lessonRender('bank'); };
+lessonRender();
+
+// ---------- part screen ----------
+const hatSteps = Array.from({ length: 16 }, (_, i) => i % 4 === 2);
+function partRender(changed) {
+  const mini = `"${gridToMini(hatSteps, 'oh')}"`;
+  renderCode(document.getElementById('part-code'), [
+    'const hats = s(' + (changed ? `⟦${mini}⟧` : mini) + ').bank("RolandTR909")',
+    '  .gain("[.6 .3 .9 .3]*4")',
+  ], 5);
+}
+makeGrid(document.getElementById('part-grid'), 'oh', hatSteps, () => partRender(true));
+partRender();
+
+// ---------- 303 sequencer ----------
+const acid = [
+  ['c2', 1, 0], ['c2', 0, 0], ['c3', 1, 0], ['c2', 0, 0], ['eb2', 0, 1], ['c2', 0, 0], ['c3', 1, 0], ['g1', 0, 0],
+  ['c2', 1, 0], ['~', 0, 0], ['bb2', 0, 1], ['c2', 0, 0], ['c3', 1, 0], ['c2', 0, 0], ['eb2', 0, 0], ['g2', 1, 0],
+];
+const seq = document.getElementById('seq303');
+function acidRender(changed) {
+  seq.innerHTML = '';
+  const add = (html, cls = '') => { const d = document.createElement('div'); d.className = cls; d.innerHTML = html; seq.appendChild(d); return d; };
+  add('step', 'h lab'); acid.forEach((_, i) => add(i + 1, 'h' + (i % 4 === 0 && i ? ' beatstart' : '')));
+  add('note', 'lab'); acid.forEach(a => add(`<span class="mono">${a[0]}</span>`, 'cell'));
+  add('accent', 'lab'); acid.forEach((a, i) => { const d = add(a[1] ? 'A' : '', 'cell' + (a[1] ? ' on' : '')); d.onclick = () => { a[1] = +!a[1]; acidRender('acc'); }; });
+  add('≈ slide', 'lab'); acid.forEach((a, i) => { const d = add(a[2] ? 'S' : '', 'cell' + (a[2] ? ' sl' : '')); d.onclick = () => { a[2] = +!a[2]; acidRender('sl'); }; });
+  const notes = `"${acid.map(a => a[0]).join(' ')}"`;
+  const vel = `"${acid.map(a => a[1] ? '1' : '.6').join(' ')}"`;
+  const env = `"${acid.map(a => a[1] ? '6' : '3').join(' ')}"`;
+  const pen = `"${acid.map(a => a[2] ? '-3' : '0').join(' ')}"`;
+  renderCode(document.getElementById('acid-code'), [
+    `const acid = note(${notes})`,
+    '  .s("sawtooth").ftype("ladder").lpf(500).lpq(18).lpdecay(.15)',
+    `  .velocity(${changed === 'acc' ? '⟦' + vel + '⟧' : vel})   // accent: louder…`,
+    `  .lpenv(${changed === 'acc' ? '⟦' + env + '⟧' : env})   // …and brighter`,
+    `  .penv(${changed === 'sl' ? '⟦' + pen + '⟧' : pen}).pattack(.05)   // ≈ slide`,
+  ], 20);
+}
+acidRender();
+
+// ---------- arrangement matrix ----------
+const sections = [['intro', 16], ['build', 16], ['drop', 32], ['breakdown', 16], ['drop2', 32], ['outro', 16]];
+const rows = ['kick', 'hats', 'clap', 'bass', 'stab', 'acid'];
+const cells = {
+  intro: { kick: 1, hats: 1 },
+  build: { kick: 1, hats: 1, clap: 1, bass: 'riseOver16' },
+  drop: { kick: 1, hats: 1, clap: 1, bass: 1, stab: 'dubDelay', acid: 1 },
+  breakdown: { hats: 1, stab: 'dubDelay', acid: 1 },
+  drop2: { kick: 1, hats: 1, clap: 1, bass: 1, stab: 'dubDelay', acid: 1 },
+  outro: { kick: 1, hats: 1 },
+};
+let changedSection = null;
+function arrRender() {
+  const t = document.getElementById('matrix');
+  t.innerHTML = '<tr><th></th>' + sections.map(([n, b], i) =>
+    `<th class="${n === 'drop' ? 'now' : ''}"><div class="mono">${n}</div><div style="font-weight:normal;color:var(--muted)"><u>${b}</u> bars</div></th>`).join('') + '</tr>' +
+    rows.map(r => `<tr><th class="part">${r}</th>` + sections.map(([n]) => {
+      const v = cells[n][r];
+      return `<td class="cell ${v === 1 ? 'on' : v ? 'mod' : ''}" data-s="${n}" data-r="${r}" data-mod="${v && v !== 1 ? v : ''}"></td>`;
+    }).join('') + '</tr>').join('');
+  t.querySelectorAll('td.cell').forEach(td => td.onclick = () => {
+    const s = td.dataset.s, r = td.dataset.r, v = cells[s][r];
+    cells[s][r] = !v ? 1 : v === 1 ? (r === 'stab' ? 'dubDelay' : r === 'bass' ? 'riseOver16' : 0) : 0;
+    if (!cells[s][r]) delete cells[s][r];
+    changedSection = s; arrRender();
+  });
+  const use = (r, v) => v === 1 ? r : v === 'riseOver16' ? `rise16(${r})` : `${v}(${r})`;
+  const lines = ['// ── sections ─────────────────────────'];
+  sections.forEach(([n]) => {
+    const body = `stack(${rows.filter(r => cells[n][r]).map(r => use(r, cells[n][r])).join(', ')})`;
+    lines.push(`const ${n.padEnd(9)} = ${n === changedSection ? '⟦' + body + '⟧' : body}`);
+  });
+  lines.push('', '// ── arrangement ──────────────────────', 'arrange(');
+  sections.forEach(([n, b]) => lines.push(`  [${b}, ${n}],`));
+  lines.push(')');
+  renderCode(document.getElementById('arr-code'), lines, 30);
+  changedSection = null;
+}
+arrRender();
+
+// ---------- sandbox code ----------
+renderCode(document.getElementById('sandbox-code'), [
+  '// ── setup ─────────────────────────────',
+  'setcpm(124/4)            // 124 BPM · 1 cycle = 1 bar',
+  'const key = "C:minor"',
+  '',
+  '// ── parts ─────────────────────────────',
+  'const kick = s("bd*4").bank("RolandTR909").duckorbit(2)',
+  'const clap = s("~ cp ~ cp").bank("RolandTR909").room(.25).orbit(2)',
+  'const hats = s("[~ oh]*4").bank("RolandTR909").gain("[.6 .3 .9 .3]*4")',
+  '  .sometimesBy(.2, x => x.speed(2))',
+  'const bass = n("[~ 0]*3 [~ 3]").scale(key).s("sawtooth").octave(2)',
+  '  .lpf(500).decay(.15).sustain(0).orbit(2)',
+  '// my own experiment, the GUI leaves it alone',
+  'const noiseRise = s("pink").hpf(saw.range(200, 8000).slow(16)).gain(.3)',
+  '',
+  '// ── groups ────────────────────────────',
+  'const drums = stack(kick, clap.postgain(.8), hats)',
+  '',
+  '// ── play ──────────────────────────────',
+  'stack(drums, bass)',
+]);
+</script>
+</body>
+</html>
