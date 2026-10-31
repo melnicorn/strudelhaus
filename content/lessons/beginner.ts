@@ -258,8 +258,8 @@ stack(kick, hats)`,
     ],
     challenge: {
       text: 'Leave a gap: make the hats rest on the very last 16th of the bar.',
-      hint: 'Write the bar as four beat groups and leave the last step empty: "[hh*4]*3 [hh hh hh ~]".',
-      check: (c) => times(c, (h) => sound(h) === 'hh').length === 15 && !includesTimes(c, 'hh', [15 / 16]),
+      hint: 'Write the bar as four beat groups and leave the last step empty: "[hh*4]!3 [hh hh hh ~]". (!3 repeats the group as three steps; *3 would squeeze all three into one.)',
+      check: (c) => times(c, (h) => sound(h) === 'hh').length === 15 && playsAt(c, 'hh', Array.from({ length: 15 }, (_, i) => i / 16)),
     },
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
@@ -267,7 +267,7 @@ const hats = s("hh*16").bank("RolandTR909").gain("[.8 .3 .5 .3]*4")
 stack(kick, hats)`,
     challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
-const hats = s("[hh*4]*3 [hh hh hh ~]").bank("RolandTR909")
+const hats = s("[hh*4]!3 [hh hh hh ~]").bank("RolandTR909")
 stack(kick, hats)`,
     summary: ['16th notes: four per beat, sixteen per bar.', 'Dynamics: louder and quieter hits make a groove feel played.', 'Controls accept patterns: .gain("…") changes per step.'],
     introduces: ['*16', 'patterned .gain'],

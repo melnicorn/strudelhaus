@@ -35,3 +35,20 @@ describe('lesson corpus', () => {
     });
   }
 });
+
+describe('lesson 6 challenge', () => {
+  const lesson = lessons.find((l) => l.number === 6)!;
+  const hats = (mini: string) => `setcpm(124/4)\nconst hats = s("${mini}").bank("RolandTR909")\nhats`;
+
+  it('rejects a squeezed first step ([…]*3 packs twelve hats into one step)', async () => {
+    const r = await buildContext(hats('[hh*4]*3 [hh hh hh ~]'));
+    if ('error' in r) throw new Error(r.error);
+    expect(lesson.challenge!.check(r.ctx)).toBe(false);
+  });
+
+  it('accepts the long form too', async () => {
+    const r = await buildContext(hats('[hh*4] [hh*4] [hh*4] [hh hh hh ~]'));
+    if ('error' in r) throw new Error(r.error);
+    expect(lesson.challenge!.check(r.ctx)).toBe(true);
+  });
+});
