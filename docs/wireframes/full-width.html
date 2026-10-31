@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Full-width Tool Pages Wireframe</title>
+<style>
+  :root { --bg: #f4f3ef; --panel: #fff; --ink: #1d1d1b; --muted: #6b6a66; --line: #c9c7c0; --soft: #ebe9e3; --accent: #d9480f; --warn: #b08900; --warn-soft: #fff3bf; --code: #1e1e1e; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28; --accent: #ff8a4c; --warn: #ffd43b; --warn-soft: #3d3310; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, sans-serif; }
+  main { padding: 16px; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  h2 { font-size: 14px; margin: 22px 0 6px; }
+  p { margin: 4px 0; }
+  .anno { color: var(--accent); font-size: 12px; font-style: italic; }
+  .note { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 8px 12px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  /* a miniature browser window, drawn to scale */
+  .win { border: 1px solid var(--line); border-radius: 8px; background: var(--bg); overflow: hidden; margin: 8px 0 4px; }
+  .win .bar { background: var(--panel); border-bottom: 1px solid var(--line); padding: 4px 10px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+  .cols { display: grid; gap: 6px; padding: 8px; align-items: start; }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 6px; font-size: 11px; min-height: 70px; color: var(--muted); }
+  .box b { display: block; color: var(--ink); margin-bottom: 2px; }
+  .box.fixed { border-style: dashed; }
+  .code { background: var(--code); color: #ccc; min-height: 90px; font-family: ui-monospace, Menlo, monospace; }
+  .grow { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .dim { opacity: .45; }
+  .legend { font-size: 12px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+  .legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 5px; vertical-align: -1px; border: 1px solid var(--line); border-radius: 2px; }
+  .legend .f::before { border-style: dashed; }
+  .legend .g::before { outline: 2px solid var(--accent); outline-offset: -1px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Tool pages use the whole window</h1>
+  <p>The sandbox and lesson pages lose their 1600px cap. Sidebars keep a fixed width; the centre (editor + controls) takes everything else. Prose pages (Learn, About, home) stay as centred 1280px columns, since long lines of text get hard to read. Sounds, Library, Reference and Dictionary were already the wide kind (a fixed list or sidebar beside a table or card grid), so they go full width with the tool pages.</p>
+  <div class="legend"><span class="f">fixed width</span><span class="g">grows with the window</span></div>
+
+  <h2>1 · Sandbox, 1920px window</h2>
+  <p class="anno">Block nav 190px (as now). Editor and controls share the rest 1.1 : 1 (as now), so a step grid gets room for 16 wide steps and the editor still shows long lines. Only the 1600px cap goes.</p>
+  <div class="win" style="width: 960px; max-width: 100%;">
+    <div class="bar"><span>Strudel Workshop · Learn · Sandbox · Sounds · Library · Reference · Dictionary</span><span>1920 × 1080 (shown at ½)</span></div>
+    <div class="cols" style="grid-template-columns: 95px minmax(0,1.1fr) minmax(0,1fr);">
+      <div class="box fixed"><b>Blocks</b>kick<br>clap<br>hats<br>bass<br>stab</div>
+      <div class="grow" style="display:flex;flex-direction:column;gap:6px;"><div class="box">▶ Play ⌘↵ · ■ Stop ⌘. · 124 BPM</div><div class="box code">setcpm(124/4)<br>const kick = s("bd*4").bank("RolandTR909")<br>…</div></div>
+      <div class="grow" style="display:flex;flex-direction:column;gap:6px;"><div class="box"><b>kick</b>■ □ □ □ ■ □ □ □ ■ □ □ □ ■ □ □ □</div><div class="box"><b>hats</b>□ ■ □ ■ □ ■ □ ■ □ ■ □ ■ □ ■ □ ■</div></div>
+    </div>
+  </div>
+
+  <h2>2 · Lesson, 1920px window</h2>
+  <p class="anno">Lesson text stays a readable 380px column (its current maximum, now always used when there's room). The workbench takes the rest.</p>
+  <div class="win" style="width: 960px; max-width: 100%;">
+    <div class="bar"><span>Strudel Workshop</span><span>1920 × 1080 (shown at ½)</span></div>
+    <div class="cols" style="grid-template-columns: 190px minmax(0,1.1fr) minmax(0,1fr);">
+      <div class="box fixed"><b>6 · Sixteenth Hats</b>Concept text wraps at a comfortable width.<br><br>Tasks ☐ ☐ ☐<br>Challenge</div>
+      <div class="grow" style="display:flex;flex-direction:column;gap:6px;"><div class="box">▶ Play ⌘↵ · ■ Stop ⌘.</div><div class="box code">setcpm(124/4)<br>const hats = s("hh*16")<br>…</div></div>
+      <div class="grow" style="display:flex;flex-direction:column;gap:6px;"><div class="box"><b>hats</b>■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■</div></div>
+    </div>
+  </div>
+
+  <h2>3 · Same pages at 1280px</h2>
+  <p class="anno">Nothing changes below 1600px: the pages already filled the window there.</p>
+  <div class="win" style="width: 640px; max-width: 100%;">
+    <div class="bar"><span>Sandbox</span><span>1280 × 800 (shown at ½)</span></div>
+    <div class="cols" style="grid-template-columns: 95px minmax(0,1.1fr) minmax(0,1fr);">
+      <div class="box fixed"><b>Blocks</b>kick<br>clap</div>
+      <div class="grow box code">code</div>
+      <div class="grow box"><b>kick</b>■ □ □ □ ■ □ □ □</div>
+    </div>
+  </div>
+
+  <h2>Not changing</h2>
+  <ul>
+    <li>Below 1100px the sidebars still fold away (block nav hidden; lesson text behind the Lesson / Code tabs). Below 960px editor and controls stack.</li>
+    <li>The header and footer already span the window.</li>
+    <li>Reading pages keep their 1280px column.</li>
+  </ul>
+  <div class="note">Option: cap the editor column at around 900px on very wide windows and give the extra to the controls, since code lines rarely need more than that. Not drawn; say if you want it.</div>
+</main>
+</body>
+</html>

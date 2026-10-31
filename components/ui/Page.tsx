@@ -14,15 +14,15 @@ interface Props {
   intro?: ReactNode;
   /** Larger intro text (the home page). */
   lede?: boolean;
-  /** 1600px instead of 1280px, for tool pages. */
+  /** Tool pages (sandbox, lessons, sounds): the whole window instead of a 1280px column. */
   wide?: boolean;
   children?: ReactNode;
 }
 
-/** The standard page shell: centred column with an optional heading and intro paragraph. */
+/** The standard page shell: a centred column (or the whole window for tool pages) with an optional heading and intro. */
 export function Page({ title, intro, lede, wide, children }: Props) {
   return (
-    <main className={cn('mx-auto w-full p-4', wide ? 'max-w-[1600px]' : 'max-w-7xl')}>
+    <main className={cn('mx-auto w-full p-4', !wide && 'max-w-7xl')}>
       {title && <h1 className="mt-1 mb-3 text-[1.75rem] leading-tight font-bold">{title}</h1>}
       {intro && <p className={cn('mb-4', lede && 'max-w-[720px] text-base')}>{intro}</p>}
       {children}
