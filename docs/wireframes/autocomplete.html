@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editor Autocomplete Wireframe</title>
+<style>
+  :root {
+    --bg: #f4f3ef; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #c9c7c0;
+    --accent: #d9480f; --warn: #b08900; --warn-soft: #fff3bf;
+    --code-bg: #1e1e1e; --code-ink: #e6e6e6; --code-str: #ce9178; --code-fn: #dcdcaa; --code-var: #9cdcfe; --code-num: #b5cea8;
+    --pop-bg: #262624; --pop-line: #3c3b37; --pop-sel: #4a2412; --pop-muted: #9a9890; --pop-accent: #ff8a4c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --accent: #ff8a4c; --warn: #ffd43b; --warn-soft: #3d3310; }
+  }
+  :root[data-theme="dark"] { --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --accent: #ff8a4c; --warn: #ffd43b; --warn-soft: #3d3310; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { padding: 16px; max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  h2 { font-size: 14px; margin: 24px 0 6px; }
+  p { margin: 4px 0; }
+  .note { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 8px 12px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .anno { color: var(--accent); font-size: 12px; font-style: italic; }
+  .mono, code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+  .editor { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 10px 0; position: relative; min-height: 210px; overflow: hidden; }
+  .line { display: flex; gap: 14px; padding: 0 12px; line-height: 1.6; white-space: pre; }
+  .ln { color: #6e6e6e; width: 14px; text-align: right; flex: none; }
+  .s { color: var(--code-str); } .f { color: var(--code-fn); } .v { color: var(--code-var); } .n { color: var(--code-num); }
+  .caret { border-left: 2px solid #fff; margin-left: 1px; }
+  .pop { position: absolute; display: flex; align-items: flex-start; gap: 4px; font-size: 13px; max-width: calc(100% - 16px); }
+  .list { background: var(--pop-bg); border: 1px solid var(--pop-line); border-radius: 6px; padding: 3px; min-width: 210px; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+  .opt { display: flex; gap: 8px; align-items: baseline; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+  .opt.sel { background: var(--pop-sel); }
+  .opt b { font-weight: 600; color: #fff; }
+  .opt .lbl { font-family: ui-monospace, Menlo, monospace; }
+  .opt .det { color: var(--pop-muted); font-size: 12px; margin-left: auto; padding-left: 16px; }
+  .opt .tag { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--pop-accent); width: 30px; flex: none; }
+  .info { background: var(--pop-bg); border: 1px solid var(--pop-line); border-radius: 6px; padding: 8px 10px; width: 280px; color: var(--code-ink); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+  .info b { display: block; margin-bottom: 2px; }
+  .info .ex { margin-top: 6px; color: var(--code-fn); font-family: ui-monospace, Menlo, monospace; font-size: 12px; white-space: pre-wrap; }
+  .info .meta { margin-top: 6px; color: var(--pop-muted); font-size: 12px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  @media (max-width: 640px) { .info { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Editor autocomplete</h1>
+  <p>The standard CodeMirror suggestion popup, styled to match the dark editor. A list on the left, and for the highlighted item a details box on the right with what it does and an example from the reference. Enter accepts, ↑/↓ move, Esc closes. Tab still indents. Ctrl-Space opens it on demand.</p>
+  <div class="note">On phones (narrow editor) the details box is hidden and only the list shows.</div>
+
+  <h2>1 · After a dot: methods</h2>
+  <p class="anno">Typing <code>.l</code> lists matching methods. The right column is the short label. Methods you've already met in a lesson are not treated differently (keeps it simple).</p>
+  <div class="editor">
+    <div class="line"><span class="ln">1</span><span><span class="f">setcpm</span>(<span class="n">124</span>/<span class="n">4</span>)</span></div>
+    <div class="line"><span class="ln">2</span><span></span></div>
+    <div class="line"><span class="ln">3</span><span><span class="f">note</span>(<span class="s">"c2 eb2 g2"</span>).<span class="f">s</span>(<span class="s">"sawtooth"</span>).l<span class="caret"></span></span></div>
+    <div class="pop" style="left: 330px; top: 82px;">
+      <div class="list">
+        <div class="opt sel"><span class="tag">fn</span><span class="lbl"><b>l</b>pf</span><span class="det">low-pass cutoff</span></div>
+        <div class="opt"><span class="tag">fn</span><span class="lbl"><b>l</b>pq</span><span class="det">resonance</span></div>
+        <div class="opt"><span class="tag">fn</span><span class="lbl"><b>l</b>penv</span><span class="det">filter envelope</span></div>
+        <div class="opt"><span class="tag">fn</span><span class="lbl"><b>l</b>pattack</span><span class="det">filter attack</span></div>
+        <div class="opt"><span class="tag">fn</span><span class="lbl"><b>l</b>astOf</span><span class="det">every n cycles</span></div>
+      </div>
+      <div class="info">
+        <b class="mono">.lpf(…)</b>
+        Low-pass cutoff. Takes 50–18000 Hz.
+        <div class="ex">note("c2*4").s("sawtooth").lpf(1200)</div>
+        <div class="meta">filter · Lesson 9</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>2 · Inside s("…"): sound names</h2>
+  <p class="anno">Only inside the strings of s() / sound(). Drum names first (with the full name), then synths. If the part has a .bank(), only that machine's sounds are listed, with their variant counts.</p>
+  <div class="editor">
+    <div class="line"><span class="ln">1</span><span><span class="f">setcpm</span>(<span class="n">124</span>/<span class="n">4</span>)</span></div>
+    <div class="line"><span class="ln">2</span><span></span></div>
+    <div class="line"><span class="ln">3</span><span><span class="v">const</span> <span class="v">hats</span> = <span class="f">s</span>(<span class="s">"~ o<span class="caret"></span>"</span>).<span class="f">bank</span>(<span class="s">"RolandTR909"</span>)</span></div>
+    <div class="pop" style="left: 170px; top: 82px;">
+      <div class="list">
+        <div class="opt sel"><span class="tag">drum</span><span class="lbl"><b>o</b>h</span><span class="det">open hi-hat · 1</span></div>
+      </div>
+      <div class="info">
+        <b class="mono">oh</b>
+        Open hi-hat on the Roland TR-909. Add <span class="mono">:n</span> to pick a variant.
+      </div>
+    </div>
+  </div>
+
+  <h2>3 · Inside .bank("…"): machines</h2>
+  <p class="anno">All 71 machines, the classics (★) first, matching on the code name.</p>
+  <div class="editor">
+    <div class="line"><span class="ln">1</span><span><span class="f">s</span>(<span class="s">"bd*4"</span>).<span class="f">bank</span>(<span class="s">"Roland<span class="caret"></span>"</span>)</span></div>
+    <div class="pop" style="left: 230px; top: 34px;">
+      <div class="list">
+        <div class="opt"><span class="tag">★</span><span class="lbl"><b>Roland</b>TR808</span><span class="det">1980</span></div>
+        <div class="opt"><span class="tag">★</span><span class="lbl"><b>Roland</b>TR606</span><span class="det">1981</span></div>
+        <div class="opt sel"><span class="tag">★</span><span class="lbl"><b>Roland</b>TR909</span><span class="det">1983</span></div>
+        <div class="opt"><span class="tag">★</span><span class="lbl"><b>Roland</b>TR707</span><span class="det">1985</span></div>
+        <div class="opt"><span class="tag"></span><span class="lbl"><b>Roland</b>CompurhythmCR78</span><span class="det"></span></div>
+      </div>
+      <div class="info">
+        <b>Roland TR-909</b>
+        The house and techno drum machine: punchy kick, crisp sampled hats and cymbals.
+        <div class="meta">bd sd hh oh cp rim lt mt ht cr rd</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>4 · Inside .scale("…"): scales</h2>
+  <p class="anno">After the root and colon. A short list of scales that suit house and techno, each with a one-line feel. Multi-word names use colons (<code>C:minor:pentatonic</code>), since a space would split them into two steps.</p>
+  <div class="editor">
+    <div class="line"><span class="ln">1</span><span><span class="f">n</span>(<span class="s">"0 2 4"</span>).<span class="f">scale</span>(<span class="s">"C:<span class="caret"></span>"</span>).<span class="f">s</span>(<span class="s">"sawtooth"</span>)</span></div>
+    <div class="pop" style="left: 230px; top: 34px;">
+      <div class="list">
+        <div class="opt sel"><span class="tag">scale</span><span class="lbl">minor</span><span class="det">dark, the default</span></div>
+        <div class="opt"><span class="tag">scale</span><span class="lbl">dorian</span><span class="det">deep house, jazzy</span></div>
+        <div class="opt"><span class="tag">scale</span><span class="lbl">phrygian</span><span class="det">tense techno</span></div>
+        <div class="opt"><span class="tag">scale</span><span class="lbl">minor:pentatonic</span><span class="det">can't go wrong</span></div>
+        <div class="opt"><span class="tag">scale</span><span class="lbl">major</span><span class="det">bright, uplifting</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Not shown</h2>
+  <ul>
+    <li>Start of an expression: <code>s</code>, <code>note</code>, <code>n</code>, <code>chord</code>, <code>stack</code>, <code>arrange</code>, <code>cat</code>, <code>setcpm</code>, signals (<code>sine</code>, <code>rand</code>…), plus your own <code>const</code> part names.</li>
+    <li>Fixed-choice arguments, e.g. <code>.ftype("</code> → 12db / ladder / 24db.</li>
+    <li>Anywhere else inside a string (rhythms like <code>"bd [bd bd] ~"</code> in note(), mask(), struct()): no popup.</li>
+  </ul>
+</main>
+</body>
+</html>

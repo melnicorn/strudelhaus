@@ -62,6 +62,7 @@ export type Progress = z.infer<typeof progressSchema>;
 
 export const settingsSchema = z.object({
   autoPlayGuiEdits: z.boolean().default(true),
+  autocomplete: z.boolean().default(true),
 });
 export type Settings = z.infer<typeof settingsSchema>;
 

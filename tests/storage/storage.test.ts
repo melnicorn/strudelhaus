@@ -13,7 +13,7 @@ import {
   updatesAvailable,
   upsertItem,
 } from '@/lib/storage/library';
-import { loadProgress, resetLesson, saveProgress, updateLesson } from '@/lib/storage/progress';
+import { loadProgress, loadSettings, resetLesson, saveProgress, saveSettings, updateLesson } from '@/lib/storage/progress';
 import { evaluatePure } from '@/lib/strudel/pure';
 import { parseProject } from '@/lib/sync/parseProject';
 
@@ -128,5 +128,20 @@ describe('progress', () => {
     saveProgress(p);
     expect(loadProgress().l1.lastCode).toBe('x');
     expect(resetLesson(p, 'l1')).toEqual({});
+  });
+});
+
+describe('settings', () => {
+  beforeEach(() => setBackend(new MemoryStore()));
+
+  it('defaults autocomplete on, and keeps an old saved shape', () => {
+    expect(loadSettings().autocomplete).toBe(true);
+    saveSettings({ autoPlayGuiEdits: false } as never); // saved before the setting existed
+    expect(loadSettings()).toEqual({ autoPlayGuiEdits: false, autocomplete: true });
+  });
+
+  it('round-trips the setting', () => {
+    saveSettings({ ...loadSettings(), autocomplete: false });
+    expect(loadSettings().autocomplete).toBe(false);
   });
 });

@@ -23,6 +23,7 @@ The footer links to the source at <https://github.com/melnicorn/strudelhaus>, as
 - `components/blocks/`: panels for parts (step grid, 303 sequencer, degree tracker, chords, sound controls), modifiers, groups (mixer) and the arrangement matrix.
 - `content/lessons/`: lessons as typed data. Every solution is tested against its own checks.
 - `lib/sounds/`: the sound browser's catalog. `catalog.data.ts` is generated from the sample manifests by `node scripts/gen-sound-catalog.mjs`; `engine.audition()` plays a snippet over whatever is playing.
+- `lib/editor/autocomplete.ts` + `completions.ts`: editor autocomplete (methods after a dot, sounds in `s()`, machines in `.bank()`, scales in `.scale()`), fed by the reference and the sound catalog. The checkbox under the editor turns it off; the setting is saved in the browser.
 - `lib/dictionary/terms.ts`: the dictionary. Hold ⌘/Ctrl anywhere to underline its words (prose via `withTerms`, code via `lib/editor/terms.ts`); `components/dictionary/TermHover.tsx` shows definitions.
 - Strudel packages are pinned to exact versions (npm 1.2.6 / 1.3.0); upstream `main` has breaking changes.
 

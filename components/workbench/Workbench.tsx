@@ -1,5 +1,6 @@
 'use client';
 
+import { Checkbox, Label } from '@heroui/react';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { CodeEditor } from '@/components/editor/CodeEditor';
 import { ErrorPanel } from '@/components/errors/ErrorPanel';
@@ -11,6 +12,7 @@ import { setErrorLine } from '@/lib/editor/errorLine';
 import { showActiveHaps, updateMiniLocations } from '@/lib/editor/playingHighlight';
 import { friendlyEvalError, friendlyRuntimeMessage, type FriendlyError } from '@/lib/errors/friendly';
 import { useEditorStore } from '@/lib/stores/editor';
+import { useSettingsStore } from '@/lib/stores/settings';
 import { setAfterGuiEdit } from '@/lib/stores/model';
 
 interface Props {
@@ -115,6 +117,10 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
   // Stop when leaving the page (also runs when Next hides the page with <Activity>).
   useEffect(() => () => void engine?.stop(), [engine]);
 
+  const autocomplete = useSettingsStore((s) => s.settings.autocomplete);
+  const setSetting = useSettingsStore((s) => s.set);
+  useEffect(() => useSettingsStore.getState().load(), []);
+
   return (
     <div
       className={
@@ -134,6 +140,16 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
           tempo={<TempoControl />}
         />
         <CodeEditor initialCode={initialCode} onEvaluate={evaluate} onStop={stop} />
+        <div className="-mt-1.5 flex justify-end">
+          <Checkbox isSelected={autocomplete} onChange={(on) => setSetting('autocomplete', on)}>
+            <Checkbox.Content>
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              <Label className="text-xs text-muted">Autocomplete</Label>
+            </Checkbox.Content>
+          </Checkbox>
+        </div>
         <ErrorPanel
           error={error}
           runtimeError={runtimeError}

@@ -13,12 +13,14 @@ import {
   keymap,
   lineNumbers,
 } from '@codemirror/view';
+import { autocomplete, autocompleteCompartment } from '@/lib/editor/autocomplete';
 import { errorLine } from '@/lib/editor/errorLine';
 import { guiEditHighlight } from '@/lib/editor/guiEdits';
 import { playingHighlight } from '@/lib/editor/playingHighlight';
 import { codeTerms } from '@/lib/editor/terms';
 import { strudelTheme } from '@/lib/editor/theme';
 import { useEditorStore } from '@/lib/stores/editor';
+import { useSettingsStore } from '@/lib/stores/settings';
 
 interface Props {
   initialCode: string;
@@ -37,6 +39,11 @@ export function CodeEditor({ initialCode, onEvaluate, onStop, ariaLabel = 'Strud
   useEffect(() => {
     handlers.current = { onEvaluate, onStop };
   });
+
+  const completions = useSettingsStore((s) => s.settings.autocomplete);
+  useEffect(() => {
+    useEditorStore.getState().view?.dispatch({ effects: autocompleteCompartment.reconfigure(autocomplete(completions)) });
+  }, [completions]);
 
   useEffect(() => {
     const { setView, setCode } = useEditorStore.getState();
@@ -69,6 +76,7 @@ export function CodeEditor({ initialCode, onEvaluate, onStop, ariaLabel = 'Strud
           bracketMatching(),
           keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
           javascript(),
+          autocompleteCompartment.of(autocomplete(useSettingsStore.getState().settings.autocomplete)),
           strudelTheme,
           playingHighlight,
           codeTerms,
