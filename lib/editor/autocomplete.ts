@@ -4,7 +4,7 @@
 // the setting can switch it off live.
 import { autocompletion, type Completion, type CompletionContext } from '@codemirror/autocomplete';
 import { Compartment, type Extension } from '@codemirror/state';
-import { EditorView } from '@codemirror/view';
+import { EditorView, tooltips } from '@codemirror/view';
 
 export const autocompleteCompartment = new Compartment();
 
@@ -99,5 +99,11 @@ const popupTheme = EditorView.theme(
 
 export function autocomplete(enabled: boolean): Extension {
   if (!enabled) return [];
-  return [autocompletion({ override: [lazySource], icons: false, addToOptions: [tag], interactionDelay: 150 }), popupTheme];
+  return [
+    autocompletion({ override: [lazySource], icons: false, addToOptions: [tag], interactionDelay: 150 }),
+    // Mounted on <body>: inside the editor the popup sits in the sticky column's stacking context
+    // and the GUI panels beside it paint over it.
+    tooltips({ position: 'fixed', parent: document.body }),
+    popupTheme,
+  ];
 }
