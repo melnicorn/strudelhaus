@@ -22,11 +22,15 @@ Every lesson is a typed TypeScript object (see §7.4). Because of that, the test
 | `starter` | The code loaded into the editor |
 | `task` | Guided steps, each with an automatic **check** (see below) |
 | `challenge` | Optional; it also has a check |
-| `solution` | Revealed by "Show solution". It goes into a diff view first; you choose "Use this code" to load it |
+| `steps` | The code after each task but the last, following that task's hint. Used only by the isolation test (below) |
+| `solution` | The code after the last task, without the challenge. Revealed by "Show solution". It goes into a diff view first; you choose "Use this code" to load it |
+| `challengeSolution` | The solution plus the challenge. Required when there is a challenge |
 | `youNowKnow` | Summary bullets, plus the list of Strudel functions introduced (each linked to the reference page) |
 | `skills` | Skill IDs from research §1 |
 
 **Checks.** Checks are music-aware rather than text-matching. We evaluate the learner's code to a pattern (no audio) and run a predicate over `pattern.queryArc(0, n)`. Example: *"a `bd` event starts at 0, ¼, ½, ¾ of every cycle"*. This means `s("bd*4")`, `s("bd bd bd bd")`, and `s("bd!4")` all pass, which teaches that there are many ways to write the same thing. A check can also look at the parsed code, e.g. "uses `.bank(…)`". All checks show a plain hint when they fail.
+
+**Isolation rule.** Doing a task ticks that task and nothing else, so each lesson builds one idea at a time. The starter passes no task. Each step (`steps[i]`, then `solution`) passes the tasks done so far and no later task. The challenge passes only in `challengeSolution`. `tests/lessons/isolation.test.ts` walks every lesson this way. When it fails, the check is almost always too loose: an `.every` over an empty list, a regex the starter already matches, or a threshold a hint value already meets. Tighten the check rather than bending the steps around it, and keep hint values clear of the challenge's threshold.
 
 ### 1.2 Lesson list
 
@@ -490,6 +494,7 @@ Groups, sections, and the arrangement have tiny grammars (§2.8). The parse extr
 - **Musical round trip:** for each GUI operation, apply it and evaluate both the before and after code without audio. Then assert that `queryArc` differs **only** in the intended events.
 - **Never-rewrite property:** a randomized test runs a GUI edit against hand-modified buffers and asserts that bytes outside the edit range are identical.
 - **Lesson corpus:** every lesson starter and solution parses, evaluates, and passes or fails its checks as expected.
+- **Task isolation:** walking starter → each step → solution → challenge solution, only the tasks done so far pass, and the challenge passes only at the end (§1.1).
 - **Risk to check first in milestone 3:** importing `@strudel/core`/`mini` under Vitest. Plain Node ESM fails on `@kabelsalat/web`. Mitigation: a Vitest `deps.inline` setting or alias for kabelsalat, or `environment: 'jsdom'`.
 
 ---

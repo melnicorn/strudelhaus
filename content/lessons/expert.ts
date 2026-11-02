@@ -21,6 +21,38 @@ const hasNotes = (c: CheckContext, bar: number) => inBar(c, bar, isNote).length 
 /** First bar of each arrangement row. */
 const rowStarts = (c: CheckContext) => arrangement(c).map((_, i) => sectionStart(c, i));
 
+/** Lesson 33's parts and modifiers, followed by `rest` (its sections and what plays). */
+const capstone = (rest: string) => `// Acid Warehouse
+setcpm(126/4)            // BPM ÷ 4 beats: 1 cycle = 1 bar
+const key = "C:minor"
+
+// ── parts ─────────────────────────────
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909").room(.2).orbit(2).hpf(200)
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.55).hpf(300)
+const ticks = s("hh*16").bank("RolandTR909").gain("[.4 .2 .3 .2]*4").swingBy(.16, 8).hpf(400)
+const bass = n("[~ 0] [~ 0] [~ 0] [~ -2]").scale(key).s("sawtooth").octave(2)
+  .lpf(450).decay(.15).sustain(0).gain(.7).orbit(4)
+const acid = note(${LINE})
+  .s("sawtooth").ftype("ladder").lpf(900).lpq(18).lpdecay(.15).decay(.2).sustain(0)
+${ACCENTS}
+  .distort(1).gain(.55).orbit(5)
+const stab = chord("<Cm7 Fm7>").voicing().struct("[~ x]*2").s("sawtooth")
+  .lpf(1400).decay(.15).sustain(0).hpf(200).gain(.45)
+const riser = s("pink*16").hpf(saw.range(200, 6000).slow(16)).gain(.2)
+
+// ── modifiers ─────────────────────────
+const dubDelay = x => x.delay(.4).delaysync(3/16).delayfeedback(.55).orbit(3)
+// Duck only where the bass (orbit 4) plays: ducking a silent orbit is an error.
+const pump = x => x.duckorbit(4).duckdepth(.7)
+
+// ── sections ──────────────────────────
+${rest}
+`;
+const INTRO_DROP_OUTRO = `const intro = stack(kick, hats, ticks)
+const drop = stack(pump(kick), clap, hats, ticks, bass, acid, dubDelay(stab))
+const outro = stack(kick, hats)`;
+
 export const expert: Lesson[] = [
   {
     id: '25-acid-line',
@@ -58,10 +90,21 @@ stack(kick, acid)`,
       hint: '.distort(1.5)',
       check: (c) => c.events().filter(isNote).every((h) => num(h.value.distort, 0) > 0),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const acid = note(${LINE}).s("sawtooth")
+stack(kick, acid)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
-const acid = note(${LINE})
-  .s("sawtooth").ftype("ladder").lpf(500).lpq(18).lpenv(4).lpdecay(.15).decay(.2).sustain(0)
+const acid = note(${LINE}).s("sawtooth")
+  .ftype("ladder").lpf(500).lpq(18).lpenv(4).lpdecay(.15)
+stack(kick, acid)`,
+    challengeSolution: `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const acid = note(${LINE}).s("sawtooth")
+  .ftype("ladder").lpf(500).lpq(18).lpenv(4).lpdecay(.15)
   .distort(1.5)
 stack(kick, acid)`,
     summary: ['A 303 line: 16 steps, mostly one root, octave jumps.', 'Saw + ladder filter + high resonance + short filter envelope.'],
@@ -108,6 +151,18 @@ stack(kick, acid)`,
           return !!h && num(h.value.penv, 0) === 3 && num(h.value.pattack, 0) > 0;
         },
       },
+    ],
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+${ACID}
+  .velocity("[.6 1 .6 .6] [.6 .6 1 .6] [.6 .6 .6 .6] [1 .6 .6 .6]")
+stack(kick, acid)`,
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+${ACID}
+${ACCENTS}
+stack(kick, acid)`,
     ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
@@ -156,7 +211,23 @@ stack(kick, acid)`,
       hint: 'const pad = note("[c3,g3]").s("supersaw").seg(16).lpf(saw.range(400, 4000).slow(32)).gain(.25)',
       check: (c) => uses(c, 'seg') && c.events().some((h) => h.value.s === 'supersaw'),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const acid = note(${LINE})
+  .s("sawtooth").ftype("ladder").lpq(18).lpdecay(.15).decay(.2).sustain(0)
+${ACCENTS}
+  .lpf(saw.range(300, 3000).slow(32))
+stack(kick, acid)`,
+    ],
     solution: `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const acid = note(${LINE})
+  .s("sawtooth").ftype("ladder").lpdecay(.15).decay(.2).sustain(0)
+${ACCENTS}
+  .lpf(saw.range(300, 3000).slow(32)).lpq(sine.range(10, 22).slow(16))
+stack(kick, acid)`,
+    challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const acid = note(${LINE})
   .s("sawtooth").ftype("ladder").lpdecay(.15).decay(.2).sustain(0)
@@ -204,7 +275,21 @@ stack(kick, clap, hats, bass)`,
       hint: '.duckdepth(.9).duckattack(.25) on the kick.',
       check: (c) => eventsOf(c, 'bd').every((h) => num(h.value.duckdepth, 0) >= 0.8 && num(h.value.duckattack, 0) >= 0.2),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909").duckorbit(2)
+const clap = s("~ cp ~ cp").bank("RolandTR909")
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6)
+const bass = note("[~ c2]*4").s("sawtooth").lpf(500).orbit(2)
+stack(kick, clap, hats, bass)`,
+    ],
     solution: `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909").duckorbit(2)
+const clap = s("~ cp ~ cp").bank("RolandTR909").hpf(250)
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6).hpf(250)
+const bass = note("[~ c2]*4").s("sawtooth").lpf(500).orbit(2)
+stack(kick, clap, hats, bass)`,
+    challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909").duckorbit(2).duckdepth(.9).duckattack(.25)
 const clap = s("~ cp ~ cp").bank("RolandTR909").hpf(250)
 const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6).hpf(250)
@@ -252,9 +337,13 @@ stack(kick, clap, hats, bass)`,
         },
       },
       {
-        text: 'Keep every section a multiple of 4 bars.',
-        hint: '4, 8, 16, 32…',
-        check: (c) => arrangement(c).length >= 3 && arrangement(c).every((r) => r.bars > 0 && r.bars % 4 === 0),
+        text: 'Stretch the drop to a full 32-bar phrase, keeping every section a multiple of 4 bars.',
+        hint: '[32, drop]',
+        check: (c) => {
+          const rows = arrangement(c);
+          const starts = rowStarts(c);
+          return rows.length >= 3 && rows.every((r) => r.bars > 0 && r.bars % 4 === 0) && rows.some((r, i) => r.bars >= 32 && hasNotes(c, starts[i]));
+        },
       },
     ],
     challenge: {
@@ -262,16 +351,31 @@ stack(kick, clap, hats, bass)`,
       hint: '[16, intro]',
       check: (c) => arrangement(c)[0]?.bars >= 16 && !hasNotes(c, 0) && !hasNotes(c, 15),
     },
+    steps: [
+      `setcpm(124/4)
+${PARTS}
+const intro = stack(kick, hats)
+const drop = stack(kick, clap, hats, bass)
+arrange([8, intro], [16, drop])`,
+      `setcpm(124/4)
+${PARTS}
+const intro = stack(kick, hats)
+const drop = stack(kick, clap, hats, bass)
+const outro = stack(kick, hats)
+arrange([8, intro], [16, drop], [8, outro])`,
+    ],
     solution: `setcpm(124/4)
 ${PARTS}
 const intro = stack(kick, hats)
 const drop = stack(kick, clap, hats, bass)
 const outro = stack(kick, hats)
-arrange(
-  [16, intro],
-  [16, drop],
-  [8, outro],
-)`,
+arrange([8, intro], [32, drop], [8, outro])`,
+    challengeSolution: `setcpm(124/4)
+${PARTS}
+const intro = stack(kick, hats)
+const drop = stack(kick, clap, hats, bass)
+const outro = stack(kick, hats)
+arrange([16, intro], [32, drop], [8, outro])`,
     summary: ['Change things on 8/16/32-bar phrases.', 'A section is a named stack; arrange([bars, section], …) sequences them.', 'Each section counts its bars from 1.', 'Give DJs drum-only intros and outros.'],
     introduces: ['arrange', 'sections'],
     skills: ['E3', 'E4', 'E6', 'E7'],
@@ -326,7 +430,32 @@ arrange(
       hint: 'const roll = s("sd*4").bank("RolandTR909").lastOf(8, x => x.ply(4)).gain(.5), added to the breakdown.',
       check: (c) => Array.from({ length: 64 }, (_, b) => inBar(c, b, (h) => sound(h) === 'sd').length).some((n) => n >= 16),
     },
+    steps: [
+      `setcpm(126/4)
+${PARTS}
+const intro = stack(kick, hats)
+const drop = stack(kick, clap, hats, bass)
+const breakdown = stack(hats, bass)
+arrange(
+  [8, intro],
+  [16, drop],
+  [8, breakdown],
+  [16, drop],
+)`,
+    ],
     solution: `setcpm(126/4)
+${PARTS}
+const riser = s("pink*16").hpf(saw.range(200, 6000).slow(8)).gain(.25)
+const intro = stack(kick, hats)
+const drop = stack(kick, clap, hats, bass)
+const breakdown = stack(hats, bass, riser)
+arrange(
+  [8, intro],
+  [16, drop],
+  [8, breakdown],
+  [16, drop],
+)`,
+    challengeSolution: `setcpm(126/4)
 ${PARTS}
 const riser = s("pink*16").hpf(saw.range(200, 6000).slow(8)).gain(.25)
 const roll = s("sd*4").bank("RolandTR909").lastOf(8, x => x.ply(4)).gain(.5)
@@ -383,7 +512,19 @@ stack(kick, hats, perc)`,
       hint: '.gain(rand.range(.25, .6))',
       check: (c) => new Set(inBar(c, 0, (h) => sound(h) === 'hh').map((h) => num(h.value.gain).toFixed(2))).size >= 4,
     },
+    steps: [
+      `setcpm(128/4)
+const kick = s("bd*4").bank("RolandTR909")
+const hats = s("hh*16").bank("RolandTR909").gain(.4).degradeBy(.3)
+const perc = s("rim(5,16)").bank("RolandTR909").gain(.5)
+stack(kick, hats, perc)`,
+    ],
     solution: `setcpm(128/4)
+const kick = s("bd*4").bank("RolandTR909")
+const hats = s("hh*16").bank("RolandTR909").gain(.4).degradeBy(.3)
+const perc = s("rim(5,16)").bank("RolandTR909").gain(.5).sometimesBy(.3, x => x.speed(2))
+stack(kick, hats, perc)`,
+    challengeSolution: `setcpm(128/4)
 const kick = s("bd*4").bank("RolandTR909")
 const hats = s("hh*16").bank("RolandTR909").gain(rand.range(.25, .6)).degradeBy(.3)
 const perc = s("rim(5,16)").bank("RolandTR909").gain(.5).sometimesBy(.3, x => x.speed(2))
@@ -434,11 +575,27 @@ stack(kick, clap, hats, pad, bass)`,
       hint: '.compressor("-20:4:10:.005:.1")',
       check: (c) => eventsOf(c, 'cp').every((h) => h.value.compressor !== undefined),
     },
+    steps: [
+      `setcpm(126/4)
+const kick = s("bd*4").bank("RolandTR909").gain(.9)
+const clap = s("~ cp ~ cp").bank("RolandTR909").gain(.7)
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.5)
+const pad = note("<[c3,eb3,g3] [f3,ab3,c4]>").s("supersaw").gain(.35)
+const bass = note("[~ c2]*4").s("sawtooth").lpf(500).gain(.7)
+stack(kick, clap, hats, pad, bass)`,
+    ],
     solution: `setcpm(126/4)
 const kick = s("bd*4").bank("RolandTR909").gain(.9)
+const clap = s("~ cp ~ cp").bank("RolandTR909").gain(.7).hpf(200)
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.5).hpf(200)
+const pad = note("<[c3,eb3,g3] [f3,ab3,c4]>").s("supersaw").gain(.35).hpf(200)
+const bass = note("[~ c2]*4").s("sawtooth").lpf(500).gain(.7)
+stack(kick, clap, hats, pad, bass)`,
+    challengeSolution: `setcpm(126/4)
+const kick = s("bd*4").bank("RolandTR909").gain(.9)
 const clap = s("~ cp ~ cp").bank("RolandTR909").gain(.7).hpf(200).compressor("-20:4:10:.005:.1")
-const hats = s("[~ oh]*4").bank("RolandTR909").gain(.5).hpf(300)
-const pad = note("<[c3,eb3,g3] [f3,ab3,c4]>").s("supersaw").gain(.35).hpf(250)
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.5).hpf(200)
+const pad = note("<[c3,eb3,g3] [f3,ab3,c4]>").s("supersaw").gain(.35).hpf(200)
 const bass = note("[~ c2]*4").s("sawtooth").lpf(500).gain(.7)
 stack(kick, clap, hats, pad, bass)`,
     summary: ['Keep gains ≤ 1 and the kick loudest.', 'High-pass everything but kick and bass.', '.compressor evens out a part; Strudel has no master EQ or limiter.'],
@@ -480,21 +637,13 @@ const key = "C:minor"
 `,
     tasks: [
       {
-        text: 'Parts: define kick, clap, hats, bass and acid.',
-        hint: 'One const each. The acid needs a ladder filter and high resonance.',
+        text: 'Parts: define kick, clap, hats, bass and acid, and play them together.',
+        hint: 'One const each, then stack(kick, clap, hats, bass, acid). The acid needs a ladder filter and high resonance.',
         check: (c) => ['kick', 'clap', 'hats', 'bass', 'acid'].every((n) => defines(c, n)),
       },
       {
-        text: 'Arrangement: at least six sections, each a multiple of 4 bars, at least 96 bars in total.',
-        hint: 'arrange([16, intro], [16, build], [32, drop], [16, breakdown], [32, drop], [16, outro])',
-        check: (c) => {
-          const rows = arrangement(c);
-          return rows.length >= 6 && rows.every((r) => r.bars % 4 === 0) && rows.reduce((s, r) => s + r.bars, 0) >= 96;
-        },
-      },
-      {
-        text: 'DJ-friendly: the first and last sections have kick but no bass or acid.',
-        hint: 'intro and outro = stack(kick, hats) or similar.',
+        text: 'DJ-friendly: arrange an intro and an outro with kick but no bass or acid, around a drop with everything.',
+        hint: 'const intro = stack(kick, hats, ticks), const drop = stack(kick, clap, hats, bass, acid), const outro = stack(kick, hats), then arrange([16, intro], [32, drop], [16, outro])',
         check: (c) => {
           const starts = rowStarts(c);
           const first = starts[0];
@@ -503,8 +652,16 @@ const key = "C:minor"
         },
       },
       {
-        text: 'Drops: some section has kick, bass and the acid line together, and it plays at least twice.',
-        hint: 'const drop = stack(kick, clap, hats, bass, acid), used twice in arrange.',
+        text: 'Breakdown: after the drop, a section with no kick but with music.',
+        hint: 'const breakdown = stack(hats, acid, stab, riser), then [16, breakdown] after the drop.',
+        check: (c) => {
+          const starts = rowStarts(c);
+          return starts.slice(1, -1).some((s) => !hasKick(c, s) && hasNotes(c, s));
+        },
+      },
+      {
+        text: 'Drop again: some section has kick, bass and the acid line together, and it plays at least twice.',
+        hint: '[32, drop] again after the breakdown.',
         check: (c) => {
           const rows = arrangement(c);
           const starts = rowStarts(c);
@@ -513,11 +670,11 @@ const key = "C:minor"
         },
       },
       {
-        text: 'Breakdown: a section in the middle with no kick but with music.',
-        hint: 'const breakdown = stack(hats, acid, stab, riser)',
+        text: 'Build: add a section after the intro, for at least six sections, each a multiple of 4 bars, at least 96 bars in total.',
+        hint: 'const build = stack(kick, hats, ticks, bass, acid), then [16, build] after the intro.',
         check: (c) => {
-          const starts = rowStarts(c);
-          return starts.slice(1, -1).some((s) => !hasKick(c, s) && hasNotes(c, s));
+          const rows = arrangement(c);
+          return rows.length >= 6 && rows.every((r) => r.bars % 4 === 0) && rows.reduce((s, r) => s + r.bars, 0) >= 96;
         },
       },
     ],
@@ -534,37 +691,41 @@ const key = "C:minor"
         });
       },
     },
-    solution: `// Acid Warehouse
-setcpm(126/4)            // BPM ÷ 4 beats: 1 cycle = 1 bar
-const key = "C:minor"
+    steps: [
+      capstone('stack(kick, clap, hats, bass, acid)'),
+      capstone(`${INTRO_DROP_OUTRO}
 
-// ── parts ─────────────────────────────
-const kick = s("bd*4").bank("RolandTR909")
-const clap = s("~ cp ~ cp").bank("RolandTR909").room(.2).orbit(2).hpf(200)
-const hats = s("[~ oh]*4").bank("RolandTR909").gain(.55).hpf(300)
-const ticks = s("hh*16").bank("RolandTR909").gain("[.4 .2 .3 .2]*4").swingBy(.16, 8).hpf(400)
-const bass = n("[~ 0] [~ 0] [~ 0] [~ -2]").scale(key).s("sawtooth").octave(2)
-  .lpf(450).decay(.15).sustain(0).gain(.7).orbit(4)
-const acid = note(${LINE})
-  .s("sawtooth").ftype("ladder").lpf(900).lpq(18).lpdecay(.15).decay(.2).sustain(0)
-${ACCENTS}
-  .distort(1).gain(.55).orbit(5)
-const stab = chord("<Cm7 Fm7>").voicing().struct("[~ x]*2").s("sawtooth")
-  .lpf(1400).decay(.15).sustain(0).hpf(200).gain(.45)
-const riser = s("pink*16").hpf(saw.range(200, 6000).slow(16)).gain(.2)
-
-// ── modifiers ─────────────────────────
-const dubDelay = x => x.delay(.4).delaysync(3/16).delayfeedback(.55).orbit(3)
-const rise = x => x.lpf(saw.range(300, 2500).slow(16))
-// Duck only where the bass (orbit 4) plays: ducking a silent orbit is an error.
-const pump = x => x.duckorbit(4).duckdepth(.7)
-
-// ── sections ──────────────────────────
-const intro = stack(kick, hats, ticks)
-const build = stack(pump(kick), hats, ticks, bass, rise(acid))
-const drop = stack(pump(kick), clap, hats, ticks, bass, acid, dubDelay(stab))
+// ── arrangement ───────────────────────
+arrange(
+  [16, intro],
+  [32, drop],
+  [16, outro],
+)`),
+      capstone(`${INTRO_DROP_OUTRO}
 const breakdown = stack(hats, acid, dubDelay(stab), riser)
-const outro = stack(kick, hats)
+
+// ── arrangement ───────────────────────
+arrange(
+  [16, intro],
+  [32, drop],
+  [16, breakdown],
+  [16, outro],
+)`),
+      capstone(`${INTRO_DROP_OUTRO}
+const breakdown = stack(hats, acid, dubDelay(stab), riser)
+
+// ── arrangement ───────────────────────
+arrange(
+  [16, intro],
+  [32, drop],
+  [16, breakdown],
+  [32, drop],
+  [16, outro],
+)`),
+    ],
+    solution: capstone(`${INTRO_DROP_OUTRO}
+const breakdown = stack(hats, acid, dubDelay(stab), riser)
+const build = stack(pump(kick), hats, ticks, bass, acid)
 
 // ── arrangement ───────────────────────
 arrange(
@@ -574,8 +735,21 @@ arrange(
   [16, breakdown],
   [32, drop],
   [16, outro],
-)
-`,
+)`),
+    challengeSolution: capstone(`${INTRO_DROP_OUTRO}
+const breakdown = stack(hats, acid, dubDelay(stab), riser)
+const rise = x => x.lpf(saw.range(300, 2500).slow(16))
+const build = stack(pump(kick), hats, ticks, bass, rise(acid))
+
+// ── arrangement ───────────────────────
+arrange(
+  [16, intro],
+  [16, build],
+  [32, drop],
+  [16, breakdown],
+  [32, drop],
+  [16, outro],
+)`),
     summary: ['You can write a complete arranged track in Strudel code.', 'Parts, modifiers, sections and arrange() are all plain, readable code.'],
     introduces: ['capstone'],
     skills: ['E14'],

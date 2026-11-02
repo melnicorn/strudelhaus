@@ -18,11 +18,12 @@ export const beginner: Lesson[] = [
 \`s("bd")\` means "play the sound called **bd**" (bass drum, the kick) once per cycle. In this workshop one cycle is one **bar** of music: four beats, the length of counting "1 2 3 4".
 
 Press **▶ Play** (or Ctrl/Cmd+Enter in the editor); the same key pauses. Change the code and press **⟳ Update** (Shift+Ctrl/Cmd+Enter): the music updates without stopping. **■ Stop** (or Ctrl/Cmd+.) stops it and goes back to bar 1.`,
-    starter: `s("bd")`,
+    starter: `// Type s("bd") on the next line, then press Play.
+`,
     tasks: [
       {
-        text: 'Press Play and listen to the kick once per bar.',
-        hint: 'Click ▶ Play above the code, or put the cursor in the code and press Ctrl+Enter (Cmd+Enter on a Mac).',
+        text: 'Type s("bd") and press Play: listen to the kick once per bar.',
+        hint: 'Type s("bd") on its own line. Then click ▶ Play above the code, or put the cursor in the code and press Ctrl+Enter (Cmd+Enter on a Mac).',
         check: (c) => eventsOf(c, 'bd').length === 1,
         replacedLater: true,
       },
@@ -30,6 +31,8 @@ Press **▶ Play** (or Ctrl/Cmd+Enter in the editor); the same key pauses. Chang
         text: 'Change bd to sd (a snare drum) and run it again.',
         hint: 'Edit the text inside the quotes so it reads s("sd"), then press Update (or Play if it is stopped).',
         check: (c) => eventsOf(c, 'sd').length >= 1,
+        // The challenge swaps the snare for a clap.
+        replacedLater: true,
       },
     ],
     challenge: {
@@ -37,6 +40,7 @@ Press **▶ Play** (or Ctrl/Cmd+Enter in the editor); the same key pauses. Chang
       hint: 'Sound names are short: bd, sd, cp, hh, oh…',
       check: (c) => eventsOf(c, 'cp').length >= 1,
     },
+    steps: [`s("bd")`],
     solution: `s("sd")`,
     challengeSolution: `s("cp")`,
     summary: ['Strudel plays your code as a repeating loop called a cycle.', 'One cycle is one bar of four beats in this workshop.', 's("…") plays a sound by its name.'],
@@ -72,14 +76,18 @@ s("bd")`,
       },
     ],
     challenge: {
-      text: 'Write the same four kicks a different way that sounds identical.',
-      hint: 'Try "bd bd bd bd" if you used *4, or "bd!4" (! repeats a step without squeezing it).',
-      check: (c) => playsAt(c, 'bd', BEATS) && !/"bd\*4"/.test(c.code),
+      text: 'Write the same four kicks a third way, with ! instead of *.',
+      hint: '"bd!4": ! repeats a step without squeezing it, so it sounds the same as "bd*4".',
+      check: (c) => playsAt(c, 'bd', BEATS) && /bd\s*!\s*4/.test(c.code),
     },
+    steps: [
+      `setcpm(124/4)
+s("bd*4")`,
+    ],
     solution: `setcpm(124/4)
 s("bd*4").bank("RolandTR909")`,
     challengeSolution: `setcpm(124/4)
-s("bd bd bd bd").bank("RolandTR909")`,
+s("bd!4").bank("RolandTR909")`,
     summary: ['Steps inside the quotes share one bar equally.', '*n repeats a step n times inside its own slot.', 'setcpm(BPM/4) sets the tempo for 4 beats per bar.', '.bank(…) chooses the drum machine.'],
     introduces: ['setcpm', '*', '.bank'],
     skills: ['B1', 'B4', 'B8'],
@@ -114,14 +122,18 @@ s("~ ~ ~ ~").bank("RolandTR909")`,
       },
     ],
     challenge: {
-      text: 'Write the plain clap-on-2-and-4 pattern as one half-bar, repeated twice with *.',
-      hint: '"[~ cp]" is half a bar. Repeat it twice.',
-      check: (c) => playsAt(c, 'cp', [0.25, 0.75]) && /\[\s*~\s+cp\s*\]\s*\*\s*2/.test(c.code),
+      text: 'Double the clap at the end of beat 2 too, writing the bar as one half-bar repeated twice with *.',
+      hint: '"[~ [cp cp]]" is half a bar. Repeat it twice.',
+      check: (c) => playsAt(c, 'cp', [0.25, 0.375, 0.75, 0.875]) && /\]\s*\*\s*2/.test(c.code),
     },
+    steps: [
+      `setcpm(124/4)
+s("~ cp ~ cp").bank("RolandTR909")`,
+    ],
     solution: `setcpm(124/4)
 s("~ cp ~ [cp cp]").bank("RolandTR909")`,
     challengeSolution: `setcpm(124/4)
-s("[~ cp]*2").bank("RolandTR909")`,
+s("[~ [cp cp]]*2").bank("RolandTR909")`,
     summary: ['~ is a rest.', 'Beats 2 and 4 are the backbeat.', '[ ] squeezes several steps into one.'],
     introduces: ['~', '[ ]'],
     skills: ['B3', 'B5', 'B7'],
@@ -161,6 +173,11 @@ s("bd*4").bank("RolandTR909")`,
       hint: 'A bar has 16 sixteenths: "~ ~ ~ [~ ~ ~ sd]" puts sd on the last one.',
       check: (c) => defines(c, 'snare') && includesTimes(c, 'sd', [15 / 16]),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+kick`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const clap = s("~ cp ~ cp").bank("RolandTR909")
@@ -199,7 +216,10 @@ stack(kick, clap)`,
       {
         text: 'The hats are loud. Turn them down with .gain(.6).',
         hint: 'Add .gain(.6) at the end of the hats line. The gain control in the panel writes it for you.',
-        check: (c) => eventsOf(c, 'oh').every((h) => Number(h.value.gain) < 0.8),
+        check: (c) => {
+          const oh = eventsOf(c, 'oh');
+          return oh.length > 0 && oh.every((h) => Number(h.value.gain) < 0.8);
+        },
       },
     ],
     challenge: {
@@ -207,6 +227,13 @@ stack(kick, clap)`,
       hint: 'Another part: s("hh*4").gain(.3). Remember to stack it.',
       check: (c) => playsAt(c, 'hh', BEATS) && eventsOf(c, 'hh').every((h) => Number(h.value.gain ?? 0.8) < Number(eventsOf(c, 'oh')[0]?.value.gain ?? 0.8)),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909")
+const hats = s("[~ oh]*4").bank("RolandTR909")
+stack(kick, clap, hats)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const clap = s("~ cp ~ cp").bank("RolandTR909")
@@ -245,6 +272,8 @@ stack(kick, hats)`,
         text: 'Make the closed hats play on all 16 sixteenths.',
         hint: 'hh*16',
         check: (c) => playsAt(c, 'hh', Array.from({ length: 16 }, (_, i) => i / 16)),
+        // The challenge rests on the last 16th.
+        replacedLater: true,
       },
       {
         text: 'Give the hats a gain pattern so the hit on each beat is louder than the next 16th.',
@@ -252,7 +281,7 @@ stack(kick, hats)`,
         check: (c) => {
           const hh = eventsOf(c, 'hh');
           const g = (t: number) => Number(hh.find((h) => Math.abs(h.whole!.begin.valueOf() - t) < 1e-6)?.value.gain ?? 0.8);
-          return hh.length === 16 && BEATS.every((b) => g(b) > g(b + 1 / 16));
+          return hh.length >= 15 && BEATS.every((b) => g(b) > g(b + 1 / 16));
         },
       },
     ],
@@ -261,13 +290,19 @@ stack(kick, hats)`,
       hint: 'Write the bar as four beat groups and leave the last step empty: "[hh*4]!3 [hh hh hh ~]". (!3 repeats the group as three steps; *3 would squeeze all three into one.)',
       check: (c) => times(c, (h) => sound(h) === 'hh').length === 15 && playsAt(c, 'hh', Array.from({ length: 15 }, (_, i) => i / 16)),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const hats = s("hh*16").bank("RolandTR909")
+stack(kick, hats)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const hats = s("hh*16").bank("RolandTR909").gain("[.8 .3 .5 .3]*4")
 stack(kick, hats)`,
     challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
-const hats = s("[hh*4]!3 [hh hh hh ~]").bank("RolandTR909")
+const hats = s("[hh*4]!3 [hh hh hh ~]").bank("RolandTR909").gain("[.8 .3 .5 .3]*4")
 stack(kick, hats)`,
     summary: ['16th notes: four per beat, sixteen per bar.', 'Dynamics: louder and quieter hits make a groove feel played.', 'Controls accept patterns: .gain("…") changes per step.'],
     introduces: ['*16', 'patterned .gain'],
@@ -310,12 +345,18 @@ stack(kick, clap)`,
       hint: 's("~ cp:1 ~ cp:1").bank("RolandTR707")',
       check: (c) => eventsOf(c, 'cp').some((h) => String(h.value.bank).toLowerCase() === 'rolandtr707' && Number(h.value.n) === 1),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR808")
+const clap = s("~ cp ~ cp").bank("RolandTR808")
+stack(kick, clap)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("<RolandTR909 RolandTR808>")
 const clap = s("~ cp ~ cp").bank("RolandTR808")
 stack(kick, clap)`,
     challengeSolution: `setcpm(124/4)
-const kick = s("bd*4").bank("RolandTR909")
+const kick = s("bd*4").bank("<RolandTR909 RolandTR808>")
 const clap = s("~ cp:1 ~ cp:1").bank("RolandTR707")
 stack(kick, clap)`,
     summary: ['Banks: RolandTR909, RolandTR808, RolandTR707, RolandTR606…', '< > picks one item per bar.', ':n or .n(n) chooses a variation of a sound.'],
@@ -355,7 +396,17 @@ stack(kick, bass)`,
       hint: '"[~ c2] [~ c3] [~ c2] [~ eb2]"',
       check: (c) => valuesOf(c, 'note', 1, (h) => h.value.note !== undefined).map(String).map((s) => s.toLowerCase()).includes('c3'),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[~ c2]*4").s("sawtooth")
+stack(kick, bass)`,
+    ],
     solution: `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[~ c2] [~ c2] [~ c2] [~ eb2]").s("sawtooth")
+stack(kick, bass)`,
+    challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const bass = note("[~ c2] [~ c3] [~ c2] [~ eb2]").s("sawtooth")
 stack(kick, bass)`,
@@ -400,16 +451,22 @@ stack(kick, bass)`,
     ],
     challenge: {
       text: 'Give every note its own cutoff with a pattern of four values.',
-      hint: '.lpf("300 600 900 1500"): one value per beat.',
+      hint: '.lpf("<[300 600 900 1500] 2000>"): one value per beat in the dark bar.',
       check: (c) => valuesOf(c, 'cutoff', 1, (h) => h.value.note !== undefined).length >= 3,
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[~ c2] [~ c3] [~ c2] [~ eb2]").s("sawtooth").lpf(400)
+stack(kick, bass)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const bass = note("[~ c2] [~ c3] [~ c2] [~ eb2]").s("sawtooth").lpf("<300 2000>")
 stack(kick, bass)`,
     challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
-const bass = note("[~ c2] [~ c3] [~ c2] [~ eb2]").s("sawtooth").lpf("300 600 900 1500")
+const bass = note("[~ c2] [~ c3] [~ c2] [~ eb2]").s("sawtooth").lpf("<[300 600 900 1500] 2000>")
 stack(kick, bass)`,
     summary: ['A low-pass filter keeps the lows and cuts the highs.', 'The cutoff (in Hz) sets where: lower is darker.', '.lpf(…) can take a pattern like any control.'],
     introduces: ['.lpf'],
@@ -431,7 +488,6 @@ stack(kick, bass)`,
 
 Write each as a named \`const\`, stack them, and set the tempo between 118 and 128 BPM. When it grooves, use **Save parts to library** below the lesson so you can reuse them later.`,
     starter: `// Your warehouse loop. Tempo first:
-setcpm(124/4)
 
 `,
     tasks: [
@@ -442,7 +498,7 @@ setcpm(124/4)
       },
       {
         text: 'Define kick, clap, hats and bass as named parts.',
-        hint: 'Four const lines, one per part.',
+        hint: 'Four const lines, one per part. End with a line that names one of them (like kick) so the code plays.',
         check: (c) => ['kick', 'clap', 'hats', 'bass'].every((n) => defines(c, n)),
       },
       {
@@ -460,7 +516,24 @@ setcpm(124/4)
         return notes(0) !== notes(1);
       },
     },
+    steps: [
+      `// Your warehouse loop. Tempo first:
+setcpm(124/4)
+`,
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909")
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6)
+const bass = note("[~ c2]*4").s("sawtooth").lpf(500)
+kick`,
+    ],
     solution: `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909")
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6)
+const bass = note("[~ c2]*4").s("sawtooth").lpf(500)
+stack(kick, clap, hats, bass)`,
+    challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const clap = s("~ cp ~ cp").bank("RolandTR909")
 const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6)

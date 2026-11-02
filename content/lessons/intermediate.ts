@@ -42,7 +42,7 @@ export const intermediate: Lesson[] = [
 
 Roger Linn, who designed the swing on the MPC, describes it like this: **50%** is straight, **66%** puts the late note on the triplet, and around **54%** loosens the feel without sounding swung.
 
-In Strudel: \`.swingBy(x, 8)\` cuts the bar into 8 slices (8th notes) and delays the second half of each slice. To get **p%** swing, use \`x = (p − 50) / 50\`: 58% is \`.swingBy(.16, 8)\`. The panel's swing control writes this for you.`,
+In Strudel: \`.swingBy(x, 8)\` cuts the bar into 8 slices (8th notes) and delays the second half of each slice. To get **p%** swing, use \`x = (p − 50) / 50\`: 54% is \`.swingBy(.08, 8)\`. The panel's swing control writes this for you.`,
     starter: `setcpm(124/4)
 ${DRUMS}
 const hats = s("hh*16").bank("RolandTR909").gain("[.7 .35]*8")
@@ -50,7 +50,7 @@ stack(kick, clap, hats)`,
     tasks: [
       {
         text: 'Swing the hats with .swingBy(…, 8).',
-        hint: 'Add .swingBy(.16, 8) to the hats.',
+        hint: 'Add .swingBy(.08, 8) to the hats.',
         check: (c) => {
           const t = times(c, (h) => sound(h) === 'hh');
           return t.length === 16 && t[1] > 1 / 16 + 0.002 && Math.abs(t[0]) < 1e-6;
@@ -64,6 +64,8 @@ stack(kick, clap, hats)`,
           const p = 50 + ((t[1] - 1 / 16) * 16 * 50) / 1; // delay of x/16 bar → p = 50 + 50x
           return t.length === 16 && p >= 54.9 && p <= 62.1;
         },
+        // The challenge swings harder, past house range.
+        replacedLater: true,
       },
     ],
     challenge: {
@@ -74,6 +76,12 @@ stack(kick, clap, hats)`,
         return t.length === 16 && Math.abs(t[1] - (1 / 16 + 0.32 / 16)) < 0.003;
       },
     },
+    steps: [
+      `setcpm(124/4)
+${DRUMS}
+const hats = s("hh*16").bank("RolandTR909").gain("[.7 .35]*8").swingBy(.08, 8)
+stack(kick, clap, hats)`,
+    ],
     solution: `setcpm(124/4)
 ${DRUMS}
 const hats = s("hh*16").bank("RolandTR909").gain("[.7 .35]*8").swingBy(.16, 8)
@@ -122,6 +130,12 @@ stack(kick, clap)`,
       hint: 's("cb(5,16)").bank("RolandTR808"): the 909 has no cowbell!',
       check: (c) => times(c, (h) => sound(h) === 'cb').length === 5,
     },
+    steps: [
+      `setcpm(124/4)
+${DRUMS}
+const perc = s("rim(3,8)").bank("RolandTR909")
+stack(kick, clap, perc)`,
+    ],
     solution: `setcpm(124/4)
 ${DRUMS}
 const perc = s("rim(3,8,1)").bank("RolandTR909")
@@ -170,6 +184,13 @@ stack(kick, clap, hats)`,
       hint: '"bd!3 ~"',
       check: (c) => playsAt(c, 'bd', [0, 0.25, 0.5]) && /bd!3/.test(c.code),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("<[~ cp ~ cp] [~ cp ~ [cp cp]]>").bank("RolandTR909")
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6)
+stack(kick, clap, hats)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const clap = s("<[~ cp ~ cp] [~ cp ~ [cp cp]]>").bank("RolandTR909")
@@ -177,7 +198,9 @@ const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6).lastOf(4, x => x.ply(2))
 stack(kick, clap, hats)`,
     challengeSolution: `setcpm(124/4)
 const kick = s("bd!3 ~").bank("RolandTR909")
-stack(kick)`,
+const clap = s("<[~ cp ~ cp] [~ cp ~ [cp cp]]>").bank("RolandTR909")
+const hats = s("[~ oh]*4").bank("RolandTR909").gain(.6).lastOf(4, x => x.ply(2))
+stack(kick, clap, hats)`,
     summary: ['Change things every 2, 4 or 8 bars.', '.lastOf(n, f) changes the last bar of every n.', 'x => x.ply(2) is a function that doubles every hit.', '! repeats a step; @ lengthens one.'],
     introduces: ['.lastOf', '.ply', '!', '@', 'x => …'],
     skills: ['I19', 'E3'],
@@ -215,6 +238,13 @@ stack(kick, bass)`,
       hint: 'Only the key line changes.',
       check: (c) => (keyOf(c) ?? '').toLowerCase() === 'a:minor' && notesIn(c).length > 0 && notesIn(c).every((m) => inKey(m, 'A:minor')) && notesIn(c).some((m) => m % 12 === 9),
     },
+    steps: [
+      `setcpm(124/4)
+const key = "C:minor"
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[~ c2] [~ c2] [~ eb2] [~ g1]").s("sawtooth").lpf(500)
+stack(kick, bass)`,
+    ],
     solution: `setcpm(124/4)
 const key = "C:minor"
 const kick = s("bd*4").bank("RolandTR909")
@@ -264,6 +294,12 @@ stack(kick, clap)`,
       hint: 'chord("Cm7").voicing().struct("[~ x]*2").s("sawtooth")',
       check: (c) => uses(c, 'chord') && uses(c, 'voicing') && maxChordSize(c) >= 3,
     },
+    steps: [
+      `setcpm(124/4)
+${DRUMS}
+const stab = note("[c3,eb3,g3,bb3]").s("sawtooth").lpf(1500)
+stack(kick, clap, stab)`,
+    ],
     solution: `setcpm(124/4)
 ${DRUMS}
 const stab = note("[~ [c3,eb3,g3,bb3]]*2").s("sawtooth").lpf(1500).clip(.3)
@@ -315,6 +351,12 @@ stack(kick, stab)`,
         [0, 1, 2, 3].map((b) => lowestPitchClass(c, b)).join() === '0,5,8,7' &&
         [0, 1, 2, 3].every((b) => new Set(inBar(c, b, isNote).map((h) => (midiOf(h) ?? 0) % 12)).size >= 3),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const stab = chord("<Cm7 Fm7>").voicing().struct("[~ x]*2").s("sawtooth").lpf(1500).clip(.3)
+stack(kick, stab)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const stab = chord("<Cm7 Fm7>").voicing().struct("[~ x]*2").s("sawtooth").lpf(1500).clip(.3)
@@ -365,7 +407,18 @@ stack(kick, bass)`,
       // c2 or lower (c3 is MIDI 48): a sub, not just any sine.
       check: (c) => synthEvents(c, 'sine').some((h) => (midiOf(h) ?? 99) < 48),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[~ c2]*4").s("square").lpf(800)
+stack(kick, bass)`,
+    ],
     solution: `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[~ c2]*4").s("square").lpf(800)
+const pad = note("[c3,eb3,g3]").s("supersaw").unison(7).lpf(2000).gain(.4)
+stack(kick, bass, pad)`,
+    challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const bass = note("[~ c2]*4").s("square").lpf(800)
 const pad = note("[c3,eb3,g3]").s("supersaw").unison(7).lpf(2000).gain(.4)
@@ -415,6 +468,13 @@ stack(kick, stab, pad)`,
       hint: '.adsr(".005:.15:0:.05")',
       check: (c) => uses(c, 'adsr') && c.events().some((h) => h.value.s === 'sawtooth' && num(h.value.sustain, 1) === 0),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const stab = note("[~ [c3,eb3,g3,bb3]]*2").s("sawtooth").lpf(1500).decay(.15).sustain(0)
+const pad = note("<[c3,eb3,g3] [f3,ab3,c4]>").s("supersaw").lpf(1800).gain(.35)
+stack(kick, stab, pad)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const stab = note("[~ [c3,eb3,g3,bb3]]*2").s("sawtooth").lpf(1500).decay(.15).sustain(0)
@@ -462,7 +522,18 @@ stack(kick, bass)`,
       hint: '.ftype("ladder").drive(2)',
       check: (c) => c.events().filter(isNote).every((h) => h.value.ftype === 'ladder' && num(h.value.drive, 0) > 0),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[c2 c2 c3 c2]*4").s("sawtooth").lpf(400).decay(.15).sustain(0).lpq(15)
+stack(kick, bass)`,
+    ],
     solution: `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[c2 c2 c3 c2]*4").s("sawtooth").lpf(400).decay(.15).sustain(0)
+  .lpq(15).lpenv(4).lpdecay(.15)
+stack(kick, bass)`,
+    challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const bass = note("[c2 c2 c3 c2]*4").s("sawtooth").lpf(400).decay(.15).sustain(0)
   .lpq(15).lpenv(4).lpdecay(.15).ftype("ladder").drive(2)
@@ -505,7 +576,20 @@ stack(kick, clap, stab)`,
       hint: '.delayfeedback(.65)',
       check: (c) => c.events().filter(isNote).every((h) => num(h.value.delayfeedback, 0) >= 0.6 && num(h.value.delayfeedback, 0) < 1),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909").room(.3).orbit(2)
+const stab = note("[~ [c3,eb3,g3,bb3]]*2").s("sawtooth").lpf(1500).decay(.15).sustain(0)
+stack(kick, clap, stab)`,
+    ],
     solution: `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909").room(.3).orbit(2)
+const stab = note("[~ [c3,eb3,g3,bb3]]*2").s("sawtooth").lpf(1500).decay(.15).sustain(0)
+  .delay(.4).delaysync(3/16).delayfeedback(.5).orbit(3)
+stack(kick, clap, stab)`,
+    challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const clap = s("~ cp ~ cp").bank("RolandTR909").room(.3).orbit(2)
 const stab = note("[~ [c3,eb3,g3,bb3]]*2").s("sawtooth").lpf(1500).decay(.15).sustain(0)
@@ -549,7 +633,19 @@ stack(kick, clap, hats, bass)`,
       hint: '.crush(8)',
       check: (c) => eventsOf(c, 'cp').every((h) => num(h.value.crush, 99) <= 8),
     },
+    steps: [
+      `setcpm(124/4)
+${DRUMS}
+const hats = s("hh*8").bank("RolandTR909").gain(.5)
+const bass = note("[~ c2]*4").s("sawtooth").lpf(600).distort(1.5)
+stack(kick, clap, hats, bass)`,
+    ],
     solution: `setcpm(124/4)
+${DRUMS}
+const hats = s("hh*8").bank("RolandTR909").gain(.5).pan("0 1")
+const bass = note("[~ c2]*4").s("sawtooth").lpf(600).distort(1.5)
+stack(kick, clap, hats, bass)`,
+    challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const clap = s("~ cp ~ cp").bank("RolandTR909").crush(8)
 const hats = s("hh*8").bank("RolandTR909").gain(.5).pan("0 1")
@@ -597,6 +693,13 @@ stack(kick, bass)`,
       hint: 'perlin.range(300, 2000).slow(4)',
       check: (c) => uses(c, 'lpf') && /perlin/.test(c.code),
     },
+    steps: [
+      `setcpm(124/4)
+const kick = s("bd*4").bank("RolandTR909")
+const bass = note("[c2 c2 c3 c2]*4").s("sawtooth").lpq(10).decay(.15).sustain(0)
+  .lpf(sine.range(300, 2000).slow(8))
+stack(kick, bass)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const bass = note("[c2 c2 c3 c2]*4").s("sawtooth").lpq(10).decay(.15).sustain(0)
@@ -607,7 +710,8 @@ stack(kick, bass, pad)`,
 const kick = s("bd*4").bank("RolandTR909")
 const bass = note("[c2 c2 c3 c2]*4").s("sawtooth").lpq(10).decay(.15).sustain(0)
   .lpf(perlin.range(300, 2000).slow(4))
-stack(kick, bass)`,
+const pad = note("[c3,eb3,g3]").s("supersaw").seg(16).lpf(saw.range(400, 3000)).gain(.3)
+stack(kick, bass, pad)`,
     summary: ['Signals (sine, saw, tri, rand, perlin) move values automatically.', '.range(min, max) scales them; .slow(n) stretches them over n bars.', '.seg(n) gives long notes n updates per bar.'],
     introduces: ['sine', 'saw', 'perlin', '.range', '.slow', '.seg'],
     skills: ['I18', 'E2'],
@@ -651,6 +755,14 @@ stack(kick, clap, stab, lead)`,
       hint: 'const dark = x => x.lpf(500), then dark(dubDelay(stab)).',
       check: (c) => c.model.blocks.some((b) => b.name === 'dark' && b.kind === 'modifier') && c.events().some((h) => num(h.value.cutoff) === 500 && num(h.value.delay, 0) > 0),
     },
+    steps: [
+      `setcpm(124/4)
+${DRUMS}
+const stab = note("[~ [c3,eb3,g3,bb3]]*2").s("sawtooth").lpf(1500).decay(.15).sustain(0)
+const lead = note("<g4 bb4>").s("square").lpf(2000).decay(.2).sustain(0).struct("~ ~ ~ x")
+const dubDelay = x => x.delay(.4).delaysync(3/16).delayfeedback(.55).orbit(3)
+stack(kick, clap, stab, lead)`,
+    ],
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const clap = s("~ cp ~ cp").bank("RolandTR909")
@@ -690,12 +802,14 @@ const key = "C:minor"
     tasks: [
       {
         text: 'Define kick, clap and hats, and group them: const drums = stack(kick, clap, hats).',
-        hint: 'Write the three parts, then the drums group.',
-        check: (c) => c.model.blocks.some((b) => b.name === 'drums' && (b.kind === 'group' || b.kind === 'section')) && playsAt(c, 'bd', BEATS),
+        hint: 'Write the three parts, then the drums group. End with drums to hear it.',
+        // Only that the group exists: playing it with the bed is task 3.
+        check: (c) =>
+          c.model.blocks.some((b) => b.name === 'drums' && (b.kind === 'group' || b.kind === 'section') && ['kick', 'clap', 'hats'].every((n) => b.members.some((m) => m.base === n))),
       },
       {
         text: 'Define a bass and chords that use the key, and group them as bed.',
-        hint: 'n("…").scale(key) for the bass; chord("<Cm7 Fm7>").voicing() for chords. Then const bed = stack(bass, chords).',
+        hint: 'n("…").scale(key) for the bass; chord("<Cm7 Fm7>").voicing() for chords. Then const bed = stack(bass, chords), and end with bed to hear it on its own.',
         check: (c) => c.model.blocks.some((b) => b.name === 'bed' && b.kind === 'group') && notesIn(c, 2).length > 0 && notesIn(c, 2).every((m) => inKey(m, keyOf(c) ?? 'C:minor')),
       },
       {
@@ -709,7 +823,36 @@ const key = "C:minor"
       hint: 'stack(kick, clap, hats.postgain(.6))',
       check: (c) => /hats\.postgain\(/.test(c.code),
     },
+    steps: [
+      `setcpm(120/4)
+const key = "C:minor"
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909").room(.2).orbit(2)
+const hats = s("[~ oh]*4").bank("RolandTR909")
+const drums = stack(kick, clap, hats)
+drums`,
+      `setcpm(120/4)
+const key = "C:minor"
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909").room(.2).orbit(2)
+const hats = s("[~ oh]*4").bank("RolandTR909")
+const bass = n("[~ 0] [~ 0] [~ 2] [~ -3]").scale(key).s("sawtooth").octave(2).lpf(500)
+const chords = chord("<Cm7 Fm7>").voicing().struct("[~ x]*2").s("sawtooth").lpf(1400).decay(.2).sustain(0)
+const drums = stack(kick, clap, hats)
+const bed = stack(bass, chords)
+bed`,
+    ],
     solution: `setcpm(120/4)
+const key = "C:minor"
+const kick = s("bd*4").bank("RolandTR909")
+const clap = s("~ cp ~ cp").bank("RolandTR909").room(.2).orbit(2)
+const hats = s("[~ oh]*4").bank("RolandTR909")
+const bass = n("[~ 0] [~ 0] [~ 2] [~ -3]").scale(key).s("sawtooth").octave(2).lpf(500)
+const chords = chord("<Cm7 Fm7>").voicing().struct("[~ x]*2").s("sawtooth").lpf(1400).decay(.2).sustain(0)
+const drums = stack(kick, clap, hats)
+const bed = stack(bass, chords)
+stack(drums, bed)`,
+    challengeSolution: `setcpm(120/4)
 const key = "C:minor"
 const kick = s("bd*4").bank("RolandTR909")
 const clap = s("~ cp ~ cp").bank("RolandTR909").room(.2).orbit(2)

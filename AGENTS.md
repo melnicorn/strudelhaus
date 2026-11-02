@@ -1,3 +1,7 @@
+## Lessons
+
+When writing or changing a lesson in `content/lessons/`, follow the isolation rule in `docs/design.md` §1.1. Each task ticks only when the learner does that task, never earlier, and the challenge ticks only in `challengeSolution`. Give every lesson `steps` (the code after each task but the last, applying each hint literally). `npm test -- tests/lessons` must pass.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

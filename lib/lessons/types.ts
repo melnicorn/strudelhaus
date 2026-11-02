@@ -33,9 +33,14 @@ export interface Lesson {
   starter: string;
   tasks: Task[];
   challenge?: Task;
-  /** Passes every task (except those replaced later). */
+  /**
+   * The code after each task but the last, doing just what that task's hint says.
+   * steps[i] passes tasks 0..i and nothing later (see tests/lessons/isolation.test.ts).
+   */
+  steps: string[];
+  /** The code after the last task: passes every task (except those replaced later) and not the challenge. */
   solution: string;
-  /** Passes the challenge, if `solution` doesn't. */
+  /** `solution` plus the challenge. Required when there is a challenge. */
   challengeSolution?: string;
   /** "You now know" bullets. */
   summary: string[];
