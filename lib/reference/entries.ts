@@ -34,7 +34,7 @@ const HAND: RefEntry[] = [
   { name: '{ }', display: '{ }%n', takes: 'mini-notation', does: 'Polymeter: steps keep their length and drift across bars.', example: 's("{bd sd hh}%4")', category: 'mini-notation' },
   // functions
   { name: 'note', display: 'note("…")', takes: 'note names or numbers', does: 'Play pitches: c2, eb3, f#1… (c3 = MIDI 48).', example: 'note("c2 eb2 g2").s("sawtooth")', category: 'pitch' },
-  { name: 'chord', display: 'chord("…")', takes: 'chord names', does: 'Chord symbols (Cm7, Fm7, Abmaj7…). Add .voicing() or .rootNotes(o).', example: 'chord("<Cm7 Fm7>").voicing()', category: 'pitch' },
+  { name: 'chord', display: 'chord("…")', takes: 'chord names', does: 'Chord symbols in Strudel’s spelling: Cm7 (or C-7), Ab^7 for a major seventh (never maj7), G7. Add .voicing() or .rootNotes(o). A name it doesn’t know plays nothing.', example: 'chord("<Cm7 Fm7>").voicing()', category: 'pitch' },
   { name: 'rootNotes', display: '.rootNotes(octave)', takes: 'octave', does: 'The root of each chord, for basslines.', example: 'chord("<Cm7 Fm7>").rootNotes(2).s("sawtooth")', category: 'pitch' },
   { name: 'stack', display: 'stack(a, b, …)', takes: 'patterns', does: 'Play patterns at the same time.', example: 'stack(s("bd*4"), s("~ cp ~ cp"))', category: 'structure' },
   { name: 'arrange', display: 'arrange([bars, p], …)', takes: '[cycles, pattern] pairs', does: 'Play sections one after another; each restarts at its own bar 1.', example: 'arrange([2, s("bd*4")], [2, s("hh*8")])', category: 'structure' },

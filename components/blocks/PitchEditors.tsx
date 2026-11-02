@@ -3,6 +3,7 @@
 import { cn } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { Hint } from '@/components/ui/Hint';
+import { chordProblem } from '@/lib/music/chords';
 import { evaluatePure, onsets } from '@/lib/strudel/pure';
 import { runGuiEdit } from '@/lib/stores/model';
 import { setControl, setRootArg } from '@/lib/sync/generate';
@@ -182,7 +183,13 @@ export function ChordEditor({ part, model }: { part: PartBlock; model: ProjectMo
         <div className="flex flex-col gap-1 rounded-lg border border-hw-line bg-hw-deep px-2 py-1.5" key={i}>
           <Hint>bar {i + 1}</Hint>
           <MiniInput value={c} size={7} aria-label={`Chord in bar ${i + 1}`} onCommit={(v) => v.trim() && write(chords.map((x, j) => (j === i ? v.trim() : x)))} />
-          <span className="font-mono text-[11px] text-muted">{voiced[i] ?? ''}</span>
+          {chordProblem(c) ? (
+            <span className="max-w-40 text-[11px] text-danger" role="alert">
+              {chordProblem(c)}
+            </span>
+          ) : (
+            <span className="font-mono text-[11px] text-muted">{voiced[i] ?? ''}</span>
+          )}
           {chords.length > 1 && (
             <RemoveButton label={`Remove bar ${i + 1}`} onPress={() => write(chords.filter((_, j) => j !== i))} />
           )}
@@ -205,7 +212,8 @@ function useVoicedNotes(model: ProjectModel, name: string, bars: number): string
       const notes = Array.from({ length: bars }, (_, bar) => {
         const haps = onsets(r.pattern, bar, bar + 1);
         const firstStart = haps[0]?.whole!.begin.valueOf();
-        return [...new Set(haps.filter((h) => h.whole!.begin.valueOf() === firstStart).map((h) => String(h.value.note).toLowerCase()))].join(' ');
+        // A chord() part without its own .voicing() carries no notes yet: show nothing rather than "undefined".
+        return [...new Set(haps.filter((h) => h.whole!.begin.valueOf() === firstStart && h.value.note !== undefined).map((h) => String(h.value.note).toLowerCase()))].join(' ');
       });
       setVoiced({ code, notes });
     });

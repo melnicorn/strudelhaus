@@ -13,6 +13,7 @@ import { localCompletionSource } from '@codemirror/lang-javascript';
 import { syntaxTree } from '@codemirror/language';
 import type { EditorState } from '@codemirror/state';
 import type { SyntaxNode } from '@lezer/common';
+import { CHORD_QUALITIES, COMMON_QUALITIES } from '@/lib/music/chords';
 import { learnedIn, REFERENCE, type RefEntry } from '@/lib/reference/entries';
 import { DEFAULT_MACHINE, DRUM_NAMES, findMachine, MACHINES, SYNTHS } from '@/lib/sounds/catalog';
 import { METHODS } from '@/lib/sync/allowlist';
@@ -140,6 +141,12 @@ const MACHINE_OPTIONS: Completion[] = MACHINES.map((m, i) => ({
 
 const SCALE_OPTIONS: Completion[] = SCALES.map(([name, feel], i) => ({ label: name, type: 'scale', detail: feel, boost: -i / SCALES.length }));
 
+/** Chord qualities for chord("…"): the common ones first, then the whole ireal dictionary. */
+const CHORD_OPTIONS: Completion[] = [
+  ...COMMON_QUALITIES.filter(([q]) => q).map(([q, what], i) => ({ label: q, type: 'chord', detail: what, boost: 1 - i / COMMON_QUALITIES.length })),
+  ...CHORD_QUALITIES.filter((q) => q && !COMMON_QUALITIES.some(([c]) => c === q)).map((q) => ({ label: q, type: 'chord', boost: -1 })),
+];
+
 const SYNTH_OPTIONS: Completion[] = SYNTHS.map((s) => ({ label: s.sound, type: 'synth', detail: s.kind, info: textInfo(s.sound, s.blurb), boost: -1 }));
 
 function soundOptions(bank: string | undefined): Completion[] {
@@ -203,6 +210,13 @@ function stringCompletions(context: CompletionContext, str: SyntaxNode): Complet
     return { from, options: soundOptions(chainBank(state, call)), validFor: /^\w*$/ };
   }
   if (fn === 'bank') return { from, options: MACHINE_OPTIONS, validFor: /^\w*$/ };
+  if (fn === 'chord') {
+    // After a root ("Ab", "F#") comes the quality: ^7, -7, 7… Strudel's own spellings.
+    const chordWord = context.matchBefore(/[A-Ga-g][#b]?[\w^#+-]*$/);
+    if (!chordWord) return null;
+    const root = /^[A-Ga-g][#b]?/.exec(chordWord.text)![0];
+    return { from: chordWord.from + root.length, options: CHORD_OPTIONS, validFor: /^[\w^#+-]*$/ };
+  }
   if (fn === 'scale') {
     // "C:minor:pen" → complete everything after the root's colon.
     const colon = fragment.indexOf(':');

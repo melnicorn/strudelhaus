@@ -52,3 +52,23 @@ describe('lesson 6 challenge', () => {
     expect(lesson.challenge!.check(r.ctx)).toBe(true);
   });
 });
+
+describe('lesson 16 challenge', () => {
+  const lesson = lessons.find((l) => l.number === 16)!;
+  const prog = (chords: string) => `setcpm(124/4)
+const stab = chord("${chords}").voicing().struct("[~ x]*2").s("sawtooth")
+const bass = chord("${chords}").rootNotes(2).struct("[~ x]*4").s("sawtooth")
+stack(stab, bass)`;
+
+  it('rejects Abmaj7 (the bass moves but the chord is silent in bar 3)', async () => {
+    const r = await buildContext(prog('<Cm7 Fm7 Abmaj7 Gm7>'));
+    if ('error' in r) throw new Error(r.error);
+    expect(lesson.challenge!.check(r.ctx)).toBe(false);
+  });
+
+  it('accepts Ab^7', async () => {
+    const r = await buildContext(prog('<Cm7 Fm7 Ab^7 Gm7>'));
+    if ('error' in r) throw new Error(r.error);
+    expect(lesson.challenge!.check(r.ctx)).toBe(true);
+  });
+});

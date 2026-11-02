@@ -1,4 +1,5 @@
 // Project-wide warnings the GUI shows next to blocks.
+import { chordProblem, chordSymbolsIn } from '@/lib/music/chords';
 import { METHODS } from './allowlist';
 import type { ChainCall, ModifierBlock, PartBlock, ProjectModel } from './model';
 
@@ -59,6 +60,26 @@ export function nextFreeOrbit(model: ProjectModel): number {
   let n = 2;
   while (used.has(n)) n++;
   return n;
+}
+
+/**
+ * chord("…") symbols that .voicing() doesn't know (Abmaj7 instead of Ab^7): Strudel plays
+ * nothing for that bar and says nothing, so the GUI has to.
+ */
+export function unvoiceableChords(model: ProjectModel): Diagnostic[] {
+  const out: Diagnostic[] = [];
+  for (const b of model.blocks) {
+    if (b.kind !== 'part' || b.root.fn !== 'chord' || b.root.arg.kind !== 'string') continue;
+    const seen = new Set<string>();
+    for (const symbol of chordSymbolsIn(b.root.arg.value)) {
+      const problem = chordProblem(symbol);
+      if (problem && !seen.has(symbol)) {
+        seen.add(symbol);
+        out.push({ severity: 'warning', message: `${b.name}: ${problem}`, blocks: [b.name] });
+      }
+    }
+  }
+  return out;
 }
 
 /** Names used in stacks or the arrangement that no block defines. */

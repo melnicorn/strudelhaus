@@ -21,6 +21,7 @@ const TAGS: Record<string, string> = {
   synth: 'synth',
   classic: '★',
   scale: 'scale',
+  chord: 'chord',
 };
 
 const tag = {

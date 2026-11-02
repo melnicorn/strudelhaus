@@ -100,3 +100,19 @@ describe('editor completions', () => {
     });
   }
 });
+
+describe('chord completions', () => {
+  it('offers chord qualities after a root inside chord("…")', () => {
+    const r = complete('chord("<Cm7 Ab|>")');
+    expect(r?.typed).toBe('');
+    expect(r?.labels.slice(0, 3)).toEqual(['-7', '^7', '7']);
+    expect(r?.labels).toContain('-7b5');
+    expect(r?.labels).not.toContain('maj7');
+  });
+
+  it('keeps the root and completes a part-typed quality', () => {
+    const r = complete('chord("Ab^|")');
+    expect(r?.typed).toBe('^');
+    expect(r?.labels).toEqual(expect.arrayContaining(['^7', '^9']));
+  });
+});

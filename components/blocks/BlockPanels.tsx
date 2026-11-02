@@ -2,7 +2,7 @@
 
 import { Chip, cn } from '@heroui/react';
 import { useModelStore } from '@/lib/stores/model';
-import { orbitCollisions, undefinedReferences } from '@/lib/sync/diagnostics';
+import { orbitCollisions, undefinedReferences, unvoiceableChords } from '@/lib/sync/diagnostics';
 import { ArrangementMatrix } from './ArrangementMatrix';
 import { CustomCard, GroupCard, KeyCard, ModifierCard, PartCard } from './BlockCards';
 import { useGuiPolicy } from './policy';
@@ -11,7 +11,7 @@ import { useGuiPolicy } from './policy';
 export function BlockPanels({ only }: { only?: string[] }) {
   const { model, syntaxError } = useModelStore();
   const policy = useGuiPolicy();
-  const diagnostics = [...orbitCollisions(model), ...undefinedReferences(model)];
+  const diagnostics = [...orbitCollisions(model), ...undefinedReferences(model), ...unvoiceableChords(model)];
   const blocks = model.blocks.filter((b) => !only || only.includes(b.name));
 
   return (

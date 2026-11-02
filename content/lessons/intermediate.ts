@@ -285,7 +285,9 @@ stack(kick, clap, stab)`,
     goal: 'Move between chords, with the bass following the root.',
     concept: `A **chord progression** is a sequence of chords that repeats. House often uses just two chords, a bar each: \`chord("<Cm7 Fm7>")\`.
 
-The bass usually plays the **root**, the note a chord is named after (C for Cm7, F for Fm7). \`.rootNotes(2)\` turns a chord pattern into its root notes in octave 2, so the bass always follows the chords, even when you change them.`,
+The bass usually plays the **root**, the note a chord is named after (C for Cm7, F for Fm7). \`.rootNotes(2)\` turns a chord pattern into its root notes in octave 2, so the bass always follows the chords, even when you change them.
+
+**Spelling matters.** Strudel writes a major seventh as \`^7\` (\`Ab^7\`), not \`maj7\`, and a minor seventh as \`-7\` or \`m7\`. A chord name it doesn't know plays **nothing**, silently; \`.rootNotes()\` still finds the root, so the bass moves while the chord drops out. The panel beside the code warns you when that happens.`,
     starter: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const stab = chord("Cm7").voicing().struct("[~ x]*2").s("sawtooth").lpf(1500).clip(.3)
@@ -306,9 +308,12 @@ stack(kick, stab)`,
       },
     ],
     challenge: {
-      text: 'Make it a four-chord progression: Cm7, Fm7, Abmaj7, Gm7.',
-      hint: '"<Cm7 Fm7 Abmaj7 Gm7>" in both parts (or a const chords = "<…>" they share).',
-      check: (c) => [0, 1, 2, 3].map((b) => lowestPitchClass(c, b)).join() === '0,5,8,7',
+      text: 'Make it a four-chord progression: Cm7, Fm7, Ab major 7th, Gm7 (remember: ^7, not maj7).',
+      hint: '"<Cm7 Fm7 Ab^7 Gm7>" in both parts (or a const chords = "<…>" they share).',
+      // The roots must move, and every bar must have a voiced chord above the root (Abmaj7 would leave bar 3 bass-only).
+      check: (c) =>
+        [0, 1, 2, 3].map((b) => lowestPitchClass(c, b)).join() === '0,5,8,7' &&
+        [0, 1, 2, 3].every((b) => new Set(inBar(c, b, isNote).map((h) => (midiOf(h) ?? 0) % 12)).size >= 3),
     },
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
@@ -317,8 +322,8 @@ const bass = chord("<Cm7 Fm7>").rootNotes(2).struct("[~ x]*4").s("sawtooth").lpf
 stack(kick, stab, bass)`,
     challengeSolution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
-const stab = chord("<Cm7 Fm7 Abmaj7 Gm7>").voicing().struct("[~ x]*2").s("sawtooth").lpf(1500).clip(.3)
-const bass = chord("<Cm7 Fm7 Abmaj7 Gm7>").rootNotes(2).struct("[~ x]*4").s("sawtooth").lpf(400)
+const stab = chord("<Cm7 Fm7 Ab^7 Gm7>").voicing().struct("[~ x]*2").s("sawtooth").lpf(1500).clip(.3)
+const bass = chord("<Cm7 Fm7 Ab^7 Gm7>").rootNotes(2).struct("[~ x]*4").s("sawtooth").lpf(400)
 stack(kick, stab, bass)`,
     summary: ['A progression is a repeating chord sequence.', '"<A B>" gives each chord a bar.', '.rootNotes(octave) gives a bass that follows the chords.'],
     introduces: ['.rootNotes'],
