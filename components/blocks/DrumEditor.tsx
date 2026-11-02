@@ -118,9 +118,9 @@ export function DrumEditor({ part, model }: { part: PartBlock; model: ProjectMod
             <div className="flex flex-wrap items-center gap-3">
               <SimpleSelect
                 value=""
-                placeholder="+ sound row…"
+                placeholder="+ row"
                 aria-label="Add a sound row"
-                triggerClassName={`${LCD_TRIGGER} min-w-32`}
+                triggerClassName={LCD_TRIGGER}
                 onChange={(v) => v && setExtraRows((r) => [...r, v])}
                 options={(machine?.sounds.map(([x]) => x) ?? KIT_PIECES)
                   .filter((d) => !rows.includes(d))
