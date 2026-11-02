@@ -338,7 +338,7 @@ stack(kick, stab, bass)`,
     goal: 'Hear sine, triangle, square, sawtooth and supersaw.',
     concept: `A synthesizer starts with an **oscillator** making a simple repeating wave. The wave's shape decides the tone:
 
-- **sine**: pure and round. A clean sub bass.
+- **sine**: pure and round. A clean sub bass. It has no harmonics, so below about 80 Hz (c2 and under) laptop speakers play almost nothing of it: use headphones, and trust the beat LEDs when you can't hear it.
 - **triangle**: soft, a little hollow.
 - **square**: hollow and woody, good for basses and leads (the TB-303 has saw and square).
 - **sawtooth**: bright and buzzy, full of harmonics; the classic for filtering.
@@ -360,15 +360,16 @@ stack(kick, bass)`,
       },
     ],
     challenge: {
-      text: 'Add a sine sub bass an octave below the bass (octave 1).',
-      hint: 'const sub = note("[~ c1]*4").s("sine")',
-      check: (c) => synthEvents(c, 'sine').some((h) => (midiOf(h) ?? 99) < 36),
+      text: 'Add a sine sub under the bass: the same notes (c2), s("sine"). Headphones on: a pure 65 Hz tone barely exists on small speakers, and on its own it can sound like nothing at all.',
+      hint: 'const sub = note("[~ c2]*4").s("sine").gain(1.2). Solo the bass and the sub in turn: the sub adds weight you feel more than hear.',
+      // c2 or lower (c3 is MIDI 48): a sub, not just any sine.
+      check: (c) => synthEvents(c, 'sine').some((h) => (midiOf(h) ?? 99) < 48),
     },
     solution: `setcpm(124/4)
 const kick = s("bd*4").bank("RolandTR909")
 const bass = note("[~ c2]*4").s("square").lpf(800)
 const pad = note("[c3,eb3,g3]").s("supersaw").unison(7).lpf(2000).gain(.4)
-const sub = note("[~ c1]*4").s("sine")
+const sub = note("[~ c2]*4").s("sine").gain(1.2)
 stack(kick, bass, pad, sub)`,
     summary: ['The oscillator wave shapes the tone.', 'Saw and square are bright; sine is pure.', 'supersaw stacks detuned saws: .unison, .detune, .spread.'],
     introduces: ['sine', 'triangle', 'square', 'supersaw', '.unison', '.detune', '.spread'],
