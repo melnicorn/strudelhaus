@@ -152,7 +152,13 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
           </Tabs.List>
         </Tabs.ListContainer>
       </Tabs>
-      <aside className={cn('flex min-w-0 flex-col gap-3', mobileTab === 'code' && 'max-[1100px]:hidden')}>
+      {/* Beside the workbench the lesson text scrolls on its own, so the code and controls don't carry it along. */}
+      <aside
+        className={cn(
+          'flex min-w-0 flex-col gap-3 min-[1101px]:sticky min-[1101px]:top-0 min-[1101px]:max-h-dvh min-[1101px]:overflow-y-auto min-[1101px]:py-2 min-[1101px]:pr-1',
+          mobileTab === 'code' && 'max-[1100px]:hidden',
+        )}
+      >
         <nav className="flex flex-wrap items-center gap-3">
           <Link href="/learn" className={linkClass}>
             ◀ Learn
