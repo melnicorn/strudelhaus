@@ -78,3 +78,17 @@ export const exportFileSchema = z.object({
   projects: z.array(projectSchema).default([]),
 });
 export type ExportFile = z.infer<typeof exportFileSchema>;
+
+export const BACKUP_FORMAT = 'strudel-workshop-backup';
+
+/** Everything this browser keeps, for moving to another computer. */
+export const backupFileSchema = z.object({
+  format: z.literal(BACKUP_FORMAT),
+  version: z.literal(1),
+  exportedAt: isoDate,
+  progress: progressSchema.default({}),
+  settings: settingsSchema.optional(),
+  items: z.array(libraryItemSchema).default([]),
+  projects: z.array(projectSchema).default([]),
+});
+export type BackupFile = z.infer<typeof backupFileSchema>;

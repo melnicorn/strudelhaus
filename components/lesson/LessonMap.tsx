@@ -9,6 +9,7 @@ import { Panel } from '@/components/ui/Panel';
 import { lessons } from '@/content/lessons';
 import type { Tier } from '@/lib/lessons/types';
 import { useProgressStore } from '@/lib/stores/progress';
+import { MoveProgress } from './MoveProgress';
 
 const TIERS: { tier: Tier; title: string; blurb: string }[] = [
   { tier: 'beginner', title: 'Beginner · First groove', blurb: 'Drums, tempo, steps and a first bassline.' },
@@ -60,6 +61,7 @@ export function LessonMap() {
           </Panel>
         );
       })}
+      <MoveProgress />
     </div>
   );
 }

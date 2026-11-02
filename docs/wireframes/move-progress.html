@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Move Progress Wireframe</title>
+<style>
+  :root {
+    --bg: #f4f3ef; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #c9c7c0;
+    --soft: #ebe9e3; --accent: #d9480f; --play: #2b8a3e; --play-soft: #d3f9d8;
+    --warn: #b08900; --warn-soft: #fff3bf; --err: #c92a2a; --err-soft: #ffe3e3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28;
+      --accent: #ff8a4c; --play: #69db7c; --play-soft: #173b20; --warn: #ffd43b; --warn-soft: #3d3310; --err: #ff8787; --err-soft: #451c1c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28;
+    --accent: #ff8a4c; --play: #69db7c; --play-soft: #173b20; --warn: #ffd43b; --warn-soft: #3d3310; --err: #ff8787; --err-soft: #451c1c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { padding: 16px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 4px 0; }
+  h2 { font-size: 16px; margin: 28px 0 8px; }
+  .intro { color: var(--muted); margin: 0 0 12px; }
+  .note { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 8px 12px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .anno { color: var(--accent); font-size: 12px; font-style: italic; }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+  .box h3 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .btn { border: 1px solid var(--line); background: var(--soft); color: var(--ink); padding: 5px 10px; border-radius: 6px; font: inherit; font-size: 13px; }
+  .btn.primary { background: var(--play); color: #fff; border-color: var(--play); }
+  .muted { color: var(--muted); font-size: 13px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .tile { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; background: var(--panel); font-size: 13px; }
+  .tile.done { border-color: var(--play); } .tile.started { border-color: var(--accent); }
+  textarea { width: 100%; height: 70px; font: 12px ui-monospace, Menlo, monospace; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); padding: 6px; }
+  .preview { border: 1px solid var(--play); background: var(--play-soft); border-radius: 6px; padding: 10px; margin-top: 10px; }
+  .err { border: 1px solid var(--err); background: var(--err-soft); border-radius: 6px; padding: 8px 10px; margin-top: 10px; font-size: 13px; }
+  label { font-size: 13px; }
+  @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="anno">Route: /learn. New panel under the lesson map.</p>
+  <h1>Learn</h1>
+  <p class="intro">Thirty-three lessons from a first kick drum to an arranged 90s acid house track…</p>
+
+  <div class="box"><h3>Beginner · First groove · 4/10</h3>
+    <div class="tiles"><div class="tile done">✓ Press Play</div><div class="tile done">✓ Four on the Floor</div><div class="tile started">▶ Backbeat</div><div class="tile">4 Groove</div></div>
+  </div>
+  <div class="box"><h3>Intermediate · … · Expert · …</h3><span class="muted">(unchanged)</span></div>
+
+  <div class="box">
+    <h3>Move your progress</h3>
+    <p class="muted" style="margin-top:0">Your progress is saved in this browser only. To carry on from another computer, take it with you as a file or a code.</p>
+    <div class="cols">
+      <div>
+        <strong>Take it with you</strong>
+        <p class="muted">12 lessons touched, 4 done, with your code for each.</p>
+        <div class="row">
+          <button class="btn">⬇ Download file</button>
+          <button class="btn">Copy as code</button>
+          <span class="anno">“Copied” shows for a moment</span>
+        </div>
+      </div>
+      <div>
+        <strong>Bring it here</strong>
+        <div class="row" style="margin:6px 0"><button class="btn">⬆ Upload file</button><span class="muted">or paste a code:</span></div>
+        <textarea placeholder="Paste a progress code…">sw1:eJy1VU1v2zAM/SuGzj1YtpN2u+0w7LCh2K3YIZApjRUmUhApTbOi/32UbCfO2qZFgV1si+R7JB8pPrJuqMrG5CzbsnS0YDzzBnCnbz9xT6xqahUprwKdlr6ag9b2wfqd2HjfFyqUh/K4fNNgn5hGr+TDlUa3f9lKXkc3sYlOWpjV8m8V/9DzyrmNsTpMKR6XN/eLUWGpFyltRQu2htO0zbUKq4WK45RLDOeZPL22kZ8SFJmUnslnvkaB+3Nzg92FuTzlZjGe8nVtbo6K/Cw5KCyGtTjgqkDuHFJ8Fn4+…</textarea>
+        <div class="preview">
+          <strong>From 2 Nov 2026, 14:05:</strong> 18 lessons, 9 done.<br>
+          <span class="muted">5 lessons you have here are newer than the ones in the file.</span>
+          <div class="row" style="margin-top:8px">
+            <label><input type="radio" name="m" checked> Merge: keep whichever is newer, lesson by lesson</label>
+            <label><input type="radio" name="m"> Replace everything here</label>
+          </div>
+          <div class="row" style="margin-top:8px"><button class="btn primary">Load progress</button><button class="btn">Cancel</button></div>
+        </div>
+        <div class="err">Error state: “That isn’t a Strudel Workshop progress file or code.”</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Questions for you</strong>
+    <ol style="margin:4px 0 0 18px; padding:0">
+      <li><b>What travels?</b> Proposed: lesson progress (ticks, done, challenge) and the code you left in each lesson, plus settings (layout, autocomplete). Should the library and sandbox projects come along in the same file? The library already has its own export; folding them in makes this one “move everything” button.</li>
+      <li><b>Merge or replace?</b> Proposed default: merge, with the newer copy of each lesson winning.</li>
+      <li><b>The code</b> is the same data compressed into one line, so it can go through chat or email. A file and a code are interchangeable: either one loads either way.</li>
+    </ol>
+  </div>
+</main>
+</body>
+</html>
