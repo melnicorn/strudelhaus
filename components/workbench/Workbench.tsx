@@ -1,6 +1,6 @@
 'use client';
 
-import { Checkbox, Label } from '@heroui/react';
+import { Checkbox, cn, Label, ToggleButton, ToggleButtonGroup } from '@heroui/react';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { CodeEditor } from '@/components/editor/CodeEditor';
 import { ErrorPanel } from '@/components/errors/ErrorPanel';
@@ -127,18 +127,20 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
   useEffect(() => () => void engine?.stop(), [engine]);
 
   const autocomplete = useSettingsStore((s) => s.settings.autocomplete);
+  const layout = useSettingsStore((s) => s.settings.layout);
   const setSetting = useSettingsStore((s) => s.set);
   useEffect(() => useSettingsStore.getState().load(), []);
+  const side = !!panels && layout === 'side';
 
   return (
     <div
       className={
-        panels
+        side
           ? 'grid min-w-0 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start gap-4 max-[960px]:grid-cols-[minmax(0,1fr)]'
           : 'flex min-w-0 flex-col gap-3'
       }
     >
-      <div className="sticky top-2 flex min-w-0 flex-col gap-3 max-[960px]:static">
+      <div className={cn('flex min-w-0 flex-col gap-3', side && 'sticky top-2 max-[960px]:static')}>
         <Transport
           engine={engine}
           state={playState}
@@ -150,7 +152,28 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
           tempo={<TempoControl />}
         />
         <CodeEditor initialCode={initialCode} onToggle={toggle} onUpdate={evaluate} onStop={stop} />
-        <div className="-mt-1.5 flex justify-end">
+        <div className="-mt-1.5 flex items-center justify-end gap-4">
+          {panels && (
+            // Controls beside the code (for wide screens) or under it (more room for knobs).
+            <ToggleButtonGroup
+              size="sm"
+              selectionMode="single"
+              disallowEmptySelection
+              aria-label="Layout"
+              selectedKeys={new Set([layout])}
+              onSelectionChange={(keys) => {
+                const next = [...keys][0];
+                if (next === 'side' || next === 'stacked') setSetting('layout', next);
+              }}
+            >
+              <ToggleButton id="side" className="h-6 px-2 text-xs md:h-6" aria-label="Controls beside the code">
+                ◫ Side by side
+              </ToggleButton>
+              <ToggleButton id="stacked" className="h-6 px-2 text-xs md:h-6" aria-label="Controls under the code">
+                <ToggleButtonGroup.Separator />⊟ Stacked
+              </ToggleButton>
+            </ToggleButtonGroup>
+          )}
           <Checkbox isSelected={autocomplete} onChange={(on) => setSetting('autocomplete', on)}>
             <Checkbox.Content>
               <Checkbox.Control>

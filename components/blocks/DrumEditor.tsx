@@ -1,7 +1,7 @@
 'use client';
 
-import { ToggleButton, ToggleButtonGroup } from '@heroui/react';
 import { useCallback, useState } from 'react';
+import { SlideSwitch } from '@/components/hw/Switches';
 import { Hint } from '@/components/ui/Hint';
 import { SimpleSelect } from '@/components/ui/SimpleSelect';
 import { SoundDrawer } from '@/components/sounds/SoundDrawer';
@@ -12,7 +12,7 @@ import { gridToMini, isCanonicalGrid, parseGrid, type Steps } from '@/lib/sync/m
 import type { PartBlock, ProjectModel } from '@/lib/sync/model';
 import { findBlock, getCall } from '@/lib/sync/parseProject';
 import { allows, useGuiPolicy } from './policy';
-import { StepGrid } from './StepGrid';
+import { LCD_TRIGGER, StepGrid } from './StepGrid';
 import { MiniInput, SmallButton } from './SoundControls';
 import { useQueriedSteps } from './usePreview';
 
@@ -68,25 +68,14 @@ export function DrumEditor({ part, model }: { part: PartBlock; model: ProjectMod
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex flex-wrap items-center gap-1">
-        <ToggleButtonGroup
-          size="sm"
-          selectionMode="single"
-          disallowEmptySelection
-          aria-label="Edit as"
-          selectedKeys={new Set([mode])}
-          onSelectionChange={(keys) => {
-            const next = [...keys][0];
-            if (next === 'steps' || next === 'mini') setMode(next);
-          }}
-        >
-          <ToggleButton id="steps" className="h-7 px-2 text-xs md:h-7">
-            Steps
-          </ToggleButton>
-          <ToggleButton id="mini" className="h-7 px-2 text-xs md:h-7">
-            <ToggleButtonGroup.Separator />
-            Mini-notation
-          </ToggleButton>
-        </ToggleButtonGroup>
+        <SlideSwitch
+          label="Edit as"
+          value={mode}
+          options={['steps', 'mini']}
+          format={(o) => (o === 'steps' ? 'Steps' : 'Mini')}
+          onChange={(v) => setMode(v as 'steps' | 'mini')}
+          caption={null}
+        />
         {drumRows && (
           <SmallButton className="ml-auto" onPress={() => setBrowsing({})}>
             Browse sounds…
@@ -131,6 +120,7 @@ export function DrumEditor({ part, model }: { part: PartBlock; model: ProjectMod
                 value=""
                 placeholder="+ sound row…"
                 aria-label="Add a sound row"
+                triggerClassName={`${LCD_TRIGGER} min-w-32`}
                 onChange={(v) => v && setExtraRows((r) => [...r, v])}
                 options={(machine?.sounds.map(([x]) => x) ?? KIT_PIECES)
                   .filter((d) => !rows.includes(d))

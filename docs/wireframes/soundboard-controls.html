@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sound-board Control Catalog</title>
+<style>
+  :root { --bg: #f4f3ef; --panel: #fff; --ink: #1d1d1b; --muted: #6b6a66; --line: #c9c7c0; --accent: #d9480f; --warn: #b08900; --warn-soft: #fff3bf;
+    /* the instrument surface: always dark, like the code area */
+    --hw: #262522; --hw-2: #1c1b19; --hw-line: #3d3b36; --hw-ink: #e8e6df; --hw-muted: #8f8c83; --hw-cap: #33312d; --hw-cap-hi: #44423c;
+    --led: #ff8a3c; --led-dim: #4a2d1a; --go: #5bd36b; --go-dim: #1f3a24; --purple: #b58cff; --red: #ff5a4c;
+    --pad-a: #e9452f; --pad-b: #f08a2b; --pad-c: #f2c62f; --pad-d: #efeae0; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --accent: #ff8a4c; --warn: #ffd43b; --warn-soft: #3d3310; } }
+  :root[data-theme="dark"] { --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --accent: #ff8a4c; --warn: #ffd43b; --warn-soft: #3d3310; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, sans-serif; }
+  main { padding: 16px; max-width: 1040px; margin: 0 auto; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  h2 { font-size: 14px; margin: 26px 0 6px; }
+  p { margin: 4px 0; }
+  .anno { color: var(--accent); font-size: 12px; font-style: italic; }
+  .note { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 8px 12px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .mono { font-family: ui-monospace, Menlo, monospace; }
+  table.cmp { border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  table.cmp td, table.cmp th { border: 1px solid var(--line); padding: 4px 8px; text-align: left; vertical-align: top; }
+  table.cmp th { background: var(--panel); }
+
+  /* ---- hardware surface ---- */
+  .hw { background: var(--hw); color: var(--hw-ink); border: 1px solid var(--hw-line); border-radius: 8px; padding: 12px 14px;
+        display: flex; flex-wrap: wrap; gap: 18px 26px; align-items: flex-end; margin: 8px 0 4px; user-select: none; }
+  .hw .group { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .hw .row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+  .lbl { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--hw-muted); text-align: center; }
+  .val { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--led); background: var(--hw-2); border: 1px solid #000; border-radius: 3px; padding: 1px 5px; min-width: 44px; text-align: center; }
+  .val.off { color: var(--hw-muted); }
+  .val:hover { border-color: var(--hw-muted); cursor: text; }
+  input.val { outline: none; width: 56px; font: inherit; color: var(--led); }
+  input.val:focus { border-color: var(--led); color: #fff; }
+  .val.custom { color: var(--purple); }
+
+  /* buttons with an LED */
+  .hbtn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(var(--hw-cap-hi), var(--hw-cap)); border: 1px solid #111; border-bottom-width: 3px; border-radius: 5px;
+          color: var(--hw-ink); font: 600 12px/1 system-ui, sans-serif; letter-spacing: .04em; padding: 9px 12px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+  .hbtn:active, .hbtn.down { transform: translateY(2px); border-bottom-width: 1px; }
+  .hbtn .led { width: 8px; height: 8px; border-radius: 50%; background: var(--led-dim); box-shadow: none; }
+  .hbtn.on .led { background: var(--go); box-shadow: 0 0 6px var(--go); }
+  .hbtn.on.amber .led { background: var(--led); box-shadow: 0 0 6px var(--led); }
+  .hbtn kbd { font: 10px ui-monospace, Menlo, monospace; color: var(--hw-muted); margin-left: 2px; }
+
+  /* seven-segment style display */
+  .seg { position: relative; background: #0f0e0c; border: 1px solid #000; border-radius: 4px; padding: 4px 8px; font: 700 22px/1 ui-monospace, Menlo, monospace; letter-spacing: .08em; display: inline-block; min-width: 86px; text-align: right; }
+  .seg .ghost { color: #2a1b10; }
+  .seg .lit { position: absolute; inset: 4px 8px; color: var(--led); text-shadow: 0 0 8px rgba(255,138,60,.55); text-align: right; }
+  .seg.small { font-size: 14px; min-width: 62px; }
+  .steppers { display: flex; flex-direction: column; gap: 3px; }
+  .steppers .hbtn { padding: 3px 7px; font-size: 10px; }
+  .beat { display: flex; gap: 6px; }
+  .beat i { width: 9px; height: 9px; border-radius: 50%; background: var(--led-dim); }
+  .beat i.on { background: var(--led); box-shadow: 0 0 6px var(--led); }
+
+  /* step pads */
+  .pads { display: grid; grid-template-columns: 72px repeat(16, 30px); gap: 4px; align-items: center; }
+  .pads .name { font: 600 11px ui-monospace, Menlo, monospace; color: var(--hw-ink); background: var(--hw-2); border: 1px solid #000; border-radius: 3px; padding: 4px 6px; display: flex; justify-content: space-between; cursor: pointer; }
+  .pads .name small { color: var(--hw-muted); }
+  .pad { height: 40px; border-radius: 3px; border: 1px solid #111; border-bottom-width: 3px; cursor: pointer; position: relative; background: linear-gradient(var(--c-hi), var(--c)); }
+  .pad::before { content: ""; position: absolute; top: 5px; left: 50%; width: 8px; height: 4px; margin-left: -4px; border-radius: 2px; background: #1a1210; opacity: .55; }
+  .pad.on::before { background: var(--red); opacity: 1; box-shadow: 0 0 6px var(--red); }
+  .pad:active { transform: translateY(2px); border-bottom-width: 1px; }
+  .pad.now { outline: 2px solid #fff; outline-offset: 1px; }
+  .pad.a { --c: var(--pad-a); --c-hi: #f37a62; } .pad.b { --c: var(--pad-b); --c-hi: #f5ab63; }
+  .pad.c { --c: var(--pad-c); --c-hi: #f7d96a; } .pad.d { --c: var(--pad-d); --c-hi: #fff; }
+  .pads .n:not([data-row]) { grid-column: 2 / span 16; display: grid; grid-template-columns: repeat(16, 30px); gap: 4px; font: 9px ui-monospace, Menlo, monospace; color: var(--hw-muted); text-align: center; }
+  .pads .n b { color: var(--hw-ink); }
+  .ms { display: flex; gap: 4px; }
+  .ms .hbtn { padding: 4px 7px; font-size: 10px; gap: 5px; }
+  .ms .hbtn.mute.on .led { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  /* knobs (drawn by script) */
+  .knob { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: ns-resize; outline: none; }
+  .knob:focus-visible svg { outline: 2px solid var(--led); outline-offset: 2px; border-radius: 50%; }
+  .knob svg { display: block; }
+  .knob.small svg { width: 36px; height: 36px; }
+
+  /* fader */
+  .fader { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; }
+  .fader .slot { position: relative; width: 26px; height: 110px; cursor: ns-resize; }
+  .fader .slot::before { content: ""; position: absolute; left: 11px; top: 0; bottom: 0; width: 4px; background: #0d0c0a; border-radius: 2px; box-shadow: inset 0 0 0 1px #000; }
+  .fader .cap { position: absolute; left: 0; width: 26px; height: 16px; margin-top: -8px; border-radius: 3px; background: linear-gradient(#56534c, #2b2a26); border: 1px solid #000; }
+  .fader .cap::after { content: ""; position: absolute; left: 3px; right: 3px; top: 7px; height: 2px; background: #ddd; }
+  .fader .ticks { position: absolute; left: 22px; top: 0; bottom: 0; width: 20px; font: 8px ui-monospace, Menlo, monospace; color: var(--hw-muted); }
+  .fader .ticks i { position: absolute; left: 0; font-style: normal; transform: translateY(-50%); }
+  .fader .ticks i::before { content: ""; display: inline-block; width: 4px; height: 1px; background: var(--hw-muted); vertical-align: middle; margin-right: 2px; }
+
+  /* switches */
+  .sw { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; }
+  .slide { display: flex; gap: 0; background: #0f0e0c; border: 1px solid #000; border-radius: 4px; padding: 2px; }
+  .slide span { padding: 4px 9px; font: 600 10px system-ui, sans-serif; letter-spacing: .05em; color: var(--hw-muted); border-radius: 3px; cursor: pointer; }
+  .slide span.on { background: linear-gradient(var(--hw-cap-hi), var(--hw-cap)); color: var(--hw-ink); box-shadow: 0 1px 0 #000; }
+  .toggle { width: 20px; height: 40px; background: #0f0e0c; border: 1px solid #000; border-radius: 4px; position: relative; cursor: pointer; }
+  .toggle::after { content: ""; position: absolute; left: 3px; right: 3px; height: 16px; top: 3px; border-radius: 2px; background: linear-gradient(#56534c, #2b2a26); border: 1px solid #000; }
+  .toggle.on::after { top: auto; bottom: 3px; }
+  .toggle.on { box-shadow: 0 0 0 1px var(--go-dim); }
+  .rotary { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+  .rotary .labels { position: relative; width: 150px; height: 30px; font: 9px system-ui, sans-serif; color: var(--hw-muted); }
+  .rotary .labels span { position: absolute; transform: translateX(-50%); white-space: nowrap; cursor: pointer; }
+  .rotary .labels span.on { color: var(--hw-ink); font-weight: 700; }
+
+  /* status LEDs and the LCD line */
+  .lcd { background: #10231a; color: #9ff5b9; border: 1px solid #000; border-radius: 4px; padding: 5px 9px; font: 12px ui-monospace, Menlo, monospace; min-width: 220px; text-shadow: 0 0 4px rgba(159,245,185,.4); }
+  .lcd .cur { border-left: 1px solid #9ff5b9; }
+  .lcd.warn { background: #2a1d10; color: var(--led); }
+  .lcd.custom { background: #1e1530; color: var(--purple); }
+  .leds { display: flex; gap: 10px; }
+  .leds span { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--hw-muted); }
+  .leds i { width: 10px; height: 10px; border-radius: 50%; background: #1d1b18; border: 1px solid #000; }
+  .leds i.go { background: var(--go); box-shadow: 0 0 6px var(--go); }
+  .leds i.amber { background: var(--led); box-shadow: 0 0 6px var(--led); }
+  .leds i.purple { background: var(--purple); box-shadow: 0 0 6px var(--purple); }
+  .leds i.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  /* module composite */
+  .module { background: var(--hw); border: 1px solid var(--hw-line); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; margin: 8px 0 4px; user-select: none; }
+  .module .head { display: flex; align-items: center; gap: 12px; }
+  .module .head .title { font: 700 12px system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+  .module .head .spacer { flex: 1; }
+  .module .strip { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; border-top: 1px solid var(--hw-line); padding-top: 10px; }
+  .module .section { display: flex; gap: 10px; align-items: flex-end; padding-right: 20px; border-right: 1px solid var(--hw-line); }
+  .module .section:last-child { border-right: 0; }
+  .module .section .cap { font-size: 9px; letter-spacing: .1em; color: var(--hw-muted); writing-mode: vertical-rl; transform: rotate(180deg); text-transform: uppercase; }
+  .plain { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--muted); display: inline-block; margin: 6px 6px 0 0; }
+  .plain b { color: var(--ink); }
+  @media (max-width: 700px) { .pads { grid-template-columns: 56px repeat(16, 18px); } .pad { height: 28px; } .pads .n { grid-template-columns: repeat(16, 18px); } .pads .n span:nth-child(2n) { visibility: hidden; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sound-board controls: a catalog</h1>
+  <p>Every control below is a replica of what you'd find on a drum machine or a small mixer, drawn for the instrument panels (block panels, transport, arrangement). They're all live here: drag knobs and faders up/down, click pads and switches, use ↑/↓ on a focused knob. The page chrome (lessons, library, dialogs, menus) would stay as it is.</p>
+  <div class="note">Rule kept from today: the number is always visible. A knob with no readout hides the value that's in the code, and the code is the source of truth. Every knob has a small readout under it that is also a text field: click it (or press Enter on a focused knob), type a number, Enter commits, Esc cancels. Double-click the knob to reset to the default. Mobile is not a target for now.</div>
+
+  <h2>1 · Transport</h2>
+  <p class="anno">Hardware buttons with LEDs, a seven-segment tempo display, a bar : beat counter and four beat LEDs. Play's LED is green while playing, blinking while paused (not animated here).</p>
+  <div class="hw">
+    <div class="group"><div class="row">
+      <button class="hbtn on" id="play"><i class="led"></i>PLAY <kbd>⌘↵</kbd></button>
+      <button class="hbtn"><i class="led"></i>UPDATE <kbd>⇧⌘↵</kbd></button>
+      <button class="hbtn"><i class="led"></i>STOP <kbd>⌘.</kbd></button>
+    </div></div>
+    <div class="group"><div class="row" style="align-items:center">
+      <div class="seg"><span class="ghost">888.8</span><span class="lit">124.0</span></div>
+      <div class="steppers"><button class="hbtn">▲</button><button class="hbtn">▼</button></div>
+    </div><div class="lbl">tempo · bpm</div></div>
+    <div class="group"><div class="seg small"><span class="ghost">888.8</span><span class="lit">003.2</span></div><div class="lbl">bar · beat</div></div>
+    <div class="group"><div class="beat"><i></i><i class="on"></i><i></i><i></i></div><div class="lbl">beat</div></div>
+    <div class="group"><div class="leds"><span><i class="go"></i>gui</span><span><i class="purple"></i>custom</span><span><i></i>error</span></div><div class="lbl">code status</div></div>
+  </div>
+
+  <h2>2 · Step pads</h2>
+  <p class="anno">Sixteen pads in the four TR-909 colour groups (one per beat), a red LED when the step is on, white ring on the playing step. The row name is a small LCD button that opens the sound list. M / S are per-row mute and solo (new: they'd write <span class="mono">.gain(0)</span> / a <span class="mono">solo</span> comment, or be transport-only).</p>
+  <div class="hw" style="flex-direction:column; align-items:stretch; gap:10px">
+    <div class="pads" id="pads">
+      <div class="n"><span><b>1</b></span><span>e</span><span>&amp;</span><span>a</span><span><b>2</b></span><span>e</span><span>&amp;</span><span>a</span><span><b>3</b></span><span>e</span><span>&amp;</span><span>a</span><span><b>4</b></span><span>e</span><span>&amp;</span><span>a</span></div>
+      <div class="name">bd <small>909</small></div>
+      <div class="n" data-row="bd"></div>
+      <div class="name">hh <small>909</small></div>
+      <div class="n" data-row="hh"></div>
+      <div class="name">cp <small>909</small></div>
+      <div class="n" data-row="cp"></div>
+    </div>
+    <div class="row" style="justify-content:space-between">
+      <div class="ms"><button class="hbtn mute"><i class="led"></i>M</button><button class="hbtn solo"><i class="led"></i>S</button><span class="lbl" style="align-self:center;margin-left:6px">per row</span></div>
+      <div class="lcd">s("<span>bd ~ ~ ~ bd ~ ~ ~ bd ~ ~ ~ bd ~ ~ ~</span>")<span class="cur"></span></div>
+    </div>
+  </div>
+
+  <h2>3 · Knobs</h2>
+  <p class="anno">One rotary control, four flavours. Unipolar (gain), bipolar with a centre detent (pan, transpose, filter envelope), logarithmic (cutoff: the arc is log so the useful 200–2k range isn't crammed into a corner), and stepped (octave: the pointer snaps to detents). Drag vertically, ↑/↓ to nudge, ⇧ for coarse. Scroll wheel is <em>not</em> bound: it would hijack page scrolling.</p>
+  <div class="hw">
+    <div class="group"><div class="row">
+      <span class="knob" data-label="gain" data-min="0" data-max="1.5" data-v="0.8" data-def="0.8" data-fmt="2"></span>
+      <span class="knob" data-label="velocity" data-min="0" data-max="1" data-v="1" data-def="1" data-fmt="2"></span>
+    </div><div class="lbl">unipolar</div></div>
+    <div class="group"><div class="row">
+      <span class="knob" data-label="pan" data-min="0" data-max="1" data-v="0.5" data-def="0.5" data-bipolar data-fmt="pan"></span>
+      <span class="knob" data-label="transpose" data-min="-24" data-max="24" data-v="-12" data-def="0" data-bipolar data-fmt="st"></span>
+      <span class="knob" data-label="filter env" data-min="-8" data-max="8" data-v="4" data-def="4" data-bipolar data-fmt="1"></span>
+    </div><div class="lbl">bipolar · centre detent</div></div>
+    <div class="group"><div class="row">
+      <span class="knob" data-label="cutoff" data-min="50" data-max="18000" data-v="1200" data-def="1200" data-log data-fmt="hz"></span>
+      <span class="knob" data-label="resonance" data-min="0" data-max="40" data-v="8" data-def="8" data-fmt="1"></span>
+    </div><div class="lbl">log</div></div>
+    <div class="group"><div class="row">
+      <span class="knob" data-label="octave" data-min="0" data-max="7" data-v="3" data-def="3" data-step="1" data-fmt="0"></span>
+      <span class="knob" data-label="orbit" data-min="1" data-max="12" data-v="2" data-def="2" data-step="1" data-fmt="0"></span>
+    </div><div class="lbl">stepped</div></div>
+    <div class="group"><div class="row">
+      <span class="knob small" data-label="room" data-min="0" data-max="1" data-v="0.3" data-def="0.3" data-fmt="2"></span>
+      <span class="knob small" data-label="delay" data-min="0" data-max="1" data-v="0" data-def="0.4" data-fmt="2"></span>
+      <span class="knob small" data-label="drive" data-min="0" data-max="10" data-v="1" data-def="1" data-fmt="1"></span>
+    </div><div class="lbl">small · dense rows</div></div>
+  </div>
+  <p class="anno">A pattern value like <span class="mono">"0.8 0.6"</span> (mini-notation in a number slot) can't be a knob. Those keep the mono text field, with the knob greyed and a tiny "pattern" LED, as the slider does today.</p>
+
+  <h2>4 · Faders</h2>
+  <p class="anno">Vertical level faders for the mixer view (one per part), with M / S underneath. Better than knobs for gain because relative levels can be read across parts at a glance. The arrangement matrix could sit above these as a channel strip.</p>
+  <div class="hw">
+    <template id="strip"><div class="group fader"><div class="slot"><div class="ticks"><i style="top:0">+3</i><i style="top:33%">0</i><i style="top:66%">-6</i><i style="top:100%">-∞</i></div><div class="cap"></div></div><div class="val"></div><div class="ms"><button class="hbtn mute"><i class="led"></i>M</button><button class="hbtn solo"><i class="led"></i>S</button></div><div class="lbl name"></div></div></template>
+    <div class="row" id="mixer"></div>
+  </div>
+
+  <h2>5 · Switches and selectors</h2>
+  <p class="anno">Fixed choices stop being dropdowns when there are five options or fewer: a slide switch (filter type), a two-position toggle (voicing on/off, swing on/off), and a rotary selector for the classic drum machines. Longer lists (all 71 machines, 100+ sounds, scales) stay as the LCD button that opens today's select / sounds drawer.</p>
+  <div class="hw">
+    <div class="sw"><div class="slide" data-sw><span>12 dB</span><span class="on">LADDER</span><span>24 dB</span></div><div class="lbl">filter type</div></div>
+    <div class="sw"><div class="slide" data-sw><span class="on">STEPS</span><span>MINI</span></div><div class="lbl">editor</div></div>
+    <div class="sw"><div class="toggle on" data-tg></div><div class="lbl">voicing</div></div>
+    <div class="sw"><div class="toggle" data-tg></div><div class="lbl">swing</div></div>
+    <div class="rotary">
+      <div class="labels" id="rotlabels"></div>
+      <span class="knob" id="bank" data-label="drum machine" data-min="0" data-max="7" data-v="0" data-def="0" data-step="1" data-fmt="bank"></span>
+    </div>
+    <div class="sw"><button class="hbtn" style="padding:7px 10px"><span class="lcd" style="min-width:0;padding:2px 6px">C:minor ▾</span></button><div class="lbl">scale · opens list</div></div>
+  </div>
+
+  <h2>6 · Envelope</h2>
+  <p class="anno">ADSR as four knobs with a small live envelope display between them; the filter envelope is the same unit with a bipolar depth knob on the left.</p>
+  <div class="hw">
+    <div class="group"><div class="row" style="align-items:center">
+      <span class="knob small" data-label="attack" data-min="0" data-max="2" data-v="0.01" data-def="0.01" data-log data-env="a" data-fmt="s"></span>
+      <span class="knob small" data-label="decay" data-min="0" data-max="2" data-v="0.2" data-def="0.2" data-log data-env="d" data-fmt="s"></span>
+      <span class="knob small" data-label="sustain" data-min="0" data-max="1" data-v="0.5" data-def="0.5" data-env="s" data-fmt="2"></span>
+      <span class="knob small" data-label="release" data-min="0" data-max="4" data-v="0.1" data-def="0.1" data-log data-env="r" data-fmt="s"></span>
+      <svg id="env" width="150" height="56" viewBox="0 0 150 56" style="background:#0f0e0c;border:1px solid #000;border-radius:4px"><path fill="rgba(255,138,60,.18)" stroke="var(--led)" stroke-width="1.5" d=""/></svg>
+    </div><div class="lbl">amp envelope</div></div>
+  </div>
+
+  <h2>7 · One part as a module</h2>
+  <p class="anno">What the hats panel becomes: a header with the LCD name and status LEDs, pads, then labelled sections of knobs instead of today's stacked slider rows. The "+ add" LCD button opens the same grouped list as now. Roughly 40% shorter than the current panel at the same width.</p>
+  <div class="module">
+    <div class="head">
+      <span class="title">hats</span>
+      <span class="lcd" style="min-width:0">s("hh*16") <small style="opacity:.7">· bank 909</small></span>
+      <span class="spacer"></span>
+      <div class="leds"><span><i class="go"></i>gui</span><span><i></i>custom</span></div>
+      <button class="hbtn" style="padding:5px 9px;font-size:10px">×</button>
+    </div>
+    <div class="pads" id="modpads"><div class="name">hh <small>909</small></div><div class="n" data-row="hh" data-all></div></div>
+    <div class="strip">
+      <div class="section"><span class="cap">level</span>
+        <span class="knob small" data-label="gain" data-min="0" data-max="1.5" data-v="0.6" data-def="0.8" data-fmt="2"></span>
+        <span class="knob small" data-label="pan" data-min="0" data-max="1" data-v="0.6" data-def="0.5" data-bipolar data-fmt="pan"></span>
+      </div>
+      <div class="section"><span class="cap">filter</span>
+        <span class="knob small" data-label="hpf" data-min="20" data-max="8000" data-v="400" data-def="200" data-log data-fmt="hz"></span>
+        <span class="knob small" data-label="lpf" data-min="50" data-max="18000" data-v="9000" data-def="1200" data-log data-fmt="hz"></span>
+        <div class="sw"><div class="slide" data-sw><span>12</span><span class="on">LAD</span><span>24</span></div><div class="lbl">type</div></div>
+      </div>
+      <div class="section"><span class="cap">space</span>
+        <span class="knob small" data-label="room" data-min="0" data-max="1" data-v="0.15" data-def="0.3" data-fmt="2"></span>
+        <span class="knob small" data-label="delay" data-min="0" data-max="1" data-v="0" data-def="0.4" data-fmt="2"></span>
+      </div>
+      <div class="section"><span class="cap">add</span><button class="hbtn" style="padding:7px 10px"><span class="lcd" style="min-width:0;padding:2px 6px">+ ▾</span></button></div>
+    </div>
+  </div>
+
+  <h2>Not changing</h2>
+  <div>
+    <span class="plain"><b>Selects / menus</b> long lists stay HeroUI</span>
+    <span class="plain"><b>Drawers, dialogs, tooltips</b> HeroUI</span>
+    <span class="plain"><b>Checkboxes, inputs, search</b> HeroUI</span>
+    <span class="plain"><b>Lesson / Learn / Library / Reference pages</b> untouched</span>
+    <span class="plain"><b>Editor</b> untouched</span>
+  </div>
+
+  <h2>Trade-offs</h2>
+  <table class="cmp">
+    <tr><th></th><th>Today (HeroUI sliders)</th><th>Sound-board</th></tr>
+    <tr><td>Precision</td><td>Good: a long track, the value in a field</td><td>Knobs are coarser per pixel; fine moves need ⇧ or the arrows. Readout stays, so you can still see 0.72.</td></tr>
+    <tr><td>Density</td><td>One row per parameter: panels get tall</td><td>5–6 knobs per row: panels get wide and short, which suits the full-width layout</td></tr>
+    <tr><td>Discoverability</td><td>Labels read like a form</td><td>Reads like gear: matches the lessons' vocabulary (cutoff, resonance, decay) and the 909 colours teach the beat grouping</td></tr>
+    <tr><td>Accessibility</td><td>React Aria slider: keyboard + screen reader for free</td><td>Must be rebuilt on the same React Aria <span class="mono">useSlider</span> hook so nothing is lost; the look is CSS/SVG on top</td></tr>
+    <tr><td>Touch</td><td>Fine</td><td>Vertical drag on a knob fights page scrolling on phones; needs <span class="mono">touch-action: none</span> and bigger hit areas</td></tr>
+    <tr><td>Theme</td><td>Follows light/dark</td><td>Instrument surfaces are always dark (like the code area); the page around them still follows the theme</td></tr>
+    <tr><td>Work</td><td>—</td><td>Knob, fader, pad, switch, LED button, display: six components. The write-to-code plumbing (specs, onChangeEnd, flashes) is reused as is.</td></tr>
+  </table>
+
+<script>
+(() => {
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const BANKS = ['909', '808', '707', '606', '505', 'MPC60', 'SP-12', 'Linn'];
+  const fmt = (k, v) => {
+    const f = k.dataset.fmt;
+    if (f === 'hz') return v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k' : Math.round(v) + '';
+    if (f === 'pan') { const p = Math.round((v - 0.5) * 100); return p === 0 ? 'C' : p < 0 ? 'L' + -p : 'R' + p; }
+    if (f === 'st') return (v > 0 ? '+' : '') + Math.round(v);
+    if (f === 's') return v < 1 ? Math.round(v * 1000) + 'ms' : v.toFixed(2) + 's';
+    if (f === 'bank') return BANKS[Math.round(v)];
+    return (+v).toFixed(+f);
+  };
+  // value <-> 0..1 position (log where asked)
+  const toPos = (k, v) => { const min = +k.dataset.min, max = +k.dataset.max; if (k.dataset.log !== undefined) { const lo = Math.log(Math.max(min, 1e-3)), hi = Math.log(max); return (Math.log(Math.max(v, 1e-3)) - lo) / (hi - lo); } return (v - min) / (max - min); };
+  const fromPos = (k, p) => { const min = +k.dataset.min, max = +k.dataset.max; let v; if (k.dataset.log !== undefined) { const lo = Math.log(Math.max(min, 1e-3)), hi = Math.log(max); v = Math.exp(lo + p * (hi - lo)); if (v < min + 1e-6) v = min; } else v = min + p * (max - min); if (k.dataset.step) v = Math.round(v / +k.dataset.step) * +k.dataset.step; return clamp(v, min, max); };
+  const polar = (a, r) => [32 + r * Math.cos(a), 32 + r * Math.sin(a)];
+  const arc = (a0, a1, r) => { if (Math.abs(a1 - a0) < 1e-4) return ''; const [x0, y0] = polar(a0, r), [x1, y1] = polar(a1, r); return `M${x0} ${y0}A${r} ${r} 0 ${Math.abs(a1 - a0) > Math.PI ? 1 : 0} ${a1 > a0 ? 1 : 0} ${x1} ${y1}`; };
+  const START = Math.PI * 0.75, SWEEP = Math.PI * 1.5;
+  function draw(k) {
+    const v = +k.dataset.v, p = toPos(k, v), a = START + p * SWEEP, big = !k.classList.contains('small');
+    const bip = k.dataset.bipolar !== undefined, mid = START + SWEEP / 2;
+    const fill = bip ? arc(mid, a, 27) : arc(START, a, 27);
+    const detents = k.dataset.step ? Array.from({ length: Math.round((+k.dataset.max - +k.dataset.min) / +k.dataset.step) + 1 }, (_, i) => { const [x, y] = polar(START + (i / ((+k.dataset.max - +k.dataset.min) / +k.dataset.step)) * SWEEP, 30); return `<circle cx="${x}" cy="${y}" r="1" fill="#6b685f"/>`; }).join('') : '';
+    const [px, py] = polar(a, 14), [qx, qy] = polar(a, 21);
+    const isDef = Math.abs(v - +k.dataset.def) < 1e-9;
+    k.innerHTML = `<svg width="${big ? 56 : 44}" height="${big ? 56 : 44}" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="${arc(START, START + SWEEP, 27)}" stroke="#0f0e0c" stroke-width="4" fill="none" stroke-linecap="round"/>
+      ${bip ? `<line x1="32" y1="2" x2="32" y2="7" stroke="#6b685f"/>` : ''}
+      ${detents}
+      <path d="${fill}" stroke="var(--led)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle cx="32" cy="32" r="22" fill="url(#cap)" stroke="#000"/>
+      <line x1="${px}" y1="${py}" x2="${qx}" y2="${qy}" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    </svg><span class="val${isDef ? ' off' : ''}">${fmt(k, v)}</span><span class="lbl">${k.dataset.label}</span>`;
+    if (k.dataset.env) drawEnv();
+    if (k.id === 'bank') [...document.querySelectorAll('#rotlabels span')].forEach((s, i) => s.classList.toggle('on', i === Math.round(v)));
+  }
+  // shared gradient for the caps
+  document.body.insertAdjacentHTML('afterbegin', '<svg width="0" height="0" style="position:absolute"><defs><radialGradient id="cap" cx="40%" cy="35%"><stop offset="0" stop-color="#4a4842"/><stop offset="1" stop-color="#23221f"/></radialGradient></defs></svg>');
+  const knobs = [...document.querySelectorAll('.knob')];
+  knobs.forEach((k) => {
+    k.tabIndex = 0; k.setAttribute('role', 'slider'); k.setAttribute('aria-label', k.dataset.label);
+    const set = (v) => { k.dataset.v = clamp(v, +k.dataset.min, +k.dataset.max); k.setAttribute('aria-valuenow', k.dataset.v); draw(k); };
+    k.addEventListener('pointerdown', (e) => {
+      k.setPointerCapture(e.pointerId); const y0 = e.clientY, p0 = toPos(k, +k.dataset.v);
+      const move = (ev) => set(fromPos(k, clamp(p0 + (y0 - ev.clientY) / (ev.shiftKey ? 600 : 150), 0, 1)));
+      const up = () => { k.removeEventListener('pointermove', move); k.removeEventListener('pointerup', up); };
+      k.addEventListener('pointermove', move); k.addEventListener('pointerup', up);
+    });
+    k.addEventListener('dblclick', () => set(+k.dataset.def));
+    // The readout is a text field: click it or press Enter on the knob, type, Enter commits, Esc cancels.
+    const edit = () => {
+      const out = k.querySelector('span.val'); if (!out) return;
+      const inp = document.createElement('input'); inp.className = 'val'; inp.value = k.dataset.fmt === 'bank' ? BANKS[Math.round(+k.dataset.v)] : String(+(+k.dataset.v).toFixed(3));
+      inp.setAttribute('aria-label', k.dataset.label + ' value');
+      out.replaceWith(inp); inp.focus(); inp.select();
+      let done = false;
+      const finish = (commit) => {
+        if (done) return; done = true;
+        if (commit) {
+          const raw = inp.value.trim().toLowerCase();
+          let v = k.dataset.fmt === 'bank' ? BANKS.findIndex((b) => b.toLowerCase() === raw) : parseFloat(raw.replace(/k$/, '')) * (/k$/.test(raw) ? 1000 : 1);
+          if (k.dataset.fmt === 'pan') v = /^l/.test(raw) ? 0.5 - parseFloat(raw.slice(1)) / 100 : /^r/.test(raw) ? 0.5 + parseFloat(raw.slice(1)) / 100 : raw === 'c' ? 0.5 : v;
+          if (k.dataset.fmt === 's' && /ms$/.test(raw)) v = parseFloat(raw) / 1000;
+          if (Number.isFinite(v) && v >= 0 - (+k.dataset.min < 0 ? Infinity : 0)) set(v); else draw(k);
+        } else draw(k);
+        k.focus();
+      };
+      inp.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') finish(true); if (e.key === 'Escape') finish(false); });
+      inp.addEventListener('blur', () => finish(true));
+      inp.addEventListener('pointerdown', (e) => e.stopPropagation());
+    };
+    k.addEventListener('click', (e) => { if (e.target.closest('span.val')) edit(); });
+    k.addEventListener('pointerdown', (e) => { if (e.target.closest('.val')) e.stopImmediatePropagation(); }, true);
+    k.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target === k) { e.preventDefault(); return edit(); }
+      const d = e.key === 'ArrowUp' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowDown' || e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; e.preventDefault();
+      if (k.dataset.step) return set(+k.dataset.v + d * +k.dataset.step);
+      set(fromPos(k, clamp(toPos(k, +k.dataset.v) + d * (e.shiftKey ? 0.1 : 0.01), 0, 1)));
+    });
+    draw(k);
+  });
+  function drawEnv() {
+    const g = (n) => +document.querySelector(`[data-env="${n}"]`).dataset.v;
+    const a = g('a'), d = g('d'), s = g('s'), r = g('r'), total = a + d + 0.6 + r, w = 142 / total, x = (t) => 4 + t * w, y = (l) => 50 - l * 44;
+    document.querySelector('#env path').setAttribute('d', `M4 50 L${x(a)} ${y(1)} L${x(a + d)} ${y(s)} L${x(a + d + 0.6)} ${y(s)} L${x(total)} 50 Z`);
+  }
+  // pads
+  const PATTERNS = { bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], hh: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0], cp: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0] };
+  const padsHtml = (on) => on.map((v, i) => `<button class="pad ${'abcd'[i >> 2]}${v ? ' on' : ''}${i === 5 ? ' now' : ''}" aria-label="step ${i + 1}" aria-pressed="${!!v}"></button>`).join('');
+  document.querySelectorAll('.pads .n[data-row]').forEach((n) => { const on = n.dataset.all !== undefined ? Array(16).fill(1) : PATTERNS[n.dataset.row]; n.outerHTML = padsHtml(on); });
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('.pad, .hbtn.mute, .hbtn.solo, #play, [data-tg], [data-sw] span');
+    if (!t) return;
+    if (t.classList.contains('pad')) { t.classList.toggle('on'); t.setAttribute('aria-pressed', t.classList.contains('on')); }
+    else if (t.matches('[data-sw] span')) { t.parentElement.querySelectorAll('span').forEach((s) => s.classList.remove('on')); t.classList.add('on'); }
+    else t.classList.toggle('on');
+  });
+  // mixer strips
+  const mixer = document.getElementById('mixer'), tpl = document.getElementById('strip');
+  [['kick', 0.9], ['clap', 0.7], ['hats', 0.6], ['bass', 0.8], ['stab', 0.55]].forEach(([name, v]) => {
+    const s = tpl.content.firstElementChild.cloneNode(true); s.querySelector('.name').textContent = name; mixer.appendChild(s);
+    const slot = s.querySelector('.slot'), cap = s.querySelector('.cap'), val = s.querySelector('.val');
+    const set = (g) => { g = clamp(g, 0, 1.5); cap.style.top = (1 - g / 1.5) * 100 + '%'; val.textContent = g.toFixed(2); val.classList.toggle('off', Math.abs(g - 0.8) < 1e-9); slot.dataset.g = g; };
+    slot.addEventListener('pointerdown', (e) => { slot.setPointerCapture(e.pointerId); const y0 = e.clientY, g0 = +slot.dataset.g; const mv = (ev) => set(g0 + (y0 - ev.clientY) / 110 * 1.5); const up = () => { slot.removeEventListener('pointermove', mv); slot.removeEventListener('pointerup', up); }; slot.addEventListener('pointermove', mv); slot.addEventListener('pointerup', up); });
+    slot.addEventListener('dblclick', () => set(0.8));
+    set(v);
+  });
+  // rotary selector labels around the bank knob
+  const rl = document.getElementById('rotlabels');
+  rl.innerHTML = BANKS.map((b, i) => { const a = START + (i / 7) * SWEEP; const x = 75 + Math.cos(a) * 62, y = 26 + Math.sin(a) * 20; return `<span style="left:${x}px;top:${y - 10}px" data-i="${i}">${b}</span>`; }).join('');
+  rl.addEventListener('click', (e) => { const s = e.target.closest('span'); if (!s) return; const k = document.getElementById('bank'); k.dataset.v = s.dataset.i; draw(k); });
+  draw(document.getElementById('bank'));
+})();
+</script>
+</main>
+</body>
+</html>

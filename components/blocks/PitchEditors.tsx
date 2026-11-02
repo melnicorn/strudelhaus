@@ -10,15 +10,17 @@ import { gridToMini, numberSeqToMini, parseGrid, parseNumberSeq, type Steps } fr
 import type { PartBlock, ProjectModel } from '@/lib/sync/model';
 import { compactSequence, expandTo, noteRange, slideAmounts } from '@/lib/sync/notes';
 import { findBlock } from '@/lib/sync/parseProject';
-import { usePlayStep } from './StepGrid';
+import { PAD_COLORS, usePlayStep } from './StepGrid';
 import { MiniInput, RemoveButton, SmallButton } from './SoundControls';
 import { soloCode } from './usePreview';
 import { writeRoot } from './DrumEditor';
 
 const NOTES = noteRange(24, 60);
 
-const LABEL = 'text-muted';
-const CELL = 'h-[22px] cursor-pointer rounded-[3px] border p-0 text-[11px]';
+const LABEL = 'text-[10px] tracking-[0.08em] text-hw-muted uppercase';
+/** A pad with a letter on it (accent, slide). */
+const CELL = 'hw-pad h-7 cursor-pointer rounded-[3px] p-0 pt-1.5 text-[10px] font-bold text-black/70 focus-visible:outline-2 focus-visible:outline-led';
+const padStyle = (i: number, on: boolean, color = PAD_COLORS[i >> 2]) => ({ '--pad': on ? color : 'var(--color-hw-cap)' }) as React.CSSProperties;
 
 /** Reads a mini-number control as 16 per-step values (or null if it can't be). */
 function stepValues(part: PartBlock, method: string, fallback: number): number[] | null {
@@ -71,7 +73,7 @@ export function AcidSequencer({ part }: { part: PartBlock }) {
     <div className="grid grid-cols-[56px_repeat(16,minmax(30px,1fr))] items-center gap-[3px] overflow-x-auto text-xs" role="grid" aria-label={`${part.name} sequencer`}>
       <span className={LABEL}>step</span>
       {notes.map((_, i) => (
-        <span key={i} className={cn('rounded-[3px] text-center text-muted', i % 4 === 0 && 'font-bold', now === i && 'bg-success/15 text-foreground')}>
+        <span key={i} className={cn('rounded-[3px] text-center font-mono text-[10px] text-hw-muted', i % 4 === 0 && 'font-bold text-hw-ink', now === i && 'bg-white text-black')}>
           {i + 1}
         </span>
       ))}
@@ -79,7 +81,7 @@ export function AcidSequencer({ part }: { part: PartBlock }) {
       {notes.map((n, i) => (
         <select
           key={i}
-          className="w-full min-w-0 cursor-pointer appearance-none rounded border border-border bg-surface px-0 py-0.5 text-center font-mono text-[11px] text-foreground"
+          className="hw-lcd w-full min-w-0 cursor-pointer appearance-none px-0 py-0.5 text-center text-[11px]"
           value={n ?? '~'}
           aria-label={`note ${i + 1}`}
           onChange={(e) => {
@@ -100,7 +102,9 @@ export function AcidSequencer({ part }: { part: PartBlock }) {
       {accents.map((a, i) => (
         <button
           key={i}
-          className={cn(CELL, a ? 'border-accent bg-accent text-accent-foreground' : 'border-border bg-default')}
+          className={CELL}
+          style={padStyle(i, a)}
+          data-on={a}
           aria-pressed={a}
           aria-label={`accent ${i + 1}`}
           onClick={() => write(notes, accents.map((x, j) => (j === i ? !x : x)), slides)}
@@ -114,7 +118,9 @@ export function AcidSequencer({ part }: { part: PartBlock }) {
       {slides.map((s, i) => (
         <button
           key={i}
-          className={cn(CELL, s ? 'border-custom bg-custom text-custom-foreground' : 'border-border bg-default')}
+          className={CELL}
+          style={padStyle(i, s, 'var(--custom)')}
+          data-on={s}
           aria-pressed={s}
           aria-label={`slide ${i + 1}`}
           onClick={() => write(notes, accents, slides.map((x, j) => (j === i ? !x : x)))}
@@ -140,7 +146,7 @@ export function DegreeTracker({ part }: { part: PartBlock }) {
               <input
                 key={i}
                 type="text"
-                className="w-[30px] rounded border border-border bg-surface px-0 py-[3px] text-center font-mono text-[13px] text-foreground"
+                className="hw-lcd w-[30px] px-0 py-[3px] text-center text-[13px]"
                 defaultValue={s ?? ''}
                 placeholder="·"
                 aria-label={`degree at step ${i + 1}`}
@@ -173,7 +179,7 @@ export function ChordEditor({ part, model }: { part: PartBlock; model: ProjectMo
   return (
     <div className="flex flex-wrap items-center gap-2">
       {chords.map((c, i) => (
-        <div className="flex flex-col gap-1 rounded-lg border border-border bg-surface px-2 py-1.5" key={i}>
+        <div className="flex flex-col gap-1 rounded-lg border border-hw-line bg-hw-deep px-2 py-1.5" key={i}>
           <Hint>bar {i + 1}</Hint>
           <MiniInput value={c} size={7} aria-label={`Chord in bar ${i + 1}`} onCommit={(v) => v.trim() && write(chords.map((x, j) => (j === i ? v.trim() : x)))} />
           <span className="font-mono text-[11px] text-muted">{voiced[i] ?? ''}</span>

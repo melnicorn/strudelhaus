@@ -137,7 +137,7 @@ describe('settings', () => {
   it('defaults autocomplete on, and keeps an old saved shape', () => {
     expect(loadSettings().autocomplete).toBe(true);
     saveSettings({ autoPlayGuiEdits: false } as never); // saved before the setting existed
-    expect(loadSettings()).toEqual({ autoPlayGuiEdits: false, autocomplete: true });
+    expect(loadSettings()).toEqual({ autoPlayGuiEdits: false, autocomplete: true, layout: 'side' });
   });
 
   it('round-trips the setting', () => {

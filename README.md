@@ -24,6 +24,7 @@ The footer links to the source at <https://github.com/melnicorn/strudelhaus>, as
 - `content/lessons/`: lessons as typed data. Every solution is tested against its own checks.
 - `lib/sounds/`: the sound browser's catalog. `catalog.data.ts` is generated from the sample manifests by `node scripts/gen-sound-catalog.mjs`; `engine.audition()` plays a snippet over whatever is playing.
 - `lib/editor/autocomplete.ts` + `completions.ts`: editor autocomplete (methods after a dot, sounds in `s()`, machines in `.bank()`, scales in `.scale()`), fed by the reference and the sound catalog. The checkbox under the editor turns it off; the setting is saved in the browser.
+- `components/hw/`: the instrument controls (knobs, faders, pads, switches, LED buttons, seven-segment and LCD displays) the transport and block panels are built from. They look like a drum machine but behave like sliders: drag, arrow keys, or click the readout and type a value; each change writes the code. The "Side by side / Stacked" switch under the editor puts the panels beside the code or under it (saved in the browser). See `docs/ui.md`.
 - `lib/dictionary/terms.ts`: the dictionary. Hold ⌘/Ctrl anywhere to underline its words (prose via `withTerms`, code via `lib/editor/terms.ts`); `components/dictionary/TermHover.tsx` shows definitions.
 - Strudel packages are pinned to exact versions (npm 1.2.6 / 1.3.0); upstream `main` has breaking changes.
 

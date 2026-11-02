@@ -1,7 +1,10 @@
 'use client';
 
-import { Chip, cn, Input, NumberField } from '@heroui/react';
+import { cn, Input, NumberField } from '@heroui/react';
 import { useEffect, useState } from 'react';
+import { HW_SURFACE } from '@/components/hw/Displays';
+import { Led } from '@/components/hw/HwButton';
+import { Caption } from '@/components/hw/Switches';
 import { Hint } from '@/components/ui/Hint';
 import { SimpleSelect } from '@/components/ui/SimpleSelect';
 import { getEngine } from '@/lib/audio/engine';
@@ -11,9 +14,9 @@ import type { ProjectModel, StackBlock } from '@/lib/sync/model';
 import { findBlock } from '@/lib/sync/parseProject';
 import { RemoveButton, SmallButton } from './SoundControls';
 
-const CELL = 'border border-border p-[5px] text-center';
+const CELL = 'border border-hw-line p-[5px] text-center';
 /** Marks the column playing now. */
-const NOW = 'shadow-[inset_0_-3px_0_var(--success)]';
+const NOW = 'shadow-[inset_0_-3px_0_var(--color-go)]';
 
 /**
  * Arrangement matrix (A-a): columns are the arrangement's sections in play order, rows are the
@@ -51,12 +54,15 @@ export function ArrangementMatrix({ model }: { model: ProjectModel }) {
     });
 
   return (
-    <section className="flex min-w-0 flex-col gap-2.5 rounded-lg border border-border bg-surface p-3" aria-label="Arrangement">
-      <header className="flex flex-wrap items-center gap-2">
-        <b>Arrangement</b>
-        <Chip size="sm" variant="soft" color="success">
-          GUI
-        </Chip>
+    <section className={cn(HW_SURFACE, 'flex min-w-0 flex-col gap-2.5 p-3')} aria-label="Arrangement">
+      <header className="flex flex-wrap items-center gap-3">
+        <span className="flex flex-col">
+          <b className="text-xs font-bold tracking-[0.1em] uppercase">Arrangement</b>
+          <Caption className="text-left">sections in play order</Caption>
+        </span>
+        <span className="flex items-center gap-1.5 text-[9px] tracking-[0.06em] text-hw-muted uppercase">
+          <Led color="green" className="h-2.5 w-2.5" /> gui
+        </span>
         <Hint>
           {totalBars} bars · click a cell: off → on{modifiers.length ? ' → with a modifier' : ''} → off
         </Hint>
@@ -118,9 +124,9 @@ export function ArrangementMatrix({ model }: { model: ProjectModel }) {
                       key={ci}
                       className={cn(
                         CELL,
-                        'min-w-14 cursor-pointer text-accent',
-                        member && (member.wrappers.length ? 'bg-custom/15 font-mono text-[11px] text-custom' : 'bg-accent-soft'),
-                        !stack && 'cursor-not-allowed bg-[repeating-linear-gradient(45deg,transparent_0_6px,var(--default)_6px_12px)]',
+                        'min-w-14 cursor-pointer text-black',
+                        member && (member.wrappers.length ? 'bg-[#1e1530] font-mono text-[11px] text-custom' : 'bg-pad-2'),
+                        !stack && 'cursor-not-allowed bg-[repeating-linear-gradient(45deg,transparent_0_6px,var(--color-hw-deep)_6px_12px)]',
                         playing === ci && NOW,
                       )}
                       onClick={() => stack && cycleCell(row.section.name, name)}

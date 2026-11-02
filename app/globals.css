@@ -87,6 +87,27 @@
   /* The code editor and code bars are always dark. */
   --color-code: #1e1e1e;
   --color-code-foreground: #e6e6e6;
+  /*
+   * The hardware palette: instrument panels (transport, block modules, mixer) are always dark,
+   * like a drum machine's face. Pads use the TR-909's four beat colours.
+   */
+  --color-hw: #262522;
+  --color-hw-deep: #1c1b19;
+  --color-hw-line: #3d3b36;
+  --color-hw-ink: #e8e6df;
+  --color-hw-muted: #8f8c83;
+  --color-hw-cap: #33312d;
+  --color-hw-cap-hi: #44423c;
+  --color-led: #ff8a3c;
+  --color-led-dim: #4a2d1a;
+  --color-go: #5bd36b;
+  --color-hot: #ff5a4c;
+  --color-lcd: #10231a;
+  --color-lcd-ink: #9ff5b9;
+  --color-pad-1: #e9452f;
+  --color-pad-2: #f08a2b;
+  --color-pad-3: #f2c62f;
+  --color-pad-4: #efeae0;
   --animate-flash: flash 1.2s ease-out;
 
   @keyframes flash {
@@ -111,6 +132,128 @@
   }
   code {
     @apply text-[0.92em];
+  }
+}
+
+/*
+ * Hardware controls (components/hw): the few looks that need gradients, 3D borders and glows.
+ * Everything else about them is Tailwind utilities in the components.
+ */
+@layer components {
+  /* A push button with a raised cap; pressed = sunk 2px. */
+  .hw-btn {
+    background: linear-gradient(var(--color-hw-cap-hi), var(--color-hw-cap));
+    border: 1px solid #111;
+    border-bottom-width: 3px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+    color: var(--color-hw-ink);
+  }
+  .hw-btn:active,
+  .hw-btn[data-pressed='true'] {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+  }
+  .hw-btn[data-disabled='true'] {
+    opacity: 0.45;
+  }
+  /* A step pad: coloured cap with a dark LED slot at the top; `data-on` lights it. */
+  .hw-pad {
+    position: relative;
+    background: linear-gradient(color-mix(in srgb, var(--pad) 70%, white), var(--pad));
+    border: 1px solid #111;
+    border-bottom-width: 3px;
+  }
+  .hw-pad::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    width: 12px;
+    height: 5px;
+    margin-left: -6px;
+    border-radius: 2px;
+    background: #1a1210;
+    border: 1px solid rgb(0 0 0 / 0.5);
+    opacity: 0.7;
+  }
+  .hw-pad[data-on='true']::before {
+    background: #ff2d1f;
+    border-color: #7a0c05;
+    opacity: 1;
+    box-shadow:
+      0 0 7px 1px #ff2d1f,
+      inset 0 0 2px #ffd0c8;
+  }
+  .hw-pad:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+  }
+  /* A small round LED; `data-lit` gives it a colour. */
+  .hw-led {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--color-led-dim);
+    border: 1px solid #000;
+  }
+  .hw-led[data-lit='green'] {
+    background: var(--color-go);
+    box-shadow: 0 0 6px var(--color-go);
+  }
+  .hw-led[data-lit='amber'] {
+    background: var(--color-led);
+    box-shadow: 0 0 6px var(--color-led);
+  }
+  .hw-led[data-lit='red'] {
+    background: var(--color-hot);
+    box-shadow: 0 0 6px var(--color-hot);
+  }
+  .hw-led[data-lit='purple'] {
+    background: var(--custom);
+    box-shadow: 0 0 6px var(--custom);
+  }
+  .hw-led[data-lit='blink'] {
+    background: var(--color-go);
+    animation: hw-blink 1s steps(2) infinite;
+  }
+  @keyframes hw-blink {
+    to {
+      background: var(--color-led-dim);
+      box-shadow: none;
+    }
+  }
+  /* Seven-segment digits: lit numerals over ghost 8s. */
+  .hw-seg {
+    position: relative;
+    display: inline-block;
+    background: #0f0e0c;
+    border: 1px solid #000;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: right;
+    line-height: 1;
+  }
+  .hw-seg > .ghost {
+    color: #2a1b10;
+  }
+  .hw-seg > .lit {
+    position: absolute;
+    inset: 0;
+    padding: inherit;
+    color: var(--color-led);
+    text-shadow: 0 0 8px rgb(255 138 60 / 0.55);
+  }
+  /* The green LCD line. */
+  .hw-lcd {
+    background: var(--color-lcd);
+    color: var(--color-lcd-ink);
+    border: 1px solid #000;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    text-shadow: 0 0 4px rgb(159 245 185 / 0.4);
   }
 }
 
