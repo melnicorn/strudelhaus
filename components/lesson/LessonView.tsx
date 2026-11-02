@@ -260,7 +260,8 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
           )}
         </nav>
       </aside>
-      <div className={cn('min-w-0', mobileTab === 'lesson' && 'max-[1100px]:hidden')}>
+      {/* --pin-top: the workbench pins its code block under the Lesson / Code tab bar while that bar shows. */}
+      <div className={cn('min-w-0 [--pin-top:30px] min-[1101px]:[--pin-top:0px]', mobileTab === 'lesson' && 'max-[1100px]:hidden')}>
         <GuiPolicyProvider policy={policy}>
           <Workbench initialCode={initialCode} onEvaluated={(_p, code) => void runChecks(code)} panels={<BlockPanels />} />
         </GuiPolicyProvider>

@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@heroui/react';
 import { useEffect, useRef } from 'react';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
@@ -31,10 +32,12 @@ interface Props {
   /** Ctrl/Cmd+.: stop and go back to bar 1. */
   onStop(): void;
   ariaLabel?: string;
+  /** Extra classes on the host, e.g. a `[&_.cm-editor]:max-h-…` cap (the editor scrolls inside). */
+  className?: string;
 }
 
 /** The Strudel code editor. Registers its view with the editor store. */
-export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel = 'Strudel code' }: Props) {
+export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel = 'Strudel code', className }: Props) {
   const host = useRef<HTMLDivElement>(null);
   // Keep the latest callbacks without recreating the editor.
   const handlers = useRef({ onToggle, onUpdate, onStop });
@@ -98,8 +101,13 @@ export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div
+  return (
+    <div
       ref={host}
-      className="min-w-0 [&_.cm-editor]:min-h-40 [&_.cm-editor.cm-focused]:outline-2! [&_.cm-editor.cm-focused]:outline-accent! [&_.cm-editor.cm-focused]:outline-solid!"
-    />;
+      className={cn(
+        'min-w-0 [&_.cm-editor]:min-h-40 [&_.cm-editor.cm-focused]:outline-2! [&_.cm-editor.cm-focused]:outline-accent! [&_.cm-editor.cm-focused]:outline-solid! [&_.cm-scroller]:overflow-auto',
+        className,
+      )}
+    />
+  );
 }

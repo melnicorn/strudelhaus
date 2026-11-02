@@ -140,7 +140,12 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
           : 'flex min-w-0 flex-col gap-3'
       }
     >
-      <div className={cn('flex min-w-0 flex-col gap-3', side && 'sticky top-2 max-[960px]:static')}>
+      {/*
+       * The transport and code stay pinned while the panels scroll, in both layouts. The
+       * editor is capped at a share of the window (it scrolls inside) so the pinned block can
+       * never be taller than the window and hide the panels under it.
+       */}
+      <div className={cn('sticky top-(--pin-top,0px) z-[2] flex min-w-0 flex-col gap-3 bg-background pt-2 pb-2', !side && '-mt-2')}>
         <Transport
           engine={engine}
           state={playState}
@@ -151,7 +156,13 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
           onStop={stop}
           tempo={<TempoControl />}
         />
-        <CodeEditor initialCode={initialCode} onToggle={toggle} onUpdate={evaluate} onStop={stop} />
+        <CodeEditor
+          initialCode={initialCode}
+          onToggle={toggle}
+          onUpdate={evaluate}
+          onStop={stop}
+          className={side ? '[&_.cm-editor]:max-h-[70vh]' : '[&_.cm-editor]:max-h-[40vh]'}
+        />
         <div className="-mt-1.5 flex items-center justify-end gap-4">
           {panels && (
             // Controls beside the code (for wide screens) or under it (more room for knobs).
