@@ -13,6 +13,8 @@ export const KEYS = {
   projects: 'sw:projects:v1',
   progress: 'sw:progress:v1',
   settings: 'sw:settings:v1',
+  /** The assistant's API key and prompt. Deliberately not part of backups (lib/storage/backup.ts). */
+  assistant: 'sw:assistant:v1',
 } as const;
 
 let backend: KeyValue | null | undefined;

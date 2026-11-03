@@ -11,7 +11,7 @@ import type { StrudelPattern } from '@/lib/audio/engine';
 import { setErrorLine } from '@/lib/editor/errorLine';
 import { showActiveHaps, updateMiniLocations } from '@/lib/editor/playingHighlight';
 import { friendlyEvalError, friendlyRuntimeMessage, type FriendlyError } from '@/lib/errors/friendly';
-import { useEditorStore } from '@/lib/stores/editor';
+import { useEditorStore, type EditorContext } from '@/lib/stores/editor';
 import { useSettingsStore } from '@/lib/stores/settings';
 import { setAfterGuiEdit } from '@/lib/stores/model';
 
@@ -23,15 +23,29 @@ interface Props {
   panels?: ReactNode;
   /** Shown under the editor (visualisation). */
   children?: ReactNode;
+  /** What the assistant is told about this page and whether it may change the code. */
+  assistant: EditorContext;
 }
 
 /** Transport + code editor + errors: the core of the lesson and sandbox views. */
-export function Workbench({ initialCode, onEvaluated, panels, children }: Props) {
+export function Workbench({ initialCode, onEvaluated, panels, children, assistant }: Props) {
   const { engine, loadError } = useEngine();
   const playState = usePlayState(engine);
   const playing = playState === 'playing';
   const [error, setError] = useState<FriendlyError | null>(null);
   const [runtimeError, setRuntimeError] = useState<FriendlyError | null>(null);
+  useEffect(() => useEditorStore.getState().setProblems({ error, runtimeError }), [error, runtimeError]);
+  const { mode, label, about } = assistant;
+  useEffect(() => {
+    useEditorStore.getState().setContext({ mode, label, about });
+  }, [mode, label, about]);
+  useEffect(
+    () => () => {
+      useEditorStore.getState().setContext(null);
+      useEditorStore.getState().setProblems({ error: null, runtimeError: null });
+    },
+    [],
+  );
   const onEvaluatedRef = useRef(onEvaluated);
   useEffect(() => {
     onEvaluatedRef.current = onEvaluated;
@@ -161,7 +175,7 @@ export function Workbench({ initialCode, onEvaluated, panels, children }: Props)
           onToggle={toggle}
           onUpdate={evaluate}
           onStop={stop}
-          className={side ? '[&_.cm-editor]:max-h-[70vh]' : '[&_.cm-editor]:max-h-[40vh]'}
+          className={side ? '[&_.cm-editor]:max-h-[70cqh]' : '[&_.cm-editor]:max-h-[40cqh]'}
         />
         <div className="-mt-1.5 flex items-center justify-end gap-4">
           {panels && (

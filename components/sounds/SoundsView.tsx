@@ -102,7 +102,7 @@ export function SoundsView() {
 
       <div className="grid grid-cols-[250px_minmax(0,1fr)] items-start gap-3 max-[760px]:grid-cols-1">
         <nav
-          className="sticky top-3 flex max-h-[calc(100vh-220px)] min-w-0 flex-col overflow-y-auto rounded-lg border border-border bg-surface p-2 max-[760px]:static max-[760px]:max-h-[220px]"
+          className="sticky top-3 flex max-h-[calc(100cqh-130px)] min-w-0 flex-col overflow-y-auto rounded-lg border border-border bg-surface p-2 max-[760px]:static max-[760px]:max-h-[220px]"
           aria-label="Machines and synths"
         >
           {machines.length > 0 && <GroupLabel>Drum machines</GroupLabel>}

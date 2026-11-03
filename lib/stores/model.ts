@@ -60,3 +60,10 @@ export function runGuiEdit(make: (model: ProjectModel) => TextEdit[]): boolean {
   }
   return ok;
 }
+
+/** After the assistant changes the code: re-parse now and re-run it if it's playing, like a GUI edit. */
+export function afterAssistantEdit() {
+  clearTimeout(timer);
+  reparse(useEditorStore.getState().code);
+  afterEdit?.();
+}

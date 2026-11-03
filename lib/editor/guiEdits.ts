@@ -56,7 +56,12 @@ export function applyGuiEdits(view: EditorView, edits: TextEdit[], basedOn: stri
     annotations: guiEdit.of(true),
     userEvent: 'input.gui',
   });
+  flashChanged(view);
+  return true;
+}
+
+/** Clears the changed-span highlight after a moment (call after a `guiEdit` transaction). */
+export function flashChanged(view: EditorView) {
   clearTimeout(clearTimer);
   clearTimer = setTimeout(() => view.dispatch({ effects: clearChanged.of(null) }), FLASH_MS);
-  return true;
 }

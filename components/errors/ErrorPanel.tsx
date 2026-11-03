@@ -2,6 +2,7 @@
 
 import { Button } from '@heroui/react';
 import type { FriendlyError } from '@/lib/errors/friendly';
+import { useAssistantStore } from '@/lib/stores/assistant';
 
 const errorBox = 'min-w-0 rounded-lg border border-danger bg-danger/10 p-3';
 const errorDetail = 'mt-1 font-mono text-xs whitespace-pre-wrap text-muted';
@@ -15,6 +16,9 @@ interface Props {
 
 /** Shows the last evaluation error and the last runtime problem (e.g. a missing sound). */
 export function ErrorPanel({ error, runtimeError, playing, onDismissRuntime }: Props) {
+  // Only offered once the learner has set the assistant up, to keep the panel quiet otherwise.
+  const canAsk = useAssistantStore((s) => !!s.config.apiKey);
+  const ask = useAssistantStore((s) => s.askAboutError);
   if (!error && !runtimeError) return null;
   return (
     <div className="flex flex-col gap-2" role="alert">
@@ -24,6 +28,11 @@ export function ErrorPanel({ error, runtimeError, playing, onDismissRuntime }: P
             {error.title}</b>
           {error.detail && error.detail !== error.title && <div className={errorDetail}>{error.detail}</div>}
           {playing && <div className="mt-0.5 text-xs text-muted">The music keeps playing the last code that worked.</div>}
+          {canAsk && (
+            <Button size="sm" variant="secondary" className="mt-2" onPress={ask}>
+              ✦ Ask the assistant
+            </Button>
+          )}
         </div>
       )}
       {runtimeError && (

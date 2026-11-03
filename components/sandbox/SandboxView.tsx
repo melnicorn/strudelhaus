@@ -77,7 +77,12 @@ export function SandboxView() {
       )}
       <div className="grid grid-cols-[190px_minmax(0,1fr)] items-start gap-4 max-[1100px]:grid-cols-[minmax(0,1fr)]">
         <BlockOutline />
-        <Workbench key={project.id} initialCode={project.code} panels={<BlockPanels />} />
+        <Workbench
+          key={project.id}
+          initialCode={project.code}
+          panels={<BlockPanels />}
+          assistant={{ mode: 'edit', label: `Sandbox project “${project.name}”` }}
+        />
       </div>
     </LibraryActionsContext.Provider>
   );

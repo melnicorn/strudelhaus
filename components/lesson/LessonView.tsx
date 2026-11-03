@@ -155,7 +155,7 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
       {/* Beside the workbench the lesson text scrolls on its own, so the code and controls don't carry it along. */}
       <aside
         className={cn(
-          'flex min-w-0 flex-col gap-3 min-[1101px]:sticky min-[1101px]:top-0 min-[1101px]:max-h-dvh min-[1101px]:overflow-y-auto min-[1101px]:py-2 min-[1101px]:pr-1',
+          'flex min-w-0 flex-col gap-3 min-[1101px]:sticky min-[1101px]:top-0 min-[1101px]:max-h-[100cqh] min-[1101px]:overflow-y-auto min-[1101px]:py-2 min-[1101px]:pr-1',
           mobileTab === 'code' && 'max-[1100px]:hidden',
         )}
       >
@@ -269,7 +269,12 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
       {/* --pin-top: the workbench pins its code block under the Lesson / Code tab bar while that bar shows. */}
       <div className={cn('min-w-0 [--pin-top:30px] min-[1101px]:[--pin-top:0px]', mobileTab === 'lesson' && 'max-[1100px]:hidden')}>
         <GuiPolicyProvider policy={policy}>
-          <Workbench initialCode={initialCode} onEvaluated={(_p, code) => void runChecks(code)} panels={<BlockPanels />} />
+          <Workbench
+            initialCode={initialCode}
+            onEvaluated={(_p, code) => void runChecks(code)}
+            panels={<BlockPanels />}
+            assistant={{ mode: 'hints', label: `Lesson ${lesson.number}: ${lesson.title}`, about: lessonBrief(lesson, passed) }}
+          />
         </GuiPolicyProvider>
       </div>
     </div>
@@ -338,4 +343,11 @@ function safe(fn: () => boolean): boolean {
   } catch {
     return false;
   }
+}
+
+/** What the assistant is told about the lesson: the goal and which tasks are done. */
+function lessonBrief(lesson: Lesson, passed: number[]): string {
+  const tasks = lesson.tasks.map((t, i) => `${passed.includes(i) ? '[done]' : '[todo]'} ${i + 1}. ${t.text}`);
+  if (lesson.challenge) tasks.push(`Challenge: ${lesson.challenge.text}`);
+  return `Goal: ${lesson.goal}\nTasks:\n${tasks.join('\n')}`;
 }

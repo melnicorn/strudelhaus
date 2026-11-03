@@ -14,6 +14,7 @@ import {
   keymap,
   lineNumbers,
 } from '@codemirror/view';
+import { agentChanges, agentStack } from '@/lib/assistant/agentEdits';
 import { autocomplete, autocompleteCompartment } from '@/lib/editor/autocomplete';
 import { errorLine } from '@/lib/editor/errorLine';
 import { guiEditHighlight } from '@/lib/editor/guiEdits';
@@ -51,7 +52,7 @@ export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel 
   }, [completions]);
 
   useEffect(() => {
-    const { setView, setCode } = useEditorStore.getState();
+    const { setView, setCode, setSelection, setAgentUndo } = useEditorStore.getState();
     const bind = (name: 'onToggle' | 'onUpdate' | 'onStop') => () => {
       handlers.current[name]();
       return true;
@@ -83,18 +84,31 @@ export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel 
           playingHighlight,
           codeTerms,
           guiEditHighlight,
+          agentChanges,
           errorLine,
           EditorView.contentAttributes.of({ 'aria-label': ariaLabel }),
           EditorView.updateListener.of((u) => {
             if (u.docChanged) setCode(u.state.doc.toString());
+            // The stack is re-mapped on every edit; only tell React when entries come or go.
+            const undo = agentStack(u.state);
+            const before = agentStack(u.startState);
+            if (undo.length !== before.length || undo.at(-1)?.id !== before.at(-1)?.id) setAgentUndo(undo.map((c) => c.summary));
+            if (u.selectionSet || u.docChanged) {
+              const { from, to } = u.state.selection.main;
+              setSelection(from === to ? null : { from, to });
+            }
           }),
         ],
       }),
     });
     setView(view);
     setCode(initialCode);
+    setSelection(null);
+    setAgentUndo([]);
     return () => {
       setView(null);
+      setSelection(null);
+      setAgentUndo([]);
       view.destroy();
     };
     // The editor is created once per mount; later code changes go through the store.

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Link from 'next/link';
+import { AssistantDock, AssistantToggle } from '@/components/assistant/AssistantDock';
 import { TermHover } from '@/components/dictionary/TermHover';
 import { linkClass } from '@/components/ui/Page';
 import { SOURCE_URL } from '@/lib/site';
@@ -44,8 +45,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         {/* Follow the system light/dark setting before first paint (HeroUI themes key off .dark). */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body>
-        <header className="flex flex-wrap items-center gap-5 border-b border-border bg-surface px-4 py-2.5">
+      {/* Header and footer stay put; only the page between them scrolls (#content is the scroller). */}
+      <body className="flex h-dvh flex-col overflow-hidden">
+        <header className="flex shrink-0 flex-wrap items-center gap-5 border-b border-border bg-surface px-4 py-2.5">
           <Link href="/" className="font-bold">
             Strudel Workshop
           </Link>
@@ -56,10 +58,17 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
               </Link>
             ))}
           </nav>
+          <AssistantToggle />
         </header>
-        {children}
+        <div className="flex min-h-0 flex-1">
+          {/* A size container, so tool pages can size things to the scroll area with cqh units. */}
+          <div id="content" className="min-w-0 flex-1 overflow-y-auto [container-type:size]">
+            {children}
+          </div>
+          <AssistantDock />
+        </div>
         <TermHover />
-        <footer className="p-4 text-center text-xs text-muted">
+        <footer className="shrink-0 border-t border-border px-4 py-2 text-center text-xs text-muted">
           Free software under the{' '}
           <a href="/about" className={linkClass}>
             GNU AGPL-3.0
