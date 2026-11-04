@@ -4,8 +4,25 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--port", "3210"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "3210"
+      ],
       "port": 3210
+    },
+    {
+      "name": "static",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "serve:static",
+        "--",
+        "4000"
+      ],
+      "port": 4000
     }
   ]
 }

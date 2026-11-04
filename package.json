@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:static": "STATIC_EXPORT=1 next build",
+    "serve:static": "node scripts/serve-static.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.4.0",
