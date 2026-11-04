@@ -5,7 +5,7 @@
 import { create } from 'zustand';
 import { z } from 'zod';
 import { getEngine } from '@/lib/audio/engine';
-import { allPacks, onPacksChange, registerPack, unregisterPack } from '@/lib/lessons/packs';
+import { allPacks, onPacksChange, registerPack, setPackOrder, unregisterPack } from '@/lib/lessons/packs';
 import type { Pack } from '@/lib/lessons/types';
 import { validatePack, type Finding } from '@/lib/lessons/validate';
 import { KEYS, readJson, writeJson } from '@/lib/storage/kv';
@@ -58,6 +58,7 @@ export const usePacksStore = create<PacksStore>((set, get) => {
         const index = await fetch('/packs/index.json', { cache: 'no-cache' });
         if (index.ok) {
           const files = z.array(z.string()).parse(await index.json());
+          setPackOrder(files.map((f) => f.replace(/\.json$/, '')));
           await Promise.all(
             files.map(async (file) => {
               try {

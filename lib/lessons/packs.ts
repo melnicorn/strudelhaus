@@ -99,10 +99,24 @@ export function lessonHref(lesson: Pick<Lesson, 'id' | 'packId'>): string {
 // ---------- the registry ----------
 
 let packs: Pack[] = [corePack];
+let order: string[] = [];
 const listeners = new Set<() => void>();
+
+/** The order packs show in: core first, then the site's index order, then imported packs by title. */
+function sorted(list: Pack[]): Pack[] {
+  const rank = (p: Pack) => (p.id === CORE_PACK_ID ? -1 : order.indexOf(p.id) >= 0 ? order.indexOf(p.id) : order.length);
+  return [...list].sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title));
+}
 
 export function allPacks(): Pack[] {
   return packs;
+}
+
+/** Sets the display order of the site's packs (ids, from public/packs/index.json). */
+export function setPackOrder(ids: string[]) {
+  order = ids;
+  packs = sorted(packs);
+  listeners.forEach((cb) => cb());
 }
 export function allLessons(): Lesson[] {
   return packs.flatMap((p) => p.lessons);
@@ -126,7 +140,7 @@ export function neighbours(lesson: Lesson): { prev?: Lesson; next?: Lesson } {
 /** Adds or replaces a pack (the core pack can't be replaced). Returns false if refused. */
 export function registerPack(pack: Pack): boolean {
   if (pack.id === CORE_PACK_ID) return false;
-  packs = [...packs.filter((p) => p.id !== pack.id), pack];
+  packs = sorted([...packs.filter((p) => p.id !== pack.id), pack]);
   listeners.forEach((cb) => cb());
   return true;
 }
