@@ -28,7 +28,7 @@ describe('pack registry', () => {
   it('qualifies ids and hrefs', () => {
     expect(first.id).toBe('01-press-play');
     expect(lessonHref(first)).toBe('/learn/01-press-play');
-    expect(lessonHref({ id: 'deep-house/piano-stab', packId: 'deep-house' })).toBe('/learn/lesson/?id=deep-house%2Fpiano-stab');
+    expect(lessonHref({ id: 'deep-house/piano-stab', packId: 'deep-house' })).toBe('/lesson/?id=deep-house%2Fpiano-stab');
   });
 
   it('allows the methods of earlier lessons and of the skills involved', () => {

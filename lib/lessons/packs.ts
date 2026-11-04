@@ -93,7 +93,7 @@ export const corePack: Pack = compilePack(coreJson as unknown as PackSpec, 'buil
 
 /** The page for a lesson: core lessons have their own prerendered pages; others go through ?id=. */
 export function lessonHref(lesson: Pick<Lesson, 'id' | 'packId'>): string {
-  return lesson.packId === CORE_PACK_ID ? `/learn/${lesson.id}` : `/learn/lesson/?id=${encodeURIComponent(lesson.id)}`;
+  return lesson.packId === CORE_PACK_ID ? `/learn/${lesson.id}` : `/lesson/?id=${encodeURIComponent(lesson.id)}`;
 }
 
 // ---------- the registry ----------
