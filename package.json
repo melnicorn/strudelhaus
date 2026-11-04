@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "build:static": "STATIC_EXPORT=1 next build",
-    "serve:static": "node scripts/serve-static.mjs"
+    "serve:static": "node scripts/serve-static.mjs",
+    "lessons:validate": "node scripts/validate-pack.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.4.0",
