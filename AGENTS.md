@@ -1,6 +1,6 @@
 ## Lessons
 
-When writing or changing a lesson in `content/lessons/`, follow the isolation rule in `docs/design.md` §1.1. Each task ticks only when the learner does that task, never earlier, and the challenge ticks only in `challengeSolution`. Give every lesson `steps` (the code after each task but the last, applying each hint literally). `npm test -- tests/lessons` must pass.
+Lessons are JSON packs: `content/packs/core.json` (the curriculum) and `public/packs/*.json` (extra packs, listed in `public/packs/index.json`). Checks are expressions in the language in `lib/lessons/dsl.ts` (summary on the About page); never functions. When writing or changing a lesson, follow the isolation rule in `docs/design.md` §1.1: each task ticks only when the learner does that task, never earlier, and the challenge ticks only in `challengeSolution`. Give every lesson `steps` (the code after each task but the last, applying each hint literally), `teaches` (skill ids from `content/skills.ts`) and `tags`. In a `line` track each starter is the previous solution. Run `npm run lessons:validate -- <pack.json>` until it reports no errors; `npm test -- tests/lessons` must pass.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

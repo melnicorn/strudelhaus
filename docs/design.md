@@ -13,24 +13,30 @@ Conventions used throughout:
 
 ### 1.1 Lesson anatomy
 
-Every lesson is a typed TypeScript object (see §7.4). Because of that, the test suite can transpile, evaluate (with no audio), and query every starter and solution.
+Lessons are data: a **lesson pack** is one JSON file (`content/packs/core.json` is the curriculum; `public/packs/*.json` are extra packs, fetched at runtime and listed in `public/packs/index.json`; learners can add more from a file or URL). The shapes are in `lib/lessons/types.ts` (`PackSpec`, `TrackSpec`, `LessonSpec`). Because lessons are data, the validator can transpile, evaluate (with no audio) and query every starter, step and solution, in tests, on the command line and in the browser.
 
 | Field | Content |
 |---|---|
 | `goal` | One sentence, e.g. "Make a 909 kick play on every beat." |
-| `concept` | 80–200 words of plain language, with one diagram or audio example where it helps |
-| `starter` | The code loaded into the editor |
-| `task` | Guided steps, each with an automatic **check** (see below) |
+| `concept` | 80–200 words of plain language (blank-line paragraphs, `code`, **bold**) |
+| `shape` | `concept` (the default), `drill`, `fix`, `remix`, `kata` or `project` |
+| `starter` | The code loaded into the editor. In a track line: the previous lesson's solution |
+| `tasks` | Guided steps, each with a `hint` and an automatic **check** (below) |
 | `challenge` | Optional; it also has a check |
-| `steps` | The code after each task but the last, following that task's hint. Used only by the isolation test (below) |
-| `solution` | The code after the last task, without the challenge. Revealed by "Show solution". It goes into a diff view first; you choose "Use this code" to load it |
+| `steps` | The code after each task but the last, following that task's hint literally. Used only by the validator |
+| `solution` | The code after the last task, without the challenge. Revealed by "Show solution" into a diff view |
 | `challengeSolution` | The solution plus the challenge. Required when there is a challenge |
-| `youNowKnow` | Summary bullets, plus the list of Strudel functions introduced (each linked to the reference page) |
-| `skills` | Skill IDs from research §1 |
+| `summary`, `introduces`, `concepts` | "You now know" bullets; the functions introduced (linked to the reference); ideas that aren't functions |
+| `teaches`, `requires` | Skill ids from `content/skills.ts` (research §1). `requires` defaults to the prerequisites of `teaches` |
+| `tags` | Free text for search ("jungle", "808"); the pack's and track's tags are added |
 
-**Checks.** Checks are music-aware rather than text-matching. We evaluate the learner's code to a pattern (no audio) and run a predicate over `pattern.queryArc(0, n)`. Example: *"a `bd` event starts at 0, ¼, ½, ¾ of every cycle"*. This means `s("bd*4")`, `s("bd bd bd bd")`, and `s("bd!4")` all pass, which teaches that there are many ways to write the same thing. A check can also look at the parsed code, e.g. "uses `.bank(…)`". All checks show a plain hint when they fail.
+**Tracks and the map.** A pack groups lessons into tracks. A `skills` track is a sequence of standalone lessons; a `line` track builds one piece of music, each lesson starting from the code the learner finished in the one before (their own code is carried forward when it still runs, with the reference version one click away). The Learn page draws every pack's tracks as lanes: nothing is locked, the next lesson of each track whose prerequisite skills are known is marked, and a track whose skills aren't known yet says what it builds on. Known skills are those taught by done lessons, plus their prerequisites. A search box and tag strip filter across packs.
 
-**Isolation rule.** Doing a task ticks that task and nothing else, so each lesson builds one idea at a time. The starter passes no task. Each step (`steps[i]`, then `solution`) passes the tasks done so far and no later task. The challenge passes only in `challengeSolution`. `tests/lessons/isolation.test.ts` walks every lesson this way. When it fails, the check is almost always too loose: an `.every` over an empty list, a regex the starter already matches, or a threshold a hint value already meets. Tighten the check rather than bending the steps around it, and keep hint values clear of the challenge's threshold.
+**Checks.** Checks are music-aware rather than text-matching, and they are data: expressions in the small language of `lib/lessons/dsl.ts` (summary on the About page), over the same helpers as `lib/lessons/checks.ts`. We evaluate the learner's code to a pattern (no audio) and the expression queries its events, e.g. `{ "playsAt": { "s": "bd", "at": [0, .25, .5, .75] } }`: *a `bd` event starts at 0, ¼, ½, ¾ of every cycle*. This means `s("bd*4")`, `s("bd bd bd bd")` and `s("bd!4")` all pass, which teaches that there are many ways to write the same thing. A check can also look at the source (`uses`, `matches`) or the parsed model (`defines`, `block`, `final`). A dozen arrangement checks the language can't express live in `lib/lessons/custom.ts`; only built-in packs may name them. All checks show a plain hint when they fail.
+
+**Isolation rule.** Doing a task ticks that task and nothing else, so each lesson builds one idea at a time. The starter passes no task. Each step (`steps[i]`, then `solution`) passes the tasks done so far and no later task. The challenge passes only in `challengeSolution`. No check may pass on `silence`. In a track line each lesson's starter is the previous lesson's solution, and no solution (until the track is arranged) undoes an earlier lesson's task. `lib/lessons/validate.ts` walks every lesson this way; `tests/lessons/` runs it on the built-in packs, `npm run lessons:validate -- pack.json` on any file, and the pack import and author pages in the browser. When it fails, the check is almost always too loose: an `every` over a selection the step doesn't change, a regex the starter already matches, or a threshold a hint value already meets. Tighten the check rather than bending the steps around it, and keep hint values clear of the challenge's threshold.
+
+**Writing lessons.** The Lesson author page (`/author`) edits a pack as JSON with the assistant alongside: the assistant's system prompt carries the pack format and the check language, and it reads the validator's findings from the page, so a lesson can be drafted, validated and fixed in a loop; a person reviews lessons that already pass.
 
 ### 1.2 Lesson list
 

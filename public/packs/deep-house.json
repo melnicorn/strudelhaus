@@ -1,0 +1,234 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "deep-house",
+  "title": "Deep house",
+  "description": "Piano stabs, organ bass and a shuffled groove: the warm side of 90s house, on the skills from the core lessons.",
+  "author": "Strudel Workshop",
+  "tags": ["deep house", "house", "piano", "organ"],
+  "tracks": [
+    {
+      "id": "deep-house-basics",
+      "title": "Deep house basics",
+      "blurb": "A piano stab, an organ bass, a shuffle, then a groove that puts them together.",
+      "kind": "skills",
+      "requires": ["I6", "B12", "I1"],
+      "lessons": ["piano-stab", "organ-bass", "shuffle-and-ghosts", "deep-house-groove"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "piano-stab",
+      "title": "The piano stab",
+      "goal": "Add a sampled piano chord on the offbeats of 2 and 4.",
+      "concept": "Deep house grew out of Chicago house and New York garage, and its signature sound is a **sampled piano** playing short minor-seventh chords. The chord lands on the **offbeats** of beats 2 and 4, so it answers the clap rather than sitting on it.\n\n`chord(\"Cm7\").voicing()` picks the notes; `.struct(\"[~ x]*2\")` says when they hit: a rest, then a hit, twice a bar. `s(\"piano\")` is a sampled grand piano.\n\nA little **reverb** (`.room`) pushes the piano back behind the drums, which is where deep house keeps it.",
+      "shape": "drill",
+      "starter": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nstack(kick, clap, hats)",
+      "tasks": [
+        {
+          "text": "Add a part called piano: a Cm7 chord on the piano sound, hitting on the offbeats of beats 2 and 4.",
+          "hint": "const piano = chord(\"Cm7\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6), then add piano to the stack.",
+          "check": {
+            "all": [
+              { "defines": "piano" },
+              { "gte": [{ "maxChordSize": true }, 3] },
+              { "eq": [{ "values": { "sel": { "s": "piano" }, "key": "$time", "unique": true, "sorted": true } }, [0.25, 0.75]] }
+            ]
+          }
+        },
+        {
+          "text": "Push the piano back with a little reverb.",
+          "hint": ".room(.3) on the piano line.",
+          "check": { "every": { "sel": { "s": "piano" }, "where": [{ "key": "room", "gt": 0, "default": 0 }] } }
+        }
+      ],
+      "challenge": {
+        "text": "Make the chord change every bar: Cm7, then Fm7.",
+        "hint": "chord(\"<Cm7 Fm7>\"): angle brackets pick one chord per bar.",
+        "check": {
+          "neq": [
+            { "values": { "sel": { "s": "piano", "bar": 0 }, "key": "$pc", "unique": true, "sorted": true } },
+            { "values": { "sel": { "s": "piano", "bar": 1 }, "key": "$pc", "unique": true, "sorted": true } }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nconst piano = chord(\"Cm7\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6)\nstack(kick, clap, hats, piano)"
+      ],
+      "solution": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nconst piano = chord(\"Cm7\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6).room(.3)\nstack(kick, clap, hats, piano)",
+      "challengeSolution": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6).room(.3)\nstack(kick, clap, hats, piano)",
+      "summary": ["The deep house piano is a minor 7th chord on the offbeats of 2 and 4.", "chord(…).voicing().struct(\"[~ x]*2\") picks the notes and when they hit.", "A touch of .room() puts it behind the drums."],
+      "introduces": ["chord", ".voicing", ".struct", ".room"],
+      "concepts": ["the piano stab"],
+      "teaches": ["I6", "I14"],
+      "tags": ["chords", "piano"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "cp", "bank": "RolandTR909" }, { "s": "oh", "bank": "RolandTR909" }, { "s": "piano" }]
+    },
+    {
+      "id": "organ-bass",
+      "title": "The organ bass",
+      "goal": "Write a short, hollow bassline that bounces against the kick.",
+      "concept": "The classic deep house bass is an **organ bass**: a hollow, woody tone (a **square** wave) played in short stabs between the kicks, often with a pure **sine** underneath to carry the weight.\n\nA square wave through a low-pass filter already sounds like a cheap organ. Keep the notes short with a fast **decay** and no **sustain**, and put them on the **offbeats** so they never fight the kick.\n\nWe stay in C minor, like the piano, so the notes agree: `n(\"0 … 3\").scale(\"C2:minor\")` picks scale degrees, and the 2 in the scale name puts them in the second octave.",
+      "shape": "concept",
+      "starter": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6).room(.3)\nstack(kick, clap, piano)",
+      "tasks": [
+        {
+          "text": "Add a part called bass: a square wave playing scale degrees of C minor, down in octave 2, on every offbeat.",
+          "hint": "const bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\"), and stack it.",
+          "check": {
+            "all": [
+              { "defines": "bass" },
+              { "playsAt": { "sel": { "s": "square" }, "at": [0.125, 0.375, 0.625, 0.875], "cycles": 1 } },
+              { "inKey": { "sel": { "s": "square" }, "key": "C:minor" } },
+              { "every": { "sel": { "s": "square" }, "where": [{ "key": "$midi", "lt": 48 }] } }
+            ]
+          }
+        },
+        {
+          "text": "Make every bass note a short stab: a quick decay and no sustain.",
+          "hint": ".decay(.12).sustain(0) on the bass line.",
+          "check": { "every": { "sel": { "s": "square" }, "where": [{ "key": "decay", "lte": 0.2, "default": 9 }, { "key": "sustain", "eq": 0, "default": 1 }] } }
+        },
+        {
+          "text": "Round it off with a low-pass filter around 700 Hz.",
+          "hint": ".lpf(700) on the bass line.",
+          "check": { "every": { "sel": { "s": "square" }, "where": [{ "key": "cutoff", "lte": 900, "gt": 0 }] } }
+        }
+      ],
+      "challenge": {
+        "text": "Add a sine sub an octave below the bass, on the same notes.",
+        "hint": "const sub = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C1:minor\").s(\"sine\").decay(.2).sustain(0).gain(.7), and stack it.",
+        "check": { "some": { "sel": { "s": "sine" }, "where": [{ "key": "$midi", "lt": 40 }] } }
+      },
+      "steps": [
+        "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6).room(.3)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\")\nstack(kick, clap, piano, bass)",
+        "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6).room(.3)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\").decay(.12).sustain(0)\nstack(kick, clap, piano, bass)"
+      ],
+      "solution": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6).room(.3)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\").decay(.12).sustain(0).lpf(700)\nstack(kick, clap, piano, bass)",
+      "challengeSolution": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.6).room(.3)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\").decay(.12).sustain(0).lpf(700)\nconst sub = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C1:minor\").s(\"sine\").decay(.2).sustain(0).gain(.7)\nstack(kick, clap, piano, bass, sub)",
+      "summary": ["An organ bass is a square wave played in short offbeat stabs.", "Short decay, no sustain and a low-pass around 700 Hz make it hollow and woody.", "scale(\"C2:minor\"): the number picks the octave.", "A sine an octave below carries the weight."],
+      "introduces": [".decay", ".sustain", ".lpf", ".scale"],
+      "concepts": ["the organ bass"],
+      "teaches": ["B12", "I9", "I10"],
+      "tags": ["bass", "organ"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "cp", "bank": "RolandTR909" }, { "s": "piano" }]
+    },
+    {
+      "id": "shuffle-and-ghosts",
+      "title": "Shuffle and ghosts",
+      "goal": "Give the hats a deep house shuffle and add ghost notes.",
+      "concept": "Deep house moves because the hats **shuffle**: every second 16th arrives a touch late. On an MPC you'd set swing to 56–58%; here `.swingBy(.14, 8)` does the same (x = (swing% − 50) / 50).\n\n**Ghost notes** are hits so quiet you feel them more than hear them: a rimshot or a quiet snare between the main hits. They fill the gaps without crowding the groove.",
+      "shape": "drill",
+      "starter": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.4)\nstack(kick, clap, hats)",
+      "tasks": [
+        {
+          "text": "Make the closed hats play 16ths, with the hit on each beat louder than the ones between.",
+          "hint": "s(\"hh*16\") with .gain(\"[.5 .25 .35 .25]*4\").",
+          "check": {
+            "all": [
+              { "eq": [{ "count": { "s": "hh" } }, 16] },
+              { "gt": [{ "valueAt": { "sel": { "s": "hh" }, "key": "gain", "index": 0, "default": 0.8 } }, { "valueAt": { "sel": { "s": "hh" }, "key": "gain", "index": 1, "default": 0.8 } }] }
+            ]
+          }
+        },
+        {
+          "text": "Shuffle them: a swing of about 57%.",
+          "hint": ".swingBy(.14, 8) on the hats line.",
+          "check": {
+            "all": [
+              { "eq": [{ "count": { "s": "hh" } }, 16] },
+              { "gte": [{ "timeAt": { "sel": { "s": "hh" }, "index": 1 } }, 0.0686] },
+              { "lte": [{ "timeAt": { "sel": { "s": "hh" }, "index": 1 } }, 0.0776] }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add ghost rimshots: a part called ghosts with two quiet rim hits per bar, off the beat.",
+        "hint": "const ghosts = s(\"[~ ~ ~ rim] [~ ~ rim ~]\").bank(\"RolandTR909\").gain(.25), and stack it.",
+        "check": {
+          "all": [
+            { "defines": "ghosts" },
+            { "gte": [{ "count": { "s": "rim" } }, 2] },
+            { "every": { "sel": { "s": "rim" }, "where": [{ "key": "gain", "lt": 0.4, "default": 0.8 }, { "key": "$time", "neq": 0 }] } }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\")\nstack(kick, clap, hats)"
+      ],
+      "solution": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nstack(kick, clap, hats)",
+      "challengeSolution": "setcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nconst ghosts = s(\"[~ ~ ~ rim] [~ ~ rim ~]\").bank(\"RolandTR909\").gain(.25)\nstack(kick, clap, hats, ghosts)",
+      "summary": ["Swing delays every second 16th; .swingBy(.14, 8) is about 57%.", "A gain pattern on 16th hats puts the weight on the beat.", "Ghost notes are quiet in-between hits that fill the groove."],
+      "introduces": [".swingBy", "patterned .gain"],
+      "concepts": ["ghost notes"],
+      "teaches": ["I1", "I4"],
+      "tags": ["drums", "swing"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "cp", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }, { "s": "rim", "bank": "RolandTR909" }]
+    },
+    {
+      "id": "deep-house-groove",
+      "title": "Project: Deep house groove",
+      "goal": "Put the piano, the organ bass and the shuffle together in one groove.",
+      "concept": "Everything from this pack in one loop: a shuffled 909 groove, the organ bass in the gaps, and the piano answering the clap. Keep it **deep**: nothing loud, the piano behind the drums, the bass felt more than heard.\n\nThe tempo sits a little slower than the core lessons, 118–122 BPM. One `const key` keeps the bass and the piano in tune, so changing the key later is one edit.",
+      "shape": "project",
+      "starter": "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.2)\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Add shuffled 16th hats (gain pattern, swing about 57%) and stack them.",
+          "hint": "const hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)",
+          "check": {
+            "all": [
+              { "defines": "hats" },
+              { "eq": [{ "count": { "s": "hh" } }, 16] },
+              { "gte": [{ "timeAt": { "sel": { "s": "hh" }, "index": 1 } }, 0.0686] }
+            ]
+          }
+        },
+        {
+          "text": "Add the organ bass in the key, on the offbeats, short and filtered.",
+          "hint": "const bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(key).s(\"square\").octave(2).decay(.12).sustain(0).lpf(700)",
+          "check": {
+            "all": [
+              { "defines": "bass" },
+              { "inKey": { "sel": { "s": "square" } } },
+              { "playsAt": { "sel": { "s": "square" }, "at": [0.125, 0.375, 0.625, 0.875], "cycles": 1 } },
+              { "every": { "sel": { "s": "square" }, "where": [{ "key": "sustain", "eq": 0, "default": 1 }, { "key": "cutoff", "lte": 900, "gt": 0 }] } }
+            ]
+          }
+        },
+        {
+          "text": "Add the piano stab, two chords alternating, behind the drums.",
+          "hint": "const piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.5).room(.3)",
+          "check": {
+            "all": [
+              { "defines": "piano" },
+              { "gte": [{ "maxChordSize": true }, 3] },
+              { "every": { "sel": { "s": "piano" }, "where": [{ "key": "gain", "lte": 0.6, "default": 0.8 }, { "key": "room", "gt": 0, "default": 0 }] } },
+              { "neq": [
+                { "values": { "sel": { "s": "piano", "bar": 0 }, "key": "$pc", "unique": true, "sorted": true } },
+                { "values": { "sel": { "s": "piano", "bar": 1 }, "key": "$pc", "unique": true, "sorted": true } }
+              ] }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Double the clap on the last bar of every four.",
+        "hint": "Add .lastOf(4, x => x.ply(2)) to the clap line.",
+        "check": { "gt": [{ "count": { "s": "cp", "bar": 3 } }, { "count": { "s": "cp", "bar": 0 } }] }
+      },
+      "steps": [
+        "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.2)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nstack(kick, clap, hats)",
+        "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.2)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(key).s(\"square\").octave(2).decay(.12).sustain(0).lpf(700)\nstack(kick, clap, hats, bass)"
+      ],
+      "solution": "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.2)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(key).s(\"square\").octave(2).decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.5).room(.3)\nstack(kick, clap, hats, bass, piano)",
+      "challengeSolution": "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.2).lastOf(4, x => x.ply(2))\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(key).s(\"square\").octave(2).decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.5).room(.3)\nstack(kick, clap, hats, bass, piano)",
+      "summary": ["A deep house groove: shuffled hats, an offbeat organ bass, a piano stab behind the drums.", "One const key keeps the bass and piano in tune.", "A fill every four bars (.lastOf) marks the phrase."],
+      "introduces": [".lastOf", ".ply"],
+      "teaches": ["I7", "I8", "I19"],
+      "tags": ["project", "chords", "bass", "drums"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "cp", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }, { "s": "piano" }]
+    }
+  ]
+}

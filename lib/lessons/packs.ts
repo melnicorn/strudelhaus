@@ -54,7 +54,7 @@ export function compilePack(spec: PackSpec, source: Pack['source'], customs: Cus
   const extra: Record<string, SkillSpec> = Object.fromEntries((spec.skills ?? []).map((s) => [s.id, s]));
   const packTags = spec.tags ?? [];
   const byLocal = new Map<string, Lesson>();
-  const tracks: Track[] = spec.tracks.map((t) => ({ ...t, packId: spec.id, lessons: [], requires: t.requires ?? [], tags: [...new Set([...packTags, ...(t.tags ?? [])])] }));
+  const tracks: Track[] = spec.tracks.map((t) => ({ ...t, packId: spec.id, lessons: [], requires: t.requires ?? [], tags: [...new Set([...(t.tags ?? []), ...packTags])] }));
   for (const track of spec.tracks) {
     track.lessons.forEach((localId, i) => {
       const l = spec.lessons.find((x) => x.id === localId);
@@ -72,14 +72,18 @@ export function compilePack(spec: PackSpec, source: Pack['source'], customs: Cus
         tier: tierOf(l.teaches, extra),
         tasks: tasks.map((t, n) => named(`${localId} task ${n + 1}`, () => compileTask(t, customs))),
         ...(challenge ? { challenge: named(`${localId} challenge`, () => compileTask(challenge, customs)) } : {}),
-        tags: [...new Set([...packTags, ...(track.tags ?? []), ...(tags ?? [])])],
+        // The lesson's own tags first, so the most specific ones show on the map.
+        tags: [...new Set([...(tags ?? []), ...(track.tags ?? []), ...packTags])],
         requires: requires ?? defaultRequires(l, extra),
       };
       byLocal.set(localId, lesson);
       tracks.find((x) => x.id === track.id)!.lessons.push(lesson);
     });
   }
-  for (const track of tracks) if (!track.requires.length && track.lessons[0]) track.requires = track.lessons[0].requires;
+  // A track with no stated requirements builds on what its first lesson needs, less anything this
+  // pack teaches itself (a pack can't ask newcomers for a skill it is there to teach).
+  const taughtHere = new Set(spec.lessons.flatMap((l) => l.teaches));
+  for (const track of tracks) if (!track.requires.length && track.lessons[0]) track.requires = track.lessons[0].requires.filter((r) => !taughtHere.has(r));
   const lessons = tracks.flatMap((t) => t.lessons);
   for (const l of spec.lessons) if (!byLocal.has(l.id)) throw new Error(`Lesson "${l.id}" is not in any track`);
   return { ...spec, tracks, lessons, source };

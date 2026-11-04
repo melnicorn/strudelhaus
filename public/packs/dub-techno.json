@@ -1,0 +1,215 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "dub-techno",
+  "title": "A dub techno 12-inch",
+  "description": "One track built from nothing, a lesson at a time: a pulse, a chord, echoes, space, movement, then the arrangement.",
+  "author": "Strudel Workshop",
+  "tags": ["dub techno", "techno", "effects", "track"],
+  "tracks": [
+    {
+      "id": "twelve-inch",
+      "title": "A dub techno 12-inch",
+      "blurb": "Every lesson starts from the code you finished in the one before, and the last one is the whole track.",
+      "kind": "line",
+      "requires": ["B9", "I6", "I14", "I15"],
+      "lessons": ["the-pulse", "the-chord", "the-echo", "the-space", "the-movement", "the-twelve-inch"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "the-pulse",
+      "title": "The pulse",
+      "goal": "Start the track: a steady 909 kick and quiet offbeat hats at 122 BPM.",
+      "concept": "Dub techno (Basic Channel, Maurizio, Deepchord) is **patience**: a steady pulse, one chord, and effects doing the storytelling over many minutes. We'll build one such track across this whole line of lessons; each lesson picks up the code where the last one left it.\n\nIt starts, as the records do, with the **pulse**: a four-on-the-floor kick and hats on the offbeats, kept quiet. Nothing here should be loud.",
+      "shape": "concept",
+      "starter": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\n",
+      "tasks": [
+        {
+          "text": "Add a part called kick: a TR-909 kick on every beat.",
+          "hint": "const kick = s(\"bd*4\").bank(\"RolandTR909\"), then play it with stack(kick).",
+          "check": { "all": [{ "defines": "kick" }, { "playsAt": { "s": "bd", "at": [0, 0.25, 0.5, 0.75] } }, { "every": { "sel": { "s": "bd" }, "where": [{ "key": "bank", "eq": "RolandTR909" }] } }] }
+        },
+        {
+          "text": "Add a part called hats: closed hats on the offbeats, quiet.",
+          "hint": "const hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35), and stack(kick, hats).",
+          "check": { "all": [{ "defines": "hats" }, { "includesTimes": { "s": "hh", "at": [0.125, 0.375, 0.625, 0.875] } }, { "every": { "sel": { "s": "hh" }, "where": [{ "key": "gain", "lt": 0.6, "default": 0.8 }] } }] }
+        }
+      ],
+      "steps": ["// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nstack(kick)"],
+      "solution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nstack(kick, hats)",
+      "summary": ["Dub techno is a steady pulse with effects doing the work.", "Four-on-the-floor kick, quiet offbeat hats, 120–124 BPM."],
+      "introduces": ["s", ".bank", ".gain", "stack"],
+      "teaches": ["B4", "B6", "B9"],
+      "tags": ["drums", "909"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }]
+    },
+    {
+      "id": "the-chord",
+      "title": "The chord",
+      "goal": "Add the one chord the whole track lives on, dark and filtered.",
+      "concept": "A dub techno track usually has **one chord**, a minor seventh or ninth, played as a short stab and then drowned in effects. The chord is a sawtooth through a **low-pass filter**, closed down so it glows rather than shines.\n\n`note(\"[c3,eb3,g3,bb3]\")` plays four notes at once: C minor 7. `.struct(\"[~ x]*2\")` makes it hit on the offbeats of 2 and 4, where the clap would be.",
+      "shape": "concept",
+      "starter": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nstack(kick, hats)",
+      "tasks": [
+        {
+          "text": "Add a part called stab: a C minor 7 chord on a sawtooth, hitting on the offbeats of 2 and 4, at gain .4.",
+          "hint": "const stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4), and stack(kick, hats, stab).",
+          "check": { "all": [{ "defines": "stab" }, { "gte": [{ "maxChordSize": true }, 3] }, { "eq": [{ "values": { "sel": { "s": "sawtooth" }, "key": "$time", "unique": true, "sorted": true } }, [0.25, 0.75]] }] }
+        },
+        {
+          "text": "Close the filter down to 800 Hz, and make the chord short: a quick decay and no sustain.",
+          "hint": ".lpf(800).decay(.2).sustain(0) on the stab line.",
+          "check": { "every": { "sel": { "s": "sawtooth" }, "where": [{ "key": "cutoff", "lte": 1000, "gt": 0 }, { "key": "sustain", "eq": 0, "default": 1 }] } }
+        }
+      ],
+      "challenge": {
+        "text": "Add a little resonance so the filter sings.",
+        "hint": ".lpq(8) on the stab line.",
+        "check": { "every": { "sel": { "s": "sawtooth" }, "where": [{ "key": "resonance", "gte": 6, "default": 0 }] } }
+      },
+      "steps": ["// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4)\nstack(kick, hats, stab)"],
+      "solution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\nstack(kick, hats, stab)",
+      "challengeSolution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0).lpq(8)\nstack(kick, hats, stab)",
+      "summary": ["One minor-seventh chord, played as a short offbeat stab.", "A closed low-pass filter makes it glow instead of shine.", "Resonance (.lpq) makes the filter sing."],
+      "introduces": ["note", ".struct", ".lpf", ".decay", ".sustain", ".lpq"],
+      "teaches": ["I6", "B14", "I10", "I11"],
+      "tags": ["chords", "sound design"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }]
+    },
+    {
+      "id": "the-echo",
+      "title": "The echo",
+      "goal": "Send the chord into a dotted-eighth delay with long feedback.",
+      "concept": "The dub in dub techno is the **delay**. Each chord stab echoes in time with the beat, and with high **feedback** the echoes pile up into a wash that keeps moving after the stab is gone.\n\n`.delaysync(3/16)` sets the echo time to a dotted eighth, the classic dub spacing. `.delayfeedback(.6)` is how much of each echo comes back round.\n\nStrudel has one delay per **orbit**, so the stab gets its own: `.orbit(2)`. Anything else that wants a different delay later gets another orbit.",
+      "shape": "concept",
+      "starter": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\nstack(kick, hats, stab)",
+      "tasks": [
+        {
+          "text": "Give the stab a dotted-eighth delay with feedback of .6.",
+          "hint": ".delay(.5).delaysync(3/16).delayfeedback(.6) on the stab line.",
+          "check": { "every": { "sel": { "s": "sawtooth" }, "where": [{ "key": "delay", "gt": 0, "default": 0 }, { "key": "delaysync", "eq": 0.1875 }, { "key": "delayfeedback", "gte": 0.5, "default": 0 }] } }
+        },
+        {
+          "text": "Put the stab on its own orbit, number 2, so its delay is its own.",
+          "hint": ".orbit(2) on the stab line.",
+          "check": { "every": { "sel": { "s": "sawtooth" }, "where": [{ "key": "orbit", "eq": 2, "default": 1 }] } }
+        }
+      ],
+      "challenge": {
+        "text": "Push the feedback up towards a wash: .75 or more (but below 1, or it never stops).",
+        "hint": ".delayfeedback(.78)",
+        "check": { "every": { "sel": { "s": "sawtooth" }, "where": [{ "key": "delayfeedback", "gte": 0.75, "lt": 1, "default": 0 }] } }
+      },
+      "steps": ["// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6)\nstack(kick, hats, stab)"],
+      "solution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2)\nstack(kick, hats, stab)",
+      "challengeSolution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.78).orbit(2)\nstack(kick, hats, stab)",
+      "summary": ["Dotted-eighth delay (.delaysync(3/16)) is the dub spacing.", "Feedback sets how long the echoes keep coming.", "One delay per orbit: give the stab its own with .orbit(2)."],
+      "introduces": [".delay", ".delaysync", ".delayfeedback", ".orbit"],
+      "teaches": ["I15", "E12"],
+      "tags": ["effects"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }]
+    },
+    {
+      "id": "the-space",
+      "title": "The space",
+      "goal": "Put the chord in a big room and thin the hats out of the low end.",
+      "concept": "Delay gives rhythm; **reverb** gives distance. Dub techno chords sit far back in a huge room, so turn `.room` up on the stab (it shares the stab's orbit, so it's the stab's own reverb).\n\nAs the effects pile up the low end gets muddy. A **high-pass filter** on the hats (`.hpf`) takes away lows they never needed, leaving room for the kick.",
+      "shape": "concept",
+      "starter": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2)\nstack(kick, hats, stab)",
+      "tasks": [
+        {
+          "text": "Give the stab a big reverb: room .6 or more.",
+          "hint": ".room(.7) on the stab line.",
+          "check": { "every": { "sel": { "s": "sawtooth" }, "where": [{ "key": "room", "gte": 0.6, "default": 0 }] } }
+        },
+        {
+          "text": "High-pass the hats at 400 Hz or above.",
+          "hint": ".hpf(400) on the hats line.",
+          "check": { "every": { "sel": { "s": "hh" }, "where": [{ "key": "hcutoff", "gte": 400, "default": 0 }] } }
+        }
+      ],
+      "challenge": {
+        "text": "Add a sine sub called sub on the root, an octave below the chord’s bass note, quiet.",
+        "hint": "const sub = note(\"c1*4\").s(\"sine\").decay(.25).sustain(0).gain(.6), and stack it.",
+        "check": { "all": [{ "defines": "sub" }, { "some": { "sel": { "s": "sine" }, "where": [{ "key": "$midi", "lt": 40 }] } }] }
+      },
+      "steps": ["// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nstack(kick, hats, stab)"],
+      "solution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nstack(kick, hats, stab)",
+      "challengeSolution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nconst sub = note(\"c1*4\").s(\"sine\").decay(.25).sustain(0).gain(.6)\nstack(kick, hats, stab, sub)",
+      "summary": ["Reverb (.room) sets how far away a sound is.", "High-pass the hats so the low end stays clear.", "A quiet sine sub carries the root."],
+      "introduces": [".room", ".hpf"],
+      "teaches": ["I14", "I12", "E11"],
+      "tags": ["effects", "mixing"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }]
+    },
+    {
+      "id": "the-movement",
+      "title": "The movement",
+      "goal": "Make the chord breathe over 16 bars, and add a clap and 16th hats.",
+      "concept": "Nothing in dub techno changes quickly, but everything changes. The classic move is the chord's filter **breathing**: opening and closing over 16 bars, so the same stab is never quite the same.\n\nA **signal** does it: `sine.range(400, 1000).slow(16)` is a slow wave between 400 and 1000 Hz, one cycle every 16 bars. Give it to `.lpf` and the filter follows.\n\nThen a little more rhythm: a soft clap on 2 and 4, and the hats on 16ths with a gain pattern, still quiet.",
+      "shape": "concept",
+      "starter": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(800).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nstack(kick, hats, stab)",
+      "tasks": [
+        {
+          "text": "Replace the stab’s fixed cutoff with a 16-bar sine sweep between 400 and 1000 Hz.",
+          "hint": "Change .lpf(800) to .lpf(sine.range(400, 1000).slow(16)).",
+          "check": { "all": [{ "uses": "range" }, { "gte": [{ "distinct": { "sel": { "s": "sawtooth" }, "key": "cutoff", "round": 0, "bars": [0, 4, 8, 12] } }, 3] }] }
+        },
+        {
+          "text": "Add a part called clap: a soft 909 clap on beats 2 and 4, in the stab’s room.",
+          "hint": "const clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5).room(.4).orbit(3), and stack it.",
+          "check": { "all": [{ "defines": "clap" }, { "playsAt": { "s": "cp", "at": [0.25, 0.75] } }, { "every": { "sel": { "s": "cp" }, "where": [{ "key": "gain", "lte": 0.6, "default": 0.8 }] } }] }
+        }
+      ],
+      "challenge": {
+        "text": "Turn the hats into 16ths with a gain pattern, still quiet.",
+        "hint": "s(\"hh*16\") with .gain(\"[.4 .2 .3 .2]*4\") instead of .gain(.35).",
+        "check": { "all": [{ "eq": [{ "count": { "s": "hh" } }, 16] }, { "gte": [{ "distinct": { "sel": { "s": "hh" }, "key": "gain" } }, 2] }, { "every": { "sel": { "s": "hh" }, "where": [{ "key": "gain", "lt": 0.6, "default": 0.8 }] } }] }
+      },
+      "steps": ["// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(sine.range(400, 1000).slow(16)).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nstack(kick, hats, stab)"],
+      "solution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(sine.range(400, 1000).slow(16)).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5).room(.4).orbit(3)\nstack(kick, hats, stab, clap)",
+      "challengeSolution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.4 .2 .3 .2]*4\").hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(sine.range(400, 1000).slow(16)).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5).room(.4).orbit(3)\nstack(kick, hats, stab, clap)",
+      "summary": ["A slow signal on the filter makes the same chord breathe.", "sine.range(a, b).slow(16): one sweep every 16 bars.", "Each part with its own reverb gets its own orbit."],
+      "introduces": ["sine", ".range", ".slow"],
+      "teaches": ["I18", "E2", "I4"],
+      "tags": ["sound design", "effects", "drums"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }, { "s": "cp", "bank": "RolandTR909" }]
+    },
+    {
+      "id": "the-twelve-inch",
+      "title": "Project: The 12-inch",
+      "goal": "Arrange the loop into a track: intro, main, a dub section, outro.",
+      "concept": "A 12-inch is a loop with a **shape**. Dub techno shapes are long and gentle: a drums-only **intro** a DJ can mix into, the **main** groove, a **dub** section where the kick drops out and the echoes carry the room, and a drums **outro**.\n\nSections are stacks with names; `arrange([8, intro], [16, main], …)` plays them in turn for that many bars each. Every section restarts its own clock, so the 16-bar sweep starts fresh with each section.",
+      "shape": "project",
+      "composition": true,
+      "starter": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(sine.range(400, 1000).slow(16)).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5).room(.4).orbit(3)\nstack(kick, hats, stab, clap)",
+      "tasks": [
+        {
+          "text": "Name three sections: intro (kick and hats), main (everything) and outro (kick and hats). Keep playing main for now.",
+          "hint": "const intro = stack(kick, hats), const main = stack(kick, hats, stab, clap), const outro = stack(kick, hats); end with main.",
+          "check": { "all": [{ "block": { "name": "intro", "kind": ["group", "section"], "members": ["kick", "hats"] } }, { "block": { "name": "main", "kind": ["group", "section"], "members": ["kick", "hats", "stab", "clap"] } }, { "block": { "name": "outro", "kind": ["group", "section"] } }] }
+        },
+        {
+          "text": "Arrange them: 8 bars of intro, 16 of main, 8 of outro.",
+          "hint": "Replace the last line with arrange([8, intro], [16, main], [8, outro]).",
+          "check": { "all": [{ "final": "arrange" }, { "gte": [{ "rows": true }, 3] }, { "eq": [{ "count": { "note": true, "bar": 0 } }, 0] }, { "some": { "sel": { "note": true, "bar": 8 } } }] }
+        }
+      ],
+      "challenge": {
+        "text": "Add an 8-bar dub section before the outro: no kick, just the stab, its echoes and the hats.",
+        "hint": "const dub = stack(hats, stab), then arrange([8, intro], [16, main], [8, dub], [8, outro]).",
+        "check": { "all": [{ "gte": [{ "rows": true }, 4] }, { "eq": [{ "count": { "s": "bd", "bar": 24 } }, 0] }, { "some": { "sel": { "note": true, "bar": 24 } } }] }
+      },
+      "steps": ["// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(sine.range(400, 1000).slow(16)).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5).room(.4).orbit(3)\nconst intro = stack(kick, hats)\nconst main = stack(kick, hats, stab, clap)\nconst outro = stack(kick, hats)\nmain"],
+      "solution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(sine.range(400, 1000).slow(16)).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5).room(.4).orbit(3)\nconst intro = stack(kick, hats)\nconst main = stack(kick, hats, stab, clap)\nconst outro = stack(kick, hats)\narrange([8, intro], [16, main], [8, outro])",
+      "challengeSolution": "// A dub techno 12-inch. Tempo first:\nsetcpm(122/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.35).hpf(400)\nconst stab = note(\"[c3,eb3,g3,bb3]\").struct(\"[~ x]*2\").s(\"sawtooth\").gain(.4).lpf(sine.range(400, 1000).slow(16)).decay(.2).sustain(0)\n  .delay(.5).delaysync(3/16).delayfeedback(.6).orbit(2).room(.7)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5).room(.4).orbit(3)\nconst intro = stack(kick, hats)\nconst main = stack(kick, hats, stab, clap)\nconst dub = stack(hats, stab)\nconst outro = stack(kick, hats)\narrange([8, intro], [16, main], [8, dub], [8, outro])",
+      "summary": ["Sections are named stacks; arrange() plays them for so many bars each.", "A drums-only intro and outro let a DJ mix the record.", "A dub section drops the kick and lets the echoes carry the room."],
+      "introduces": ["arrange"],
+      "concepts": ["sections"],
+      "teaches": ["E3", "E4", "E6", "E7"],
+      "tags": ["project", "track", "arrangement"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }, { "s": "cp", "bank": "RolandTR909" }]
+    }
+  ]
+}

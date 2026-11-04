@@ -205,14 +205,15 @@ export async function validatePack(json: unknown, opts: ValidateOptions = {}): P
       if (cur.starter.trim() !== prev.solution.trim() && cur.starter.trim() !== (prev.challengeSolution ?? '').trim()) {
         err(`In line "${track.id}" the starter must be the previous lesson's solution (${prev.localId})`, cur.localId, 'starter');
       }
-      for (const code of [cur.solution, cur.challengeSolution].filter((c): c is string => !!c)) {
+      for (const [where, code] of [['solution', cur.solution] as const, ['challengeSolution', cur.challengeSolution] as const]) {
+        if (!code) continue;
         const r = await buildContext(code);
         if ('error' in r) continue;
         // Once the track is arranged, bar 1 is the intro, so earlier bar-1 checks no longer apply.
         if (r.ctx.model.final?.kind === 'arrange') continue;
         for (const earlier of track.lessons.slice(0, i)) {
           earlier.tasks.forEach((t, n) => {
-            if (!t.replacedLater && !passes(t, r.ctx)) err(`Undoes ${earlier.localId} task ${n + 1} ("${t.text}")`, cur.localId, 'solution');
+            if (!t.replacedLater && !passes(t, r.ctx)) err(`Undoes ${earlier.localId} task ${n + 1} ("${t.text}")`, cur.localId, where);
           });
         }
       }
