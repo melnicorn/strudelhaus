@@ -66,6 +66,7 @@ const lessonSchema = z
     composition: z.boolean().optional(),
     library: z.boolean().optional(),
     preload: z.array(z.object({ s: z.string(), bank: z.string().optional() }).strict()).optional(),
+    reference: z.string().optional(),
   })
   .strict();
 const trackSchema = z
@@ -229,6 +230,11 @@ async function walkLesson(lesson: Lesson, { err, warn }: Report, silence: CheckC
   const all = [...lesson.tasks.map((t, i) => [`task ${i + 1}`, t] as const), ...(lesson.challenge ? [['challenge', lesson.challenge] as const] : [])];
   if (silence) for (const [where, t] of all) if (passes(t, silence)) err('Passes with no music at all (the check is too loose)', id, where);
   if (parseProject(lesson.starter).syntaxError && lesson.starter.trim()) err('Starter does not parse', id, 'starter');
+  if (lesson.reference) {
+    const r = await buildContext(lesson.reference);
+    if ('error' in r) err(`Reference does not run: ${r.error}`, id, 'reference');
+    else lesson.tasks.forEach((t, i) => passes(t, r.ctx) || err(`Task ${i + 1} should pass on the reference`, id, 'reference'));
+  }
 
   const stages = [
     { label: 'starter', code: lesson.starter, done: 0 },

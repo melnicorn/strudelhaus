@@ -154,7 +154,7 @@ function LessonBody({ lesson, initialCode, carriedForward, passed, challengePass
     let count = 0;
     for (const b of model.blocks) {
       if (b.kind !== 'part') continue;
-      const item = itemFromBlock(code, b.name, { source: { lessonId: lesson.id }, tags: [lesson.title] });
+      const item = itemFromBlock(code, b.name, { source: { lessonId: lesson.id }, tags: [lesson.title, ...lesson.tags] });
       if (item) {
         items = upsertItem(items, item);
         count++;
@@ -201,8 +201,18 @@ function LessonBody({ lesson, initialCode, carriedForward, passed, challengePass
           </Hint>
         </nav>
         <h1 className="m-0 text-[22px] leading-tight font-bold">{lesson.title}</h1>
-        <Panel title="Goal">
+        <Panel title={lesson.shape === 'kata' ? 'Brief' : lesson.shape === 'fix' ? 'Fix it' : 'Goal'}>
           <p className="m-0 font-semibold">{lesson.goal}</p>
+          {lesson.reference && (
+            <Button
+              size="sm"
+              variant="secondary"
+              className="self-start"
+              onPress={() => getEngine().then((e) => e.audition(lesson.reference!, 2))}
+            >
+              ▶ Play the reference
+            </Button>
+          )}
         </Panel>
         {trackOf(lesson).kind === 'line' && (
           <Hint>
@@ -218,10 +228,12 @@ function LessonBody({ lesson, initialCode, carriedForward, passed, challengePass
             )}
           </Hint>
         )}
-        <Panel title="Concept" actions={<Hint>hold {isMac() ? '⌘' : 'Ctrl'} to look up words</Hint>}>
-          <Prose text={lesson.concept} />
-        </Panel>
-        <Panel title="Task">
+        {lesson.concept.trim() && (
+          <Panel title={lesson.shape === 'fix' ? 'What you hear' : 'Concept'} actions={<Hint>hold {isMac() ? '⌘' : 'Ctrl'} to look up words</Hint>}>
+            <Prose text={lesson.concept} />
+          </Panel>
+        )}
+        <Panel title={lesson.shape === 'kata' ? 'Done when' : lesson.shape === 'drill' ? 'Drill' : 'Task'}>
           <ol className="m-0 flex list-none flex-col gap-2 p-0">
             {lesson.tasks.map((t, i) => (
               <li key={i} className="flex gap-2">

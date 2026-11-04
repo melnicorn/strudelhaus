@@ -66,6 +66,8 @@ export interface LessonSpec {
   library?: boolean;
   /** Sounds to load before Play so the first hits aren't dropped. */
   preload?: { s: string; bank?: string }[];
+  /** Code the learner listens to and reproduces (ear training): a "Play reference" button plays it. */
+  reference?: string;
 }
 
 export interface TrackSpec {
