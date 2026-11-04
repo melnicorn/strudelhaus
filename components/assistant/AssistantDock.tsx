@@ -1,36 +1,138 @@
 'use client';
 
-import { Button, cn, TextArea } from '@heroui/react';
-import { useEffect, useRef } from 'react';
+import { Button, cn, TextArea, ToggleButton, ToggleButtonGroup } from '@heroui/react';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import { useEditorStore } from '@/lib/stores/editor';
 import { useAssistantStore, type ChatItem } from '@/lib/stores/assistant';
 import { AssistantSettings } from './AssistantSettings';
 
-/** Header button that opens and closes the assistant panel. */
+type Mode = 'closed' | 'overlay' | 'docked';
+
+/** Header switch for the assistant: off, over the page while hovered, or docked beside it. */
 export function AssistantToggle() {
-  const open = useAssistantStore((s) => s.config.open);
-  const setOpen = useAssistantStore((s) => s.setOpen);
+  const mode = useAssistantStore((s) => s.config.mode);
+  const setMode = useAssistantStore((s) => s.setMode);
   useEffect(() => useAssistantStore.getState().load(), []);
   return (
-    <Button size="sm" variant={open ? 'secondary' : 'ghost'} className="ml-auto" aria-pressed={open} onPress={() => setOpen(!open)}>
-      ✦ Assistant
-    </Button>
+    <div className="ml-auto flex items-center gap-2">
+      <span className="text-xs text-muted">✦ Assistant</span>
+      <ToggleButtonGroup
+        size="sm"
+        selectionMode="single"
+        disallowEmptySelection
+        aria-label="Assistant panel"
+        selectedKeys={new Set([mode])}
+        onSelectionChange={(keys) => {
+          const next = [...keys][0] as Mode | undefined;
+          if (next) setMode(next);
+        }}
+      >
+        <ToggleButton id="closed" className="h-6 px-2 text-xs md:h-6" aria-label="Assistant off">
+          Off
+        </ToggleButton>
+        <ToggleButton id="overlay" className="h-6 px-2 text-xs md:h-6" aria-label="Assistant shows when you hover the right edge">
+          <ToggleButtonGroup.Separator />
+          Hover
+        </ToggleButton>
+        <ToggleButton id="docked" className="h-6 px-2 text-xs md:h-6" aria-label="Assistant docked beside the page">
+          <ToggleButtonGroup.Separator />
+          Docked
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </div>
   );
 }
 
-/** The assistant chat, docked to the right of the page. */
+/** The assistant chat: docked to the right of the page, or floating over it while hovered. */
 export function AssistantDock() {
-  const open = useAssistantStore((s) => s.config.open);
+  const mode = useAssistantStore((s) => s.config.mode);
   const loaded = useAssistantStore((s) => s.loaded);
-  const hasKey = useAssistantStore((s) => !!s.config.apiKey);
-  const showSettings = useAssistantStore((s) => s.showSettings);
-  const { setOpen, setShowSettings, clear } = useAssistantStore.getState();
-  if (!loaded || !open) return null;
-
-  const settings = showSettings;
+  if (!loaded || mode === 'closed') return null;
+  if (mode === 'overlay') return <Overlay />;
   return (
     <aside className="flex w-[400px] shrink-0 flex-col border-l border-border bg-surface" aria-label="Assistant">
+      <Panel />
+    </aside>
+  );
+}
+
+const HIDE_DELAY_MS = 350;
+
+/**
+ * Hover mode: a tab on the right edge; hovering it slides the panel over the page. It stays while
+ * the pointer or keyboard focus is inside, and hides shortly after both leave (or on Escape).
+ */
+function Overlay() {
+  const peek = useAssistantStore((s) => s.peek);
+  const setPeek = useAssistantStore((s) => s.setPeek);
+  const [hover, setHover] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const shown = hover || focused || peek;
+
+  const enter = () => {
+    clearTimeout(timer.current);
+    setHover(true);
+  };
+  const leave = () => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      setHover(false);
+      setPeek(false);
+    }, HIDE_DELAY_MS);
+  };
+
+  return (
+    <div
+      ref={box}
+      className="pointer-events-none absolute inset-y-0 right-0 z-30 flex items-center"
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => {
+        if (!box.current?.contains(e.relatedTarget as Node | null)) setFocused(false);
+      }}
+      onKeyDown={(e) => {
+        if (e.key !== 'Escape') return;
+        (document.activeElement as HTMLElement | null)?.blur();
+        setFocused(false);
+        setHover(false);
+        setPeek(false);
+      }}
+    >
+      {shown ? (
+        <aside
+          className="pointer-events-auto flex h-full w-[400px] flex-col border-l border-border bg-surface shadow-2xl"
+          aria-label="Assistant"
+          onMouseEnter={enter}
+          onMouseLeave={leave}
+        >
+          <Panel autoFocus={peek} />
+        </aside>
+      ) : (
+        <button
+          type="button"
+          className="pointer-events-auto h-auto self-center rounded-l-md border border-r-0 border-border bg-surface px-1 py-3 text-xs text-muted shadow-md [writing-mode:vertical-rl] hover:text-foreground"
+          onMouseEnter={enter}
+          onMouseLeave={leave}
+          onClick={() => setPeek(true)}
+        >
+          ✦ Assistant
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** The panel's title bar and either the chat or the settings. */
+function Panel({ autoFocus = true }: { autoFocus?: boolean }) {
+  const mode = useAssistantStore((s) => s.config.mode);
+  const hasKey = useAssistantStore((s) => !!s.config.apiKey);
+  const settings = useAssistantStore((s) => s.showSettings);
+  const { setMode, setShowSettings, clear } = useAssistantStore.getState();
+  return (
+    <>
       <div className="flex items-center gap-1 border-b border-border px-3 py-1.5">
         <strong className="mr-auto text-sm">{settings ? 'Assistant settings' : 'Assistant'}</strong>
         {!settings && (
@@ -39,16 +141,24 @@ export function AssistantDock() {
           </Button>
         )}
         {hasKey && (
-          <Button size="sm" variant="ghost" onPress={() => setShowSettings(!showSettings)} aria-label={settings ? 'Back to chat' : 'Settings'}>
+          <Button size="sm" variant="ghost" onPress={() => setShowSettings(!settings)} aria-label={settings ? 'Back to chat' : 'Settings'}>
             {settings ? '◀ Chat' : '⚙'}
           </Button>
         )}
-        <Button size="sm" variant="ghost" isIconOnly onPress={() => setOpen(false)} aria-label="Close the assistant">
+        <Button
+          size="sm"
+          variant="ghost"
+          onPress={() => setMode(mode === 'docked' ? 'overlay' : 'docked')}
+          aria-label={mode === 'docked' ? 'Unpin: show only on hover' : 'Pin: dock beside the page'}
+        >
+          {mode === 'docked' ? 'Unpin' : 'Pin'}
+        </Button>
+        <Button size="sm" variant="ghost" isIconOnly onPress={() => setMode('closed')} aria-label="Turn the assistant off">
           ✕
         </Button>
       </div>
-      {settings ? <AssistantSettings /> : <Chat />}
-    </aside>
+      {settings ? <AssistantSettings /> : <Chat autoFocus={autoFocus} />}
+    </>
   );
 }
 
@@ -65,7 +175,7 @@ const markdown: Components = {
   ),
 };
 
-function Chat() {
+function Chat({ autoFocus }: { autoFocus: boolean }) {
   const items = useAssistantStore((s) => s.items);
   const thinking = useAssistantStore((s) => s.thinking);
   const context = useEditorStore((s) => s.context);
@@ -90,7 +200,7 @@ function Chat() {
         {thinking && <p className="m-0 animate-pulse text-xs text-muted">Thinking…</p>}
       </div>
       <UndoBar />
-      <Composer />
+      <Composer autoFocus={autoFocus} />
     </>
   );
 }
@@ -161,7 +271,7 @@ function UndoBar() {
   );
 }
 
-function Composer() {
+function Composer({ autoFocus }: { autoFocus: boolean }) {
   const draft = useAssistantStore((s) => s.draft);
   const busy = useAssistantStore((s) => s.busy);
   const useSelection = useAssistantStore((s) => s.useSelection);
@@ -175,7 +285,10 @@ function Composer() {
   });
   const hasError = useEditorStore((s) => !!(s.problems.error || s.problems.runtimeError));
   const input = useRef<HTMLTextAreaElement>(null);
-  useEffect(() => input.current?.focus(), []);
+  // Not when the overlay opens on hover: focus would keep it open after the pointer leaves.
+  useEffect(() => {
+    if (autoFocus) input.current?.focus();
+  }, [autoFocus]);
 
   return (
     <form

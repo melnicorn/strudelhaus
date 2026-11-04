@@ -23,8 +23,8 @@ export const assistantConfigSchema = z.object({
     })
     .catch(DEFAULT_PROMPT_SETTINGS)
     .default(DEFAULT_PROMPT_SETTINGS),
-  /** The panel was left open. */
-  open: z.boolean().catch(false).default(false),
+  /** How the panel shows: not at all, over the page while hovered, or docked beside it. */
+  mode: z.enum(['closed', 'overlay', 'docked']).catch('closed').default('closed'),
 });
 
 export type AssistantConfig = z.infer<typeof assistantConfigSchema>;

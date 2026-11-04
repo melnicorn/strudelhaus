@@ -26,7 +26,10 @@ interface AssistantStore {
   loaded: boolean;
   load(): void;
   setConfig(patch: Partial<AssistantConfig>): void;
-  setOpen(open: boolean): void;
+  setMode(mode: AssistantConfig['mode']): void;
+  /** Overlay mode: show the panel without hovering (e.g. "Ask the assistant"), until the pointer leaves it. */
+  peek: boolean;
+  setPeek(peek: boolean): void;
   /** The panel shows settings instead of the chat. */
   showSettings: boolean;
   setShowSettings(show: boolean): void;
@@ -100,9 +103,11 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
       set({ config });
       saveAssistantConfig(config);
     },
-    setOpen(open) {
-      get().setConfig({ open });
+    setMode(mode) {
+      get().setConfig({ mode });
     },
+    peek: false,
+    setPeek: (peek) => set({ peek }),
     showSettings: false,
     setShowSettings: (showSettings) => set({ showSettings }),
 
@@ -230,8 +235,9 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
       if (result === 'already') push({ kind: 'notice', text: 'That change was already undone.' });
     },
     askAboutError() {
-      const { setOpen, setShowSettings, setDraft } = get();
-      setOpen(true);
+      const { config, setMode, setShowSettings, setDraft } = get();
+      if (config.mode === 'closed') setMode('overlay');
+      set({ peek: true });
       setShowSettings(false);
       setDraft('Why does my code give this error, and how do I fix it?');
     },
