@@ -54,6 +54,14 @@ Each learner message may carry a <context> block with the page, the code in the 
 - When the context says editing is allowed, you have tools to change the editor: edit_code (replace one exact piece of text, which must appear exactly once in the current code) and replace_code (rewrite the whole program; only for large changes or when asked). Use them when the learner asks you to write, add, fix or change code, not for questions. Each change is highlighted in the editor and the learner can undo it, so make the change rather than asking permission, then say in a sentence what you changed.
 - When the context says editing is not allowed (lessons), you cannot change the code. Lessons exist so the learner does each task themselves: explain, give hints and point at the line to change, and show at most small fragments. Do not write out the full answer to a lesson task or challenge unless the learner explicitly insists after a hint.`;
 
+const AUTHOR_RULES = `# Writing lesson packs (applies on the Lesson author page)
+A lesson pack is one JSON object: { format: "strudel-workshop-pack", version: 1, id, title, description, author?, tags?, skills?, samples?, tracks: [{ id, title, blurb, kind: "skills" | "line", requires?, tags?, lessons: [ids] }], lessons: [...] }.
+Each lesson: { id, title, goal, concept (markdown-ish paragraphs), shape?: concept|drill|fix|remix|kata|project, starter, tasks: [{ text, hint, check, replacedLater? }], challenge?: { text, hint, check }, steps: [code after each task but the last], solution, challengeSolution? (required with a challenge), summary: [...], introduces: [functions], concepts?: [ideas], teaches: [skill ids like B4, I6, E3], requires?, tags?, composition?, library?, preload?: [{ s, bank? }] }.
+The isolation rule: the starter passes no task; steps[i] (the code after doing task i+1 exactly as its hint says) passes tasks 1..i+1 and nothing later; the solution passes every task and not the challenge; challengeSolution passes everything. In a "line" track each lesson's starter is the previous lesson's solution, and no solution may undo an earlier lesson's task.
+Checks are JSON expressions over what the code PLAYS, so any way of writing the same music passes. Nodes: { all: [...] } { any: [...] } { not: e } · { playsAt: { s, at: [0, .25, .5, .75], cycles? } } (exactly these onsets per bar) · { includesTimes: { s, at } } · { every: { sel, where: [cond] } } { some: { sel, where? } } · { uses: "lpf" } { matches: "regex" } { defines: "hats" } { block: { name, kind: "modifier"|"group"|"part", members? } } { final: "stack"|"arrange" } · { inKey: { key?: "C:minor" } } (default: the code's const key) · { eq|neq|gt|gte|lt|lte: [value, value] } · { defined: value }.
+A sel picks events: { s: "bd" | ["cp","oh"], note: true, bar: 3, cycles: 2, at: .25, where: [cond] }. A cond: { key: "gain", gte: .5, lt: 1, eq, neq, in: [...], defined, default: .8 } where key may also be $midi, $pc (pitch class), $note, $time. Values: numbers, strings, arrays, { count: sel } { distinct: { sel, key, round?, bars? } } { values: { sel, key, unique?, sorted? } } { valueAt: { sel, key, index?, default? } } { max|min: { sel, key, default? } } { timeAt: { sel, index } } { bpm: true } { key: true } { maxChordSize: true } { lowestPitchClass: { bar } } { rows: true } { rowBars: n } { rowStart: n } { maxCount: { sel, bars } } { plus|minus|mul: [a, b] }.
+Write checks that fail on the starter and on silence, and that test only what the task adds. Keep tasks small (one idea each) and hints literal (the exact text to add). Use the Validate button's findings to fix a pack; the assistant can read them from the context.`;
+
 function referenceSection(): string {
   const lines = REFERENCE.map((e) => {
     const aka = e.aliases ? ` (also ${e.aliases})` : '';
@@ -94,5 +102,5 @@ export function buildSystemPrompt(settings: PromptSettings): string {
   } else if (settings.mode === 'replace' && settings.custom.trim()) {
     base = settings.custom.trim();
   }
-  return `${base}\n\n${OPERATING_RULES}`;
+  return `${base}\n\n${OPERATING_RULES}\n\n${AUTHOR_RULES}`;
 }

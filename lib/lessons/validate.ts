@@ -208,6 +208,8 @@ export async function validatePack(json: unknown, opts: ValidateOptions = {}): P
       for (const code of [cur.solution, cur.challengeSolution].filter((c): c is string => !!c)) {
         const r = await buildContext(code);
         if ('error' in r) continue;
+        // Once the track is arranged, bar 1 is the intro, so earlier bar-1 checks no longer apply.
+        if (r.ctx.model.final?.kind === 'arrange') continue;
         for (const earlier of track.lessons.slice(0, i)) {
           earlier.tasks.forEach((t, n) => {
             if (!t.replacedLater && !passes(t, r.ctx)) err(`Undoes ${earlier.localId} task ${n + 1} ("${t.text}")`, cur.localId, 'solution');

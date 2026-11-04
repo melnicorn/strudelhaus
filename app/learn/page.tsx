@@ -7,7 +7,7 @@ export default function LearnPage() {
   return (
     <Page
       title="Learn"
-      intro="Thirty-three lessons from a first kick drum to an arranged 90s acid house track. Every lesson stays open: skip ahead whenever you like."
+      intro="From a first kick drum to an arranged track, by skill rather than by number. Every lesson stays open: skip ahead whenever you like, and search by what you want to make."
     >
       <LessonMap />
     </Page>

@@ -13,6 +13,10 @@ export const KEYS = {
   projects: 'sw:projects:v1',
   progress: 'sw:progress:v1',
   settings: 'sw:settings:v1',
+  /** The lesson author page's draft (its JSON text). */
+  author: 'sw:author:v1',
+  /** Lesson packs added from a file or URL (their JSON, as imported). */
+  packs: 'sw:packs:v1',
   /** The assistant's API key and prompt. Deliberately not part of backups (lib/storage/backup.ts). */
   assistant: 'sw:assistant:v1',
 } as const;

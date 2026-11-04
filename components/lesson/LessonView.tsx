@@ -4,7 +4,7 @@ import { Button, Chip, cn, Tabs } from '@heroui/react';
 import { TipButton } from '@/components/ui/TipButton';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { allowedMethods, getLesson, neighbours, trackOf } from '@/lib/lessons/packs';
+import { allowedMethods, getLesson, lessonHref, neighbours, trackOf } from '@/lib/lessons/packs';
 import { BlockPanels } from '@/components/blocks/BlockPanels';
 import { GuiPolicyProvider } from '@/components/blocks/policy';
 import { Hint } from '@/components/ui/Hint';
@@ -16,6 +16,7 @@ import { buildContext } from '@/lib/lessons/checks';
 import type { Lesson } from '@/lib/lessons/types';
 import { itemFromBlock, loadLibrary, saveLibrary, upsertItem } from '@/lib/storage/library';
 import { useEditorStore } from '@/lib/stores/editor';
+import { usePacksStore } from '@/lib/stores/packs';
 import { useProgressStore } from '@/lib/stores/progress';
 import { parseProject } from '@/lib/sync/parseProject';
 import { isMac } from '@/lib/platform';
@@ -24,20 +25,49 @@ import { Prose, inline } from './Prose';
 const TIER_LABEL = { beginner: 'Beginner', intermediate: 'Intermediate', expert: 'Expert' } as const;
 
 export function LessonView({ lessonId }: { lessonId: string }) {
-  const lesson = getLesson(lessonId)!;
+  const packsLoaded = usePacksStore((s) => s.loaded);
+  const loadPacks = usePacksStore((s) => s.load);
+  useEffect(() => void loadPacks(), [loadPacks]);
+  usePacksStore((s) => s.packs);
+  const lesson = getLesson(lessonId);
   const { progress, load, update, reset } = useProgressStore();
   useEffect(load, [load]);
   const loaded = useProgressStore((s) => s.loaded);
   const saved = progress[lessonId];
   const [resetKey, setResetKey] = useState(0);
+  // In a track line a lesson starts from the code you finished in the one before, if it still runs.
+  const [carried, setCarried] = useState<{ for: string; code: string | null } | null>(null);
+  const prevLast = lesson && trackOf(lesson).kind === 'line' ? progress[neighbours(lesson).prev?.id ?? '']?.lastCode : undefined;
+  useEffect(() => {
+    if (!lesson || saved?.lastCode || !prevLast) return;
+    let live = true;
+    buildContext(prevLast).then((r) => live && setCarried({ for: lesson.id, code: 'error' in r ? null : prevLast }));
+    return () => {
+      live = false;
+    };
+  }, [lesson, saved?.lastCode, prevLast]);
 
-  if (!loaded) return <p className="p-4">Loading…</p>;
-  const initialCode = saved?.lastCode ?? lesson.starter;
+  if (!loaded || !packsLoaded) return <p className="p-4">Loading…</p>;
+  if (!lesson) {
+    return (
+      <p className="p-4">
+        No lesson called <code>{lessonId}</code>. It may be in a pack that isn’t loaded:{' '}
+        <Link href="/learn" className={linkClass}>
+          back to Learn
+        </Link>
+        .
+      </p>
+    );
+  }
+  const carry = !saved?.lastCode && prevLast ? carried?.for === lesson.id && carried.code ? carried.code : null : null;
+  if (!saved?.lastCode && prevLast && carried?.for !== lesson.id) return <p className="p-4">Loading…</p>;
+  const initialCode = saved?.lastCode ?? carry ?? lesson.starter;
   return (
     <LessonBody
       key={`${lessonId}:${resetKey}`}
       lesson={lesson}
       initialCode={initialCode}
+      carriedForward={!!carry}
       passed={saved?.tasksPassed ?? []}
       challengePassed={!!saved?.challengePassed}
       done={saved?.status === 'done'}
@@ -53,6 +83,8 @@ export function LessonView({ lessonId }: { lessonId: string }) {
 interface BodyProps {
   lesson: Lesson;
   initialCode: string;
+  /** The code came from the previous lesson of a track line, not this lesson's starter. */
+  carriedForward: boolean;
   passed: number[];
   challengePassed: boolean;
   done: boolean;
@@ -60,7 +92,7 @@ interface BodyProps {
   onReset(): void;
 }
 
-function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProgress, onReset }: BodyProps) {
+function LessonBody({ lesson, initialCode, carriedForward, passed, challengePassed, done, onProgress, onReset }: BodyProps) {
   const { prev, next } = neighbours(lesson);
   const policy = useMemo(() => ({ methods: allowedMethods(lesson), composition: !!lesson.composition }), [lesson]);
   const [showHint, setShowHint] = useState<number | 'challenge' | null>(null);
@@ -172,6 +204,20 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
         <Panel title="Goal">
           <p className="m-0 font-semibold">{lesson.goal}</p>
         </Panel>
+        {trackOf(lesson).kind === 'line' && (
+          <Hint>
+            {carriedForward
+              ? 'You’re starting from your own code from the previous lesson. '
+              : prev
+                ? 'This lesson starts from the previous one’s result. '
+                : 'In this track every lesson builds on the last, towards a whole track. '}
+            {prev && (
+              <Button size="sm" variant="ghost" className={inlineBtn} onPress={() => confirm('Replace your code with the reference version of where the previous lesson ends?') && useEditorStore.getState().replaceAll(lesson.starter)}>
+                use the reference version
+              </Button>
+            )}
+          </Hint>
+        )}
         <Panel title="Concept" actions={<Hint>hold {isMac() ? '⌘' : 'Ctrl'} to look up words</Hint>}>
           <Prose text={lesson.concept} />
         </Panel>
@@ -257,12 +303,12 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
         )}
         <nav className="flex flex-wrap items-center justify-between gap-3">
           {prev && (
-            <Link href={`/learn/${prev.id}`} className={linkClass}>
+            <Link href={lessonHref(prev)} className={linkClass}>
               ◀ {prev.title}
             </Link>
           )}
           {next && (
-            <Link href={`/learn/${next.id}`} className={cn(linkClass, 'ml-auto')}>
+            <Link href={lessonHref(next)} className={cn(linkClass, 'ml-auto')}>
               {next.title} ▶
             </Link>
           )}

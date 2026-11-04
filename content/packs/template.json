@@ -1,0 +1,54 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "my-pack",
+  "title": "My lesson pack",
+  "description": "What this pack teaches, in a sentence.",
+  "author": "Your name",
+  "tags": ["house"],
+  "tracks": [
+    {
+      "id": "warm-up",
+      "title": "Warm-up",
+      "blurb": "One short drill to start from.",
+      "kind": "skills",
+      "lessons": ["offbeat-hats"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "offbeat-hats",
+      "title": "Offbeat hats",
+      "goal": "Put an open hi-hat on every offbeat.",
+      "concept": "The **offbeat** is halfway between two beats. `\"[~ oh]*4\"` plays a rest then an open hat, four times a bar.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nstack(kick)",
+      "tasks": [
+        {
+          "text": "Add a part called hats that plays oh on every offbeat, and stack it.",
+          "hint": "const hats = s(\"[~ oh]*4\").bank(\"RolandTR909\"), then stack(kick, hats)",
+          "check": { "all": [{ "defines": "hats" }, { "playsAt": { "s": "oh", "at": [0.125, 0.375, 0.625, 0.875] } }] }
+        },
+        {
+          "text": "Turn the hats down to about .6.",
+          "hint": ".gain(.6) on the hats line",
+          "check": { "every": { "sel": { "s": "oh" }, "where": [{ "key": "gain", "lt": 0.8 }] } }
+        }
+      ],
+      "challenge": {
+        "text": "Add closed hats (hh) on the beats, quieter than the open ones.",
+        "hint": "const ticks = s(\"hh*4\").bank(\"RolandTR909\").gain(.3), and stack it too",
+        "check": { "all": [{ "playsAt": { "s": "hh", "at": [0, 0.25, 0.5, 0.75] } }, { "lt": [{ "max": { "sel": { "s": "hh" }, "key": "gain", "default": 0.8 } }, { "valueAt": { "sel": { "s": "oh" }, "key": "gain", "default": 0.8 } }] }] }
+      },
+      "steps": ["setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\")\nstack(kick, hats)"],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.6)\nstack(kick, hats)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.6)\nconst ticks = s(\"hh*4\").bank(\"RolandTR909\").gain(.3)\nstack(kick, hats, ticks)",
+      "summary": ["Offbeats sit halfway between the beats.", ".gain(…) sets how loud a part is."],
+      "introduces": [".gain"],
+      "concepts": ["offbeats"],
+      "teaches": ["B6", "B10"],
+      "tags": ["drums", "909"],
+      "preload": [{ "s": "bd", "bank": "RolandTR909" }, { "s": "oh", "bank": "RolandTR909" }, { "s": "hh", "bank": "RolandTR909" }]
+    }
+  ]
+}

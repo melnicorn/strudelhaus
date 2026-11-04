@@ -1,69 +1,189 @@
 'use client';
 
-import { cn } from '@heroui/react';
+import { Button, Chip, cn, SearchField } from '@heroui/react';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Hint } from '@/components/ui/Hint';
-import { boxClass } from '@/components/ui/Page';
+import { boxClass, linkClass } from '@/components/ui/Page';
 import { Panel } from '@/components/ui/Panel';
-import { corePack } from '@/lib/lessons/packs';
-
-const lessons = corePack.lessons;
-import type { Tier } from '@/lib/lessons/types';
+import { allTags, knownSkills, lessonHref, lessonState, missingSkills, searchLessons, type LessonState } from '@/lib/lessons/packs';
+import type { Lesson, Pack, Track } from '@/lib/lessons/types';
+import { usePacksStore } from '@/lib/stores/packs';
 import { useProgressStore } from '@/lib/stores/progress';
 import { MoveProgress } from './MoveProgress';
+import { PackImport } from './PackImport';
 
-const TIERS: { tier: Tier; title: string; blurb: string }[] = [
-  { tier: 'beginner', title: 'Beginner · First groove', blurb: 'Drums, tempo, steps and a first bassline.' },
-  { tier: 'intermediate', title: 'Intermediate · Sound and harmony', blurb: 'Swing, scales, chords, synths, effects and modifiers.' },
-  { tier: 'expert', title: 'Expert · The track', blurb: 'Acid lines, sidechain, arrangement and the capstone.' },
-];
-
+/**
+ * The skill tree: every pack's tracks as lanes of lessons. Nothing is locked; a track whose
+ * skills you don't have yet says what it builds on, and the next lesson of each open track is marked.
+ */
 export function LessonMap() {
   const { progress, load } = useProgressStore();
   useEffect(load, [load]);
+  const packs = usePacksStore((s) => s.packs);
+  const loadPacks = usePacksStore((s) => s.load);
+  useEffect(() => void loadPacks(), [loadPacks]);
+  const [query, setQuery] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+
+  const known = useMemo(() => knownSkills(progress), [progress, packs]); // eslint-disable-line react-hooks/exhaustive-deps
+  const filtering = !!query.trim() || tags.length > 0;
+  const matches = useMemo(() => new Set(searchLessons(query, tags).map((l) => l.id)), [query, tags, packs]); // eslint-disable-line react-hooks/exhaustive-deps
+  const tagList = useMemo(() => allTags(), [packs]); // eslint-disable-line react-hooks/exhaustive-deps
+  const toggleTag = (t: string) => setTags((ts) => (ts.includes(t) ? ts.filter((x) => x !== t) : [...ts, t]));
+
   return (
     <div className="flex flex-col gap-3">
-      {TIERS.map(({ tier, title, blurb }) => {
-        const list = lessons.filter((l) => l.tier === tier);
-        const done = list.filter((l) => progress[l.id]?.status === 'done').length;
-        return (
-          <Panel
-            key={tier}
-            title={
-              <>
-                {title} · {done}/{list.length}
-              </>
-            }
+      <Panel className="flex-row flex-wrap items-center gap-2">
+        <SearchField value={query} onChange={setQuery} aria-label="Search lessons" className="w-full sm:w-64">
+          <SearchField.Group>
+            <SearchField.SearchIcon />
+            <SearchField.Input placeholder="Search lessons…" />
+            <SearchField.ClearButton />
+          </SearchField.Group>
+        </SearchField>
+        <div className="flex flex-wrap gap-1">
+          {tagList.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => toggleTag(t)}
+              aria-pressed={tags.includes(t)}
+              className={cn('rounded-full border px-2 py-0.5 text-xs', tags.includes(t) ? 'border-accent bg-accent/15 text-foreground' : 'border-border text-muted hover:text-foreground')}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+        {filtering && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => {
+              setQuery('');
+              setTags([]);
+            }}
           >
-            <Hint>{blurb}</Hint>
-            {list.length === 0 ? (
-              <Hint>Coming soon.</Hint>
-            ) : (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2">
-                {list.map((l) => {
-                  const status = progress[l.id]?.status ?? 'new';
-                  return (
-                    <Link
-                      key={l.id}
-                      href={`/learn/${l.id}`}
-                      className={cn(
-                        boxClass,
-                        'p-2.5 hover:bg-surface-secondary',
-                        status === 'done' && 'border-success',
-                        status === 'started' && 'border-accent',
-                      )}
-                    >
-                      <span className="font-mono text-[13px]">{status === 'done' ? '✓' : status === 'started' ? '▶' : l.number}</span> {l.title}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </Panel>
-        );
-      })}
+            Clear · {matches.size} match{matches.size === 1 ? '' : 'es'}
+          </Button>
+        )}
+      </Panel>
+
+      {packs.map((pack) => (
+        <PackLanes key={pack.id} pack={pack} known={known} progress={progress} filter={filtering ? matches : null} />
+      ))}
+
+      <PackImport />
       <MoveProgress />
     </div>
+  );
+}
+
+interface LanesProps {
+  pack: Pack;
+  known: Set<string>;
+  progress: ReturnType<typeof useProgressStore.getState>['progress'];
+  filter: Set<string> | null;
+}
+
+function PackLanes({ pack, known, progress, filter }: LanesProps) {
+  const removePack = usePacksStore((s) => s.removePack);
+  const source = usePacksStore((s) => s.sources[pack.id]);
+  const tracks = pack.tracks.filter((t) => !filter || t.lessons.some((l) => filter.has(l.id)));
+  if (!tracks.length) return null;
+  const all = pack.lessons.length;
+  const done = pack.lessons.filter((l) => progress[l.id]?.status === 'done').length;
+  return (
+    <Panel
+      title={
+        <>
+          {pack.title} · {done}/{all}
+        </>
+      }
+      actions={
+        pack.source === 'imported' ? (
+          <Button size="sm" variant="ghost" onPress={() => confirm(`Remove the pack “${pack.title}” from this browser? Your progress in it is kept.`) && removePack(pack.id)}>
+            Remove pack
+          </Button>
+        ) : undefined
+      }
+    >
+      {pack.id !== 'core' && (
+        <Hint>
+          {pack.description}
+          {pack.author && ` · by ${pack.author}`}
+          {source && (
+            <>
+              {' · '}
+              <a href={source} className={linkClass}>
+                source
+              </a>
+            </>
+          )}
+        </Hint>
+      )}
+      {tracks.map((track) => (
+        <Lane key={track.id} track={track} known={known} progress={progress} filter={filter} />
+      ))}
+    </Panel>
+  );
+}
+
+function Lane({ track, known, progress, filter }: { track: Track } & Omit<LanesProps, 'pack'>) {
+  const missing = missingSkills(track, known);
+  const lessons = filter ? track.lessons.filter((l) => filter.has(l.id)) : track.lessons;
+  const done = track.lessons.filter((l) => progress[l.id]?.status === 'done').length;
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <strong className="text-sm">{track.title}</strong>
+        <Hint>
+          {done}/{track.lessons.length} · {track.blurb}
+        </Hint>
+        {track.kind === 'line' && (
+          <Chip size="sm" variant="soft" color="accent">
+            Track line: each lesson builds on the last
+          </Chip>
+        )}
+        {missing.length > 0 && (
+          <Chip size="sm" variant="soft" color="warning" title={missing.map((s) => `${s.id}: ${s.definition}`).join('\n')}>
+            builds on {missing.map((s) => s.name).join(', ')}
+          </Chip>
+        )}
+      </div>
+      <ol className="m-0 flex list-none flex-wrap items-stretch gap-y-2 p-0">
+        {lessons.map((l, i) => (
+          <li key={l.id} className="flex items-center">
+            {i > 0 && <span aria-hidden className={cn('mx-1 text-xs', track.kind === 'line' ? 'text-accent' : 'text-border')}>{track.kind === 'line' ? '━▶' : '─'}</span>}
+            <LessonNode lesson={l} state={lessonState(l, progress, known)} />
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+const NODE: Record<LessonState, string> = {
+  done: 'border-success',
+  started: 'border-accent',
+  next: 'border-accent bg-accent/10',
+  open: '',
+};
+
+function LessonNode({ lesson, state }: { lesson: Lesson; state: LessonState }) {
+  const mark = state === 'done' ? '✓' : state === 'started' ? '▶' : lesson.number;
+  return (
+    <Link href={lessonHref(lesson)} className={cn(boxClass, 'flex min-w-[150px] max-w-[220px] flex-col gap-0.5 p-2 text-sm no-underline hover:bg-surface-secondary', NODE[state])} title={lesson.goal}>
+      <span>
+        <span className="font-mono text-[12px] text-muted">{mark}</span> {lesson.title}
+      </span>
+      <span className="flex flex-wrap gap-1 text-[10px] text-muted">
+        {state === 'next' && <span className="text-accent">next up</span>}
+        {lesson.shape && lesson.shape !== 'concept' && <span>{lesson.shape}</span>}
+        {lesson.tags.slice(0, 3).map((t) => (
+          <span key={t}>#{t}</span>
+        ))}
+      </span>
+    </Link>
   );
 }

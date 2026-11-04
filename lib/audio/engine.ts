@@ -252,6 +252,11 @@ async function create() {
       return { ok: true };
     },
 
+    /** Registers a lesson pack's sample map (a strudel.json URL) so its sound names resolve. */
+    async loadSamples(url: string, base?: string) {
+      await webaudio.samples(url, base);
+    },
+
     /** Fetch and decode sounds ahead of time so the first hit isn't dropped (gap G8). */
     async preload(sounds: { s: string; bank?: string; n?: number }[]) {
       await Promise.all(

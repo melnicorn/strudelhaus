@@ -35,10 +35,12 @@ interface Props {
   ariaLabel?: string;
   /** Extra classes on the host, e.g. a `[&_.cm-editor]:max-h-…` cap (the editor scrolls inside). */
   className?: string;
+  /** 'json' (the lesson-pack author): no Strudel autocomplete, dictionary words or playing highlight. */
+  language?: 'strudel' | 'json';
 }
 
 /** The Strudel code editor. Registers its view with the editor store. */
-export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel = 'Strudel code', className }: Props) {
+export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel = 'Strudel code', className, language = 'strudel' }: Props) {
   const host = useRef<HTMLDivElement>(null);
   // Keep the latest callbacks without recreating the editor.
   const handlers = useRef({ onToggle, onUpdate, onStop });
@@ -48,8 +50,8 @@ export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel 
 
   const completions = useSettingsStore((s) => s.settings.autocomplete);
   useEffect(() => {
-    useEditorStore.getState().view?.dispatch({ effects: autocompleteCompartment.reconfigure(autocomplete(completions)) });
-  }, [completions]);
+    if (language === 'strudel') useEditorStore.getState().view?.dispatch({ effects: autocompleteCompartment.reconfigure(autocomplete(completions)) });
+  }, [completions, language]);
 
   useEffect(() => {
     const { setView, setCode, setSelection, setAgentUndo } = useEditorStore.getState();
@@ -79,10 +81,9 @@ export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel 
           bracketMatching(),
           keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
           javascript(),
-          autocompleteCompartment.of(autocomplete(useSettingsStore.getState().settings.autocomplete)),
+          autocompleteCompartment.of(autocomplete(language === 'strudel' && useSettingsStore.getState().settings.autocomplete)),
           strudelTheme,
-          playingHighlight,
-          codeTerms,
+          ...(language === 'strudel' ? [playingHighlight, codeTerms] : []),
           guiEditHighlight,
           agentChanges,
           errorLine,

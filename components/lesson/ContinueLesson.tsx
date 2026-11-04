@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { corePack } from '@/lib/lessons/packs';
+import { corePack, lessonHref } from '@/lib/lessons/packs';
 import { useProgressStore } from '@/lib/stores/progress';
 
 const lessons = corePack.lessons;
@@ -15,7 +15,7 @@ export function ContinueLesson({ className }: { className?: string }) {
   const done = lessons.filter((l) => progress[l.id]?.status === 'done').length;
   const started = loaded && done > 0;
   return (
-    <Link className={className} href={`/learn/${next.id}`}>
+    <Link className={className} href={lessonHref(next)}>
       <b>{started ? `Continue: ${next.number}. ${next.title} →` : 'Start learning →'}</b>
       <span>{started ? `${done} of ${lessons.length} lessons done.` : `${lessons.length} lessons, no music experience needed.`}</span>
     </Link>

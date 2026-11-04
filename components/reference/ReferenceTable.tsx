@@ -10,7 +10,7 @@ import { TipButton } from '@/components/ui/TipButton';
 import { getEngine } from '@/lib/audio/engine';
 import { CATEGORIES, REFERENCE, learnedIn, type Category } from '@/lib/reference/entries';
 import { useProgressStore } from '@/lib/stores/progress';
-import { corePack } from '@/lib/lessons/packs';
+import { corePack, lessonHref } from '@/lib/lessons/packs';
 
 async function tryIt(example: string) {
   const engine = await getEngine();
@@ -123,7 +123,7 @@ export function ReferenceTable() {
                   </td>
                   <td>
                     {l ? (
-                      <a href={`/learn/${l.id}`} className={linkClass}>
+                      <a href={lessonHref(l)} className={linkClass}>
                         {l.number}. {l.title}
                       </a>
                     ) : (
