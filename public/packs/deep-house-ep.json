@@ -763,10 +763,11 @@
         "A filtered intro hides the chords until the drop."
       ],
       "introduces": [
-        "x => …"
+        ".lpf"
       ],
       "concepts": [
-        "modifiers"
+        "modifiers",
+        "x => …"
       ],
       "teaches": [
         "E7",
@@ -982,10 +983,23 @@
           }
         },
         {
-          "text": "Check the levels: every part except the kick at gain .8 or below.",
-          "hint": "They already are; this ticks once the two edits above are in and nothing is louder than .8.",
+          "text": "Put the kick on top: gain .9, with every other part at .8 or below.",
+          "hint": ".gain(.9) on the kick line; the other parts already sit at .8 or below.",
           "check": {
             "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "gain",
+                      "gte": 0.9
+                    }
+                  ]
+                }
+              },
               {
                 "every": {
                   "sel": {
@@ -1005,34 +1019,6 @@
                     }
                   ]
                 }
-              },
-              {
-                "every": {
-                  "sel": {
-                    "s": "hh"
-                  },
-                  "where": [
-                    {
-                      "key": "hcutoff",
-                      "gte": 300,
-                      "default": 0
-                    }
-                  ]
-                }
-              },
-              {
-                "every": {
-                  "sel": {
-                    "s": "piano"
-                  },
-                  "where": [
-                    {
-                      "key": "orbit",
-                      "eq": 2,
-                      "default": 1
-                    }
-                  ]
-                }
               }
             ]
           }
@@ -1042,7 +1028,7 @@
         "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.7).room(.2).lastOf(8, x => x.ply(2))\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).hpf(300)\nconst open = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).mask(\"<0 0 0 0 1 1 1 1>\")\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.5).room(.3)\n\nconst dark = x => x.lpf(400)\n\nconst intro = stack(kick, hats, dark(piano))\nconst breakdown = stack(piano, hats)\nconst main = stack(kick, clap, hats, open, bass, piano)\nconst outro = stack(kick, hats)\narrange([16, intro], [32, main], [16, breakdown], [32, main], [16, outro])",
         "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.7).room(.2).lastOf(8, x => x.ply(2))\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).hpf(300)\nconst open = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).mask(\"<0 0 0 0 1 1 1 1>\")\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.5).room(.3).orbit(2).hpf(150)\n\nconst dark = x => x.lpf(400)\n\nconst intro = stack(kick, hats, dark(piano))\nconst breakdown = stack(piano, hats)\nconst main = stack(kick, clap, hats, open, bass, piano)\nconst outro = stack(kick, hats)\narrange([16, intro], [32, main], [16, breakdown], [32, main], [16, outro])"
       ],
-      "solution": "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.7).room(.2).lastOf(8, x => x.ply(2))\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).hpf(300)\nconst open = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).mask(\"<0 0 0 0 1 1 1 1>\")\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.5).room(.3).orbit(2).hpf(150)\n\nconst dark = x => x.lpf(400)\n\nconst intro = stack(kick, hats, dark(piano))\nconst breakdown = stack(piano, hats)\nconst main = stack(kick, clap, hats, open, bass, piano)\nconst outro = stack(kick, hats)\narrange([16, intro], [32, main], [16, breakdown], [32, main], [16, outro])",
+      "solution": "setcpm(120/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.9)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.7).room(.2).lastOf(8, x => x.ply(2))\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).hpf(300)\nconst open = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).mask(\"<0 0 0 0 1 1 1 1>\")\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 0]\").scale(\"C2:minor\").s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"<Cm7 Fm7>\").voicing().struct(\"[~ x]*2\").s(\"piano\").gain(.5).room(.3).orbit(2).hpf(150)\n\nconst dark = x => x.lpf(400)\n\nconst intro = stack(kick, hats, dark(piano))\nconst breakdown = stack(piano, hats)\nconst main = stack(kick, clap, hats, open, bass, piano)\nconst outro = stack(kick, hats)\narrange([16, intro], [32, main], [16, breakdown], [32, main], [16, outro])",
       "summary": [
         "High-pass what doesn’t need lows.",
         "One orbit per effect; the kick stays loudest.",

@@ -25,6 +25,9 @@ interface PacksStore {
   /** Fetches a pack's JSON and imports it. */
   importUrl(url: string): Promise<{ findings: Finding[]; pack?: Pack }>;
   removePack(id: string): void;
+  /** Packs folded up on the Learn page (remembered in this browser). */
+  collapsed: Set<string>;
+  toggleCollapsed(id: string): void;
 }
 
 async function samplesFor(pack: Pack) {
@@ -39,9 +42,17 @@ export const usePacksStore = create<PacksStore>((set, get) => {
     packs: allPacks(),
     loaded: false,
     sources: {},
+    collapsed: new Set(),
+    toggleCollapsed(id) {
+      const collapsed = new Set(get().collapsed);
+      if (collapsed.has(id)) collapsed.delete(id);
+      else collapsed.add(id);
+      writeJson(KEYS.mapCollapsed, [...collapsed]);
+      set({ collapsed });
+    },
     async load() {
       if (get().loaded) return;
-      set({ loaded: true });
+      set({ loaded: true, collapsed: new Set(readJson(KEYS.mapCollapsed, z.array(z.string()), [])) });
       // The site's extra packs: a list of files beside the app, fetched when the map opens.
       try {
         const index = await fetch('/packs/index.json', { cache: 'no-cache' });

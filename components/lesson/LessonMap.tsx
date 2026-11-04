@@ -25,6 +25,8 @@ export function LessonMap() {
   useEffect(() => void loadPacks(), [loadPacks]);
   const [query, setQuery] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const collapsed = usePacksStore((s) => s.collapsed);
+  const toggleCollapsed = usePacksStore((s) => s.toggleCollapsed);
 
   const known = useMemo(() => knownSkills(progress), [progress, packs]); // eslint-disable-line react-hooks/exhaustive-deps
   const filtering = !!query.trim() || tags.length > 0;
@@ -70,7 +72,15 @@ export function LessonMap() {
       </Panel>
 
       {packs.map((pack) => (
-        <PackLanes key={pack.id} pack={pack} known={known} progress={progress} filter={filtering ? matches : null} />
+        <PackLanes
+          key={pack.id}
+          pack={pack}
+          known={known}
+          progress={progress}
+          filter={filtering ? matches : null}
+          collapsed={collapsed.has(pack.id)}
+          onToggle={() => toggleCollapsed(pack.id)}
+        />
       ))}
 
       <PackImport />
@@ -86,19 +96,24 @@ interface LanesProps {
   filter: Set<string> | null;
 }
 
-function PackLanes({ pack, known, progress, filter }: LanesProps) {
+function PackLanes({ pack, known, progress, filter, collapsed, onToggle }: LanesProps & { collapsed: boolean; onToggle(): void }) {
   const removePack = usePacksStore((s) => s.removePack);
   const source = usePacksStore((s) => s.sources[pack.id]);
   const tracks = pack.tracks.filter((t) => !filter || t.lessons.some((l) => filter.has(l.id)));
   if (!tracks.length) return null;
   const all = pack.lessons.length;
   const done = pack.lessons.filter((l) => progress[l.id]?.status === 'done').length;
+  // A search always shows what it found, folded or not.
+  const open = !collapsed || !!filter;
   return (
     <Panel
       title={
-        <>
+        <button type="button" className="flex items-center gap-1.5 text-left uppercase hover:text-foreground" onClick={onToggle} aria-expanded={open}>
+          <span aria-hidden className="inline-block w-3 text-[10px]">
+            {open ? '▼' : '▶'}
+          </span>
           {pack.title} · {done}/{all}
-        </>
+        </button>
       }
       actions={
         pack.source === 'imported' ? (
@@ -108,7 +123,8 @@ function PackLanes({ pack, known, progress, filter }: LanesProps) {
         ) : undefined
       }
     >
-      {pack.id !== 'core' && (
+      {!open && <Hint>{pack.description}</Hint>}
+      {open && pack.id !== 'core' && (
         <Hint>
           {pack.description}
           {pack.author && ` · by ${pack.author}`}
@@ -122,9 +138,7 @@ function PackLanes({ pack, known, progress, filter }: LanesProps) {
           )}
         </Hint>
       )}
-      {tracks.map((track) => (
-        <Lane key={track.id} track={track} known={known} progress={progress} filter={filter} />
-      ))}
+      {open && tracks.map((track) => <Lane key={track.id} track={track} known={known} progress={progress} filter={filter} />)}
     </Panel>
   );
 }

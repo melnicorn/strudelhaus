@@ -950,7 +950,7 @@
                 "every": {
                   "sel": {
                     "s": "sawtooth",
-                    "cycles": 17
+                    "cycles": 33
                   },
                   "where": [
                     {
@@ -964,7 +964,7 @@
               {
                 "every": {
                   "sel": {
-                    "cycles": 17,
+                    "cycles": 33,
                     "where": [
                       {
                         "key": "s",

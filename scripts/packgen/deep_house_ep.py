@@ -46,7 +46,9 @@ S6 = code(KICK, CLAP, HATS, OPEN, BASS, PIANO, '', DARK, '', INTRO, BREAKDOWN, M
 S7a = code(KICK, CLAP, HATS, OPEN, BASS, PIANO, '', DARK, '', INTRO, BREAKDOWN, MAIN, OUTRO, FINAL)
 S7 = code(KICK, CLAP, HATS, OPEN, BASS, PIANO, '', DARK, '', INTRO, BREAKDOWN, MAIN, OUTRO, ARR)
 S8a = code(KICK, CLAP, HATS_MIX, OPEN, BASS, PIANO, '', DARK, '', INTRO, BREAKDOWN, MAIN, OUTRO, ARR)
-S8 = code(KICK, CLAP, HATS_MIX, OPEN, BASS, PIANO_MIX, '', DARK, '', INTRO, BREAKDOWN, MAIN, OUTRO, ARR)
+S8b = code(KICK, CLAP, HATS_MIX, OPEN, BASS, PIANO_MIX, '', DARK, '', INTRO, BREAKDOWN, MAIN, OUTRO, ARR)
+KICK_MIX = KICK + '.gain(.9)'
+S8 = code(KICK_MIX, CLAP, HATS_MIX, OPEN, BASS, PIANO_MIX, '', DARK, '', INTRO, BREAKDOWN, MAIN, OUTRO, ARR)
 
 P = kit('bd', 'cp', 'hh', 'oh') + [{"s": "piano"}]
 TAGS = ['deep house']
@@ -121,7 +123,7 @@ lessons = [
                  all_(block('intro', ['group', 'section'], ['kick', 'hats']), matches(r'dark\(\s*piano\s*\)')))],
            [S6a], S6, ['E7', 'B14'], TAGS + ['arrangement', 'effects'], composition=True,
            summary=['A modifier is a function you apply to a part.', 'A filtered intro hides the chords until the drop.'],
-           introduces=['x => …'], concepts=['modifiers'], preload=P),
+           introduces=['.lpf'], concepts=['modifiers', 'x => …'], preload=P),
 
     lesson('the-arrangement', 'The arrangement', 'Put the sections in order: intro, main, breakdown, main, outro.',
            'Now the record takes shape. `arrange([bars, section], …)` plays each section for that many bars, in turn, and each section restarts its own clock, so the 8-bar phrase starts fresh every time.\n\nA DJ-friendly **outro** of kick and hats lets the next record mix in. 16 + 32 + 16 + 32 + 16 = 112 bars: about 3¾ minutes at 120 BPM.',
@@ -141,9 +143,9 @@ lessons = [
                  every(snd('hh'), w('hcutoff', gte=300, default=0))),
             task('Give the piano its own orbit, 2, and high-pass it at 150 Hz.', '.orbit(2).hpf(150) at the end of the piano line.',
                  every(snd('piano'), w('orbit', eq=2, default=1), w('hcutoff', gte=150, default=0))),
-            task('Check the levels: every part except the kick at gain .8 or below.', 'They already are; this ticks once the two edits above are in and nothing is louder than .8.',
-                 all_(every({"where": [w('s', neq='bd')], "cycles": 17}, w('gain', lte=0.8, default=0.8)), every(snd('hh'), w('hcutoff', gte=300, default=0)), every(snd('piano'), w('orbit', eq=2, default=1))))],
-           [S8a, S8], S8, ['E10', 'E11', 'E12'], TAGS + ['project', 'mixing', 'track'], shape='project', composition=True,
+            task('Put the kick on top: gain .9, with every other part at .8 or below.', '.gain(.9) on the kick line; the other parts already sit at .8 or below.',
+                 all_(every(snd('bd'), w('gain', gte=0.9)), every({"where": [w('s', neq='bd')], "cycles": 17}, w('gain', lte=0.8, default=0.8))))],
+           [S8a, S8b], S8, ['E10', 'E11', 'E12'], TAGS + ['project', 'mixing', 'track'], shape='project', composition=True,
            summary=['High-pass what doesn’t need lows.', 'One orbit per effect; the kick stays loudest.', 'You wrote a whole deep house record.'],
            introduces=['.hpf', '.orbit'], preload=P),
 ]

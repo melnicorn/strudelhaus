@@ -13,6 +13,8 @@ export const KEYS = {
   projects: 'sw:projects:v1',
   progress: 'sw:progress:v1',
   settings: 'sw:settings:v1',
+  /** Packs folded up on the Learn page. */
+  mapCollapsed: 'sw:map-collapsed:v1',
   /** The lesson author page's draft (its JSON text). */
   author: 'sw:author:v1',
   /** Lesson packs added from a file or URL (their JSON, as imported). */

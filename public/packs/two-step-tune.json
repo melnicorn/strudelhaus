@@ -1,0 +1,1082 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "two-step-tune",
+  "title": "A 2-step tune",
+  "description": "One UK garage track built from nothing, a lesson at a time: the skipping kick, the snares, the shuffle, an organ bass, chopped piano, a drop, the arrangement and the mix.",
+  "author": "Strudel Workshop",
+  "tags": [
+    "garage",
+    "house",
+    "swing",
+    "organ",
+    "piano",
+    "track"
+  ],
+  "tracks": [
+    {
+      "id": "two-step-tune",
+      "title": "A 2-step tune",
+      "blurb": "Every lesson starts from the code you finished in the one before, and the last one is the whole tune.",
+      "kind": "line",
+      "requires": [
+        "B5",
+        "B6",
+        "I1",
+        "B12",
+        "I6"
+      ],
+      "lessons": [
+        "the-kick",
+        "the-snares",
+        "shuffled-hats",
+        "the-organ-bass",
+        "piano-chops",
+        "the-drop",
+        "the-arrangement",
+        "the-mix"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "the-kick",
+      "title": "The 2-step kick",
+      "goal": "Start the tune: the kick pattern that makes garage skip.",
+      "concept": "UK garage came out of London in the mid-90s, when DJs sped up New York garage records and producers like Todd Edwards and MJ Cole rebuilt the drums around a **skipping** kick. Instead of four on the floor, the kick lands on beat 1 and the \"and\" of beat 2: `\"bd [~ bd] ~ ~\"`. Beats 3 and 4 are left empty, and that gap is the whole feel.\n\nWe build one 2-step tune across this line of lessons; each lesson starts from the code you finished in the one before. Tempo first: garage sits around 130–135 BPM.",
+      "shape": "concept",
+      "starter": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\n",
+      "tasks": [
+        {
+          "text": "Add a part called kick: a TR-909 kick on beat 1 and the \"and\" of 2.",
+          "hint": "const kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\"), then play it with stack(kick).",
+          "check": {
+            "all": [
+              {
+                "defines": "kick"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.375
+                  ],
+                  "s": "bd"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nstack(kick)",
+      "summary": [
+        "The 2-step kick: beat 1 and the \"and\" of 2, nothing on 3 and 4.",
+        "Garage runs at 130–135 BPM."
+      ],
+      "introduces": [
+        "s",
+        ".bank",
+        "stack"
+      ],
+      "concepts": [
+        "the 2-step kick"
+      ],
+      "teaches": [
+        "B4",
+        "B6"
+      ],
+      "tags": [
+        "drums",
+        "909"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "the-snares",
+      "title": "The snares",
+      "goal": "A snare on 2 and 4, and a quiet ghost that skips between.",
+      "concept": "The backbeat stays where house left it: a **snare** on beats 2 and 4. What makes it garage is the **ghost snare**: a second, much quieter snare slipped in between the main hits, so the pattern seems to stumble forward. Producers lifted this from swing drummers and from the MPC’s quiet pads.\n\nKeep the ghost well under the main snare; it should be felt, not heard.",
+      "shape": "concept",
+      "starter": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nstack(kick)",
+      "tasks": [
+        {
+          "text": "Add a part called snare on beats 2 and 4, at gain .7.",
+          "hint": "const snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7), and stack(kick, snare).",
+          "check": {
+            "all": [
+              {
+                "defines": "snare"
+              },
+              {
+                "includesTimes": {
+                  "s": "sd",
+                  "at": [
+                    0.25,
+                    0.75
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add a part called ghost: two quiet extra snares off the beat.",
+          "hint": "const ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "ghost"
+              },
+              {
+                "gte": [
+                  {
+                    "count": {
+                      "s": "sd"
+                    }
+                  },
+                  4
+                ]
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "sd"
+                  },
+                  "where": [
+                    {
+                      "key": "gain",
+                      "lt": 0.4,
+                      "default": 0.8
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nstack(kick, snare)"
+      ],
+      "solution": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nstack(kick, snare, ghost)",
+      "summary": [
+        "Snare on 2 and 4; a quiet ghost snare in between.",
+        "Ghosts are felt more than heard: keep them under .4."
+      ],
+      "introduces": [
+        ".gain"
+      ],
+      "concepts": [
+        "ghost notes"
+      ],
+      "teaches": [
+        "B5",
+        "I4"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "shuffled-hats",
+      "title": "Shuffled hats",
+      "goal": "16th hats with heavy swing, and an open hat on the \"and\" of 4.",
+      "concept": "Garage hats **shuffle** harder than house: every second 16th is pushed late, close to a triplet feel. `.swingBy(.2, 8)` is about 60% swing (x = (swing% − 50) / 50). A gain pattern puts the weight on the beats.\n\nOne **open hat** on the \"and\" of beat 4 lifts the bar into the next one: the classic garage \"tss\" before the kick comes back.",
+      "shape": "concept",
+      "starter": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nstack(kick, snare, ghost)",
+      "tasks": [
+        {
+          "text": "Add a part called hats: 16th closed hats with a gain pattern.",
+          "hint": "const hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\"), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "hats"
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "hh"
+                    }
+                  },
+                  16
+                ]
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "hh"
+                      },
+                      "key": "gain"
+                    }
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Shuffle them hard: swing about 60%.",
+          "hint": ".swingBy(.2, 8) on the hats line.",
+          "check": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "hh"
+                    }
+                  },
+                  16
+                ]
+              },
+              {
+                "gte": [
+                  {
+                    "timeAt": {
+                      "sel": {
+                        "s": "hh"
+                      },
+                      "index": 1
+                    }
+                  },
+                  0.072
+                ]
+              },
+              {
+                "lte": [
+                  {
+                    "timeAt": {
+                      "sel": {
+                        "s": "hh"
+                      },
+                      "index": 1
+                    }
+                  },
+                  0.082
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add a part called opens: one open hat on the \"and\" of 4, quiet.",
+          "hint": "const opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "opens"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.875
+                  ],
+                  "s": "oh",
+                  "cycles": 1
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\")\nstack(kick, snare, ghost, hats)",
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nstack(kick, snare, ghost, hats)"
+      ],
+      "solution": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nstack(kick, snare, ghost, hats, opens)",
+      "summary": [
+        ".swingBy(.2, 8) is about 60% swing.",
+        "An open hat on the \"and\" of 4 lifts the bar."
+      ],
+      "introduces": [
+        ".swingBy",
+        "patterned .gain"
+      ],
+      "teaches": [
+        "B3",
+        "I1",
+        "I4"
+      ],
+      "tags": [
+        "drums",
+        "swing"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "the-organ-bass",
+      "title": "The organ bass",
+      "goal": "A short square bass on offbeat 8ths, in a key.",
+      "concept": "Under the skipping drums garage puts an **organ bass**: a hollow square wave in short stabs, usually on the offbeat 8ths, so it answers the kick instead of sitting on it. Early producers took it from the Korg M1’s organ patch; a square wave with a quick decay and a low-pass gets close.\n\nWe set `const key = \"C2:minor\"`: the 2 in the scale name puts the degrees in the second octave, and the bass and the chords will share it.",
+      "shape": "concept",
+      "starter": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nstack(kick, snare, ghost, hats, opens)",
+      "tasks": [
+        {
+          "text": "Set const key to C2 minor and add a part called bass: square-wave scale degrees on the offbeat 8ths, with rests.",
+          "hint": "const key = \"C2:minor\" at the top, then const bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\"), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defined": {
+                  "key": true
+                }
+              },
+              {
+                "defines": "bass"
+              },
+              {
+                "inKey": {
+                  "key": "C:minor",
+                  "sel": {
+                    "s": "square"
+                  }
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "square"
+                  },
+                  "where": [
+                    {
+                      "key": "$midi",
+                      "lt": 48
+                    },
+                    {
+                      "key": "$time",
+                      "in": [
+                        0.125,
+                        0.375,
+                        0.625,
+                        0.875
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Make every bass note a short stab.",
+          "hint": ".decay(.12).sustain(0) on the bass line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "square"
+              },
+              "where": [
+                {
+                  "key": "decay",
+                  "lte": 0.2,
+                  "default": 9
+                },
+                {
+                  "key": "sustain",
+                  "eq": 0,
+                  "default": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Round it off with a low-pass at 700 Hz.",
+          "hint": ".lpf(700) on the bass line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "square"
+              },
+              "where": [
+                {
+                  "key": "cutoff",
+                  "lte": 900,
+                  "gt": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\")\nstack(kick, snare, ghost, hats, opens, bass)",
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0)\nstack(kick, snare, ghost, hats, opens, bass)"
+      ],
+      "solution": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nstack(kick, snare, ghost, hats, opens, bass)",
+      "summary": [
+        "An organ bass: a square wave in short offbeat stabs.",
+        "scale(\"C2:minor\"): the number picks the octave."
+      ],
+      "introduces": [
+        "n",
+        ".scale",
+        ".decay",
+        ".sustain",
+        ".lpf"
+      ],
+      "concepts": [
+        "const key"
+      ],
+      "teaches": [
+        "B12",
+        "I5",
+        "I10",
+        "B14"
+      ],
+      "tags": [
+        "bass",
+        "organ"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "piano-chops",
+      "title": "Piano chops",
+      "goal": "A piano chord struck in a syncopated pattern, short and roomy.",
+      "concept": "Garage borrowed the **piano stab** from house and chopped it: a chord struck on unexpected 16ths, cut short, so it sounds like a sample being triggered from pads. `.struct(\"~ [~ x] ~ [x ~]\")` gives the chord a syncopated rhythm; `.clip(.3)` cuts each hit to a third of its slot; a little `.room` sets it back.\n\nThe chord is C minor 7, the same key as the bass.",
+      "shape": "concept",
+      "starter": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nstack(kick, snare, ghost, hats, opens, bass)",
+      "tasks": [
+        {
+          "text": "Add a part called piano: a Cm7 chord on the piano sound in a syncopated struct pattern, at gain .6.",
+          "hint": "const piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "piano"
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "piano"
+                  }
+                }
+              },
+              {
+                "gte": [
+                  {
+                    "maxChordSize": true
+                  },
+                  3
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "piano",
+                      "where": [
+                        {
+                          "key": "$time",
+                          "eq": 0
+                        }
+                      ]
+                    }
+                  },
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Chop it short and put it in a room.",
+          "hint": ".clip(.3).room(.3) on the piano line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "piano"
+              },
+              "where": [
+                {
+                  "key": "clip",
+                  "lte": 0.4,
+                  "default": 1
+                },
+                {
+                  "key": "room",
+                  "gt": 0,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6)\nstack(kick, snare, ghost, hats, opens, bass, piano)"
+      ],
+      "solution": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nstack(kick, snare, ghost, hats, opens, bass, piano)",
+      "summary": [
+        "A chopped piano: a chord in a syncopated struct, cut short with .clip.",
+        "A little room sets it behind the drums."
+      ],
+      "introduces": [
+        "chord",
+        ".voicing",
+        ".struct",
+        ".clip",
+        ".room"
+      ],
+      "teaches": [
+        "I6",
+        "I2",
+        "I14"
+      ],
+      "tags": [
+        "chords",
+        "piano"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "piano"
+        }
+      ]
+    },
+    {
+      "id": "the-drop",
+      "title": "The drop",
+      "goal": "Name the main groove, and build a bigger version of it for the drop.",
+      "concept": "A garage tune has a **main** groove and a **drop** where the same parts come back bigger. We name the groove as a group, then make the drop’s versions of two parts: the bass with its filter **sweeping** open over 8 bars, and the piano **doubled** so every hit plays twice.\n\nGroups are just stacks with names. For now the tune still plays `stack(main)`; the arrangement comes next.",
+      "shape": "concept",
+      "starter": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nstack(kick, snare, ghost, hats, opens, bass, piano)",
+      "tasks": [
+        {
+          "text": "Group every part into a const called main, and play main.",
+          "hint": "const main = stack(kick, snare, ghost, hats, opens, bass, piano), then stack(main) as the last line.",
+          "check": {
+            "all": [
+              {
+                "block": {
+                  "name": "main",
+                  "kind": [
+                    "group",
+                    "section"
+                  ],
+                  "members": [
+                    "kick",
+                    "snare",
+                    "bass",
+                    "piano"
+                  ]
+                }
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.375
+                  ],
+                  "s": "bd"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Make the drop versions: bassSweep, the bass with an 8-bar filter sweep, and pianoDouble, the piano played twice as often.",
+          "hint": "const bassSweep = bass.lpf(sine.range(300, 1200).slow(8)) and const pianoDouble = piano.ply(2), above main.",
+          "check": {
+            "all": [
+              {
+                "defines": "bassSweep"
+              },
+              {
+                "defines": "pianoDouble"
+              },
+              {
+                "matches": "sine\\.range\\(\\s*300\\s*,\\s*1200\\s*\\)\\.slow\\(\\s*8\\s*\\)"
+              },
+              {
+                "uses": "ply"
+              }
+            ]
+          }
+        },
+        {
+          "text": "Group the drop: the drums with bassSweep and pianoDouble, in a const called drop.",
+          "hint": "const drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble), still playing stack(main).",
+          "check": {
+            "block": {
+              "name": "drop",
+              "kind": [
+                "group",
+                "section"
+              ],
+              "members": [
+                "kick",
+                "bassSweep",
+                "pianoDouble"
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nstack(main)",
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nstack(main)"
+      ],
+      "solution": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nconst drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble)\nstack(main)",
+      "summary": [
+        "Groups are stacks with names: main, drop.",
+        "A drop is the same parts, bigger: a filter sweep, a doubled piano."
+      ],
+      "introduces": [
+        "sine",
+        ".range",
+        ".ply"
+      ],
+      "concepts": [
+        "groups"
+      ],
+      "teaches": [
+        "E6",
+        "E2",
+        "I19"
+      ],
+      "tags": [
+        "arrangement"
+      ],
+      "composition": true,
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "piano"
+        }
+      ]
+    },
+    {
+      "id": "the-arrangement",
+      "title": "The arrangement",
+      "goal": "Intro, main, drop, outro: the shape of the tune.",
+      "concept": "A garage record is a DJ tool: it opens with drums a DJ can mix into, builds to the drop, and leaves with drums. Sections are **groups**; `arrange([8, intro], [16, main], …)` plays them for that many bars each, and every section restarts its own bar count, so the bass sweep in the drop starts closed every time.\n\nKeep sections to multiples of 8 bars: that is how DJs count.",
+      "shape": "concept",
+      "starter": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nconst drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble)\nstack(main)",
+      "tasks": [
+        {
+          "text": "Add two more groups: intro (kick, snare, hats, opens) and outro (kick, hats). Keep playing main.",
+          "hint": "const intro = stack(kick, snare, hats, opens) and const outro = stack(kick, hats), beside main and drop.",
+          "check": {
+            "all": [
+              {
+                "block": {
+                  "name": "intro",
+                  "kind": [
+                    "group",
+                    "section"
+                  ],
+                  "members": [
+                    "kick",
+                    "hats"
+                  ]
+                }
+              },
+              {
+                "block": {
+                  "name": "outro",
+                  "kind": [
+                    "group",
+                    "section"
+                  ],
+                  "members": [
+                    "kick",
+                    "hats"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "block": {
+                    "name": "intro",
+                    "members": [
+                      "piano"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Arrange them: 8 bars of intro, 16 of main, 16 of drop, 8 of outro.",
+          "hint": "Replace the last line with arrange([8, intro], [16, main], [16, drop], [8, outro]).",
+          "check": {
+            "all": [
+              {
+                "final": "arrange"
+              },
+              {
+                "gte": [
+                  {
+                    "rows": true
+                  },
+                  4
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "rowBars": 0
+                  },
+                  8
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "rowBars": 1
+                  },
+                  16
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "piano",
+                      "bar": 0
+                    }
+                  },
+                  0
+                ]
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "piano",
+                    "bar": 8
+                  }
+                }
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "piano",
+                    "bar": 24
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst intro = stack(kick, snare, hats, opens)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nconst drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble)\nconst outro = stack(kick, hats)\nstack(main)"
+      ],
+      "solution": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst intro = stack(kick, snare, hats, opens)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nconst drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble)\nconst outro = stack(kick, hats)\narrange([8, intro], [16, main], [16, drop], [8, outro])",
+      "summary": [
+        "arrange() plays named sections for so many bars each.",
+        "Drums-only intro and outro make it a DJ tool."
+      ],
+      "introduces": [
+        "arrange"
+      ],
+      "concepts": [
+        "sections"
+      ],
+      "teaches": [
+        "E3",
+        "E4",
+        "E7"
+      ],
+      "tags": [
+        "arrangement",
+        "track"
+      ],
+      "composition": true,
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "piano"
+        }
+      ]
+    },
+    {
+      "id": "the-mix",
+      "title": "Project: The mix",
+      "goal": "Clear the low end, set the levels, and give each reverb its own orbit.",
+      "concept": "The last pass is the **mix**. Everything that is not kick or bass gets a **high-pass** filter, so the low end belongs to those two alone. Levels: nothing above .8 except the kick. And each part that has a reverb gets its own **orbit**, because Strudel keeps one reverb per orbit; two parts sharing one would fight over the settings.\n\nThat is the whole tune: a kick that skips, snares that stumble, hats that shuffle, an organ bass, a chopped piano, and a shape a DJ can play.",
+      "shape": "project",
+      "starter": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst intro = stack(kick, snare, hats, opens)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nconst drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble)\nconst outro = stack(kick, hats)\narrange([8, intro], [16, main], [16, drop], [8, outro])",
+      "tasks": [
+        {
+          "text": "High-pass the closed and open hats at 400 Hz.",
+          "hint": ".hpf(400) on the hats line and the opens line.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "hh",
+                    "bar": 0
+                  },
+                  "where": [
+                    {
+                      "key": "hcutoff",
+                      "gte": 300,
+                      "default": 0
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "oh",
+                    "bar": 0
+                  },
+                  "where": [
+                    {
+                      "key": "hcutoff",
+                      "gte": 300,
+                      "default": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "High-pass the snare and the ghost at 150 Hz, and give the snare a touch of room on its own orbit 3.",
+          "hint": ".hpf(150) on both snare lines; .room(.2).orbit(3) on the snare line.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "sd",
+                    "bar": 0
+                  },
+                  "where": [
+                    {
+                      "key": "hcutoff",
+                      "gte": 100,
+                      "default": 0
+                    }
+                  ]
+                }
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "sd",
+                    "bar": 0
+                  },
+                  "where": [
+                    {
+                      "key": "room",
+                      "gt": 0,
+                      "default": 0
+                    },
+                    {
+                      "key": "orbit",
+                      "eq": 3,
+                      "default": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "High-pass the piano at 200 Hz and move its reverb to orbit 2, so no two reverbs share an orbit.",
+          "hint": ".hpf(200).orbit(2) on the piano line.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "piano",
+                    "bar": 8
+                  },
+                  "where": [
+                    {
+                      "key": "hcutoff",
+                      "gte": 150,
+                      "default": 0
+                    },
+                    {
+                      "key": "orbit",
+                      "eq": 2,
+                      "default": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "bar": 8,
+                    "where": [
+                      {
+                        "key": "s",
+                        "neq": "bd"
+                      }
+                    ]
+                  },
+                  "where": [
+                    {
+                      "key": "gain",
+                      "lte": 0.8,
+                      "default": 0.8
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8).hpf(400)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4).hpf(400)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst intro = stack(kick, snare, hats, opens)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nconst drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble)\nconst outro = stack(kick, hats)\narrange([8, intro], [16, main], [16, drop], [8, outro])",
+        "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7).hpf(150).room(.2).orbit(3)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3).hpf(150)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8).hpf(400)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4).hpf(400)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst intro = stack(kick, snare, hats, opens)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nconst drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble)\nconst outro = stack(kick, hats)\narrange([8, intro], [16, main], [16, drop], [8, outro])"
+      ],
+      "solution": "// A 2-step tune. Tempo first:\nsetcpm(132/4)\nconst key = \"C2:minor\"\nconst kick = s(\"bd [~ bd] ~ ~\").bank(\"RolandTR909\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR909\").gain(.7).hpf(150).room(.2).orbit(3)\nconst ghost = s(\"~ ~ [~ ~ sd ~] [~ sd ~ ~]\").bank(\"RolandTR909\").gain(.3).hpf(150)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.2, 8).hpf(400)\nconst opens = s(\"~ ~ ~ [~ oh]\").bank(\"RolandTR909\").gain(.4).hpf(400)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ ~]\").scale(key).s(\"square\").decay(.12).sustain(0).lpf(700)\nconst piano = chord(\"Cm7\").voicing().struct(\"~ [~ x] ~ [x ~]\").s(\"piano\").gain(.6).clip(.3).room(.3).hpf(200).orbit(2)\nconst bassSweep = bass.lpf(sine.range(300, 1200).slow(8))\nconst pianoDouble = piano.ply(2)\nconst intro = stack(kick, snare, hats, opens)\nconst main = stack(kick, snare, ghost, hats, opens, bass, piano)\nconst drop = stack(kick, snare, ghost, hats, opens, bassSweep, pianoDouble)\nconst outro = stack(kick, hats)\narrange([8, intro], [16, main], [16, drop], [8, outro])",
+      "summary": [
+        "High-pass everything but kick and bass.",
+        "Nothing above .8 except the kick.",
+        "One reverb per orbit."
+      ],
+      "introduces": [
+        ".hpf",
+        ".orbit"
+      ],
+      "teaches": [
+        "E11",
+        "E10",
+        "E12"
+      ],
+      "tags": [
+        "mixing",
+        "project",
+        "track"
+      ],
+      "composition": true,
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "piano"
+        }
+      ]
+    }
+  ]
+}
