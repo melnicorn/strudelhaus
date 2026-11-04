@@ -1,0 +1,3339 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "techniques",
+  "title": "Techniques",
+  "description": "Cross-genre skills: drum machines, mixing, modulation, randomness and ear training.",
+  "author": "Strudel Workshop",
+  "tags": [
+    "sound design",
+    "mixing",
+    "drums"
+  ],
+  "skills": [
+    {
+      "id": "T1",
+      "name": "Ear: rhythm",
+      "definition": "Hear a drum pattern and write it down.",
+      "requires": [
+        "B3"
+      ]
+    },
+    {
+      "id": "T2",
+      "name": "Ear: pitch",
+      "definition": "Hear notes and chords and write them down.",
+      "requires": [
+        "B11"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "drum-machines",
+      "title": "Drum machines",
+      "blurb": "One machine per lesson: the sound, the era, the pattern it is known for.",
+      "kind": "skills",
+      "requires": [
+        "B8"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "lessons": [
+        "tr808",
+        "tr909",
+        "tr707",
+        "tr606",
+        "linndrum",
+        "hr16",
+        "default-kit"
+      ]
+    },
+    {
+      "id": "mixing-clinic",
+      "title": "Mixing clinic",
+      "blurb": "Levels, carving, orbits, compression, ducking, and what still needs a DAW.",
+      "kind": "skills",
+      "requires": [
+        "B10",
+        "I12",
+        "I14"
+      ],
+      "tags": [
+        "mixing"
+      ],
+      "lessons": [
+        "gain-staging",
+        "carving",
+        "one-orbit-per-effect",
+        "per-voice-compression",
+        "ducking",
+        "what-needs-a-daw"
+      ]
+    },
+    {
+      "id": "modulation",
+      "title": "Modulation and signals",
+      "blurb": "Waves and noise as automation: on cutoff, gain, pan and resonance.",
+      "kind": "skills",
+      "requires": [
+        "B14",
+        "I9"
+      ],
+      "tags": [
+        "sound design"
+      ],
+      "lessons": [
+        "signal-shapes",
+        "perlin-and-rand",
+        "stepped-sweeps",
+        "tremolo-and-autopan",
+        "sixteen-bar-sweep"
+      ]
+    },
+    {
+      "id": "randomness",
+      "title": "Randomness",
+      "blurb": "Controlled chance: drop, change, choose, and pick the version you like.",
+      "kind": "skills",
+      "requires": [
+        "B9",
+        "I19"
+      ],
+      "tags": [
+        "randomness"
+      ],
+      "lessons": [
+        "drop-hits",
+        "sometimes",
+        "choose",
+        "seeds"
+      ]
+    },
+    {
+      "id": "ear-training",
+      "title": "Ear training",
+      "blurb": "Listen to a reference, then write it: rhythms first, then pitch.",
+      "kind": "skills",
+      "requires": [
+        "B3",
+        "B11"
+      ],
+      "tags": [
+        "drums",
+        "melody"
+      ],
+      "lessons": [
+        "ear-kick",
+        "ear-clap",
+        "ear-hats",
+        "ear-two-bars",
+        "ear-two-notes",
+        "ear-riff",
+        "ear-minor-major",
+        "ear-roots"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "tr808",
+      "title": "The TR-808",
+      "goal": "Hear the 808: long boomy kick, snappy snare, the cowbell.",
+      "concept": "Roland’s TR-808 (1980) flopped as a drum machine and then defined electro, hip hop and Miami bass. Its kick is a long, tuned boom, its snare a snap of noise, and its **cowbell** is the most famous cowbell in music.\n\nSame pattern, different machine: only `.bank()` changes.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Put the kick and the clap on the TR-808.",
+          "hint": ".bank(\"RolandTR808\") on both lines.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR808"
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "cp"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR808"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add the 808 cowbell on beats 2 and 4, quiet.",
+          "hint": "const bell = s(\"~ cb ~ cb\").bank(\"RolandTR808\").gain(.5), and stack it.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "cb"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "cb"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR808"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "An 808 tom fill in the fourth bar only.",
+        "hint": "const toms = s(\"<~ ~ ~ [lt mt ht ht]>\").bank(\"RolandTR808\").gain(.7), and stack it.",
+        "check": {
+          "all": [
+            {
+              "eq": [
+                {
+                  "count": {
+                    "s": "lt",
+                    "bar": 0
+                  }
+                },
+                0
+              ]
+            },
+            {
+              "some": {
+                "sel": {
+                  "s": "lt",
+                  "bar": 3
+                }
+              }
+            },
+            {
+              "some": {
+                "sel": {
+                  "s": "ht",
+                  "bar": 3
+                }
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR808\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR808\")\nstack(kick, clap)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR808\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR808\")\nconst bell = s(\"~ cb ~ cb\").bank(\"RolandTR808\").gain(.5)\nstack(kick, clap, bell)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR808\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR808\")\nconst bell = s(\"~ cb ~ cb\").bank(\"RolandTR808\").gain(.5)\nconst toms = s(\"<~ ~ ~ [lt mt ht ht]>\").bank(\"RolandTR808\").gain(.7)\nstack(kick, clap, bell, toms)",
+      "summary": [
+        "The 808: long tuned kick, noise snare, the cowbell.",
+        "Only .bank() changes; the names stay."
+      ],
+      "introduces": [
+        ".bank"
+      ],
+      "teaches": [
+        "B8"
+      ],
+      "tags": [
+        "drums",
+        "808"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "cb",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "lt",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "mt",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "ht",
+          "bank": "RolandTR808"
+        }
+      ]
+    },
+    {
+      "id": "tr909",
+      "title": "The TR-909",
+      "goal": "Hear the 909: punchy kick, sampled hats, the house machine.",
+      "concept": "The TR-909 (1983) mixed analogue drums with **sampled** cymbals and hats. Its kick punches rather than booms, and its open hat “tss” on the offbeat is house music’s signature.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR808\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR808\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Move the kick and clap to the TR-909.",
+          "hint": ".bank(\"RolandTR909\") on both lines.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR909"
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "cp"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR909"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add the 909 open hat on every offbeat.",
+          "hint": "const hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5), and stack it.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0.125,
+                    0.375,
+                    0.625,
+                    0.875
+                  ],
+                  "s": "oh"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "oh"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR909"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add the 909 ride on 8ths, quiet.",
+        "hint": "const ride = s(\"rd*8\").bank(\"RolandTR909\").gain(.3), and stack it.",
+        "check": {
+          "all": [
+            {
+              "playsAt": {
+                "at": [
+                  0.0,
+                  0.125,
+                  0.25,
+                  0.375,
+                  0.5,
+                  0.625,
+                  0.75,
+                  0.875
+                ],
+                "s": "rd"
+              }
+            },
+            {
+              "every": {
+                "sel": {
+                  "s": "rd"
+                },
+                "where": [
+                  {
+                    "key": "bank",
+                    "eq": "RolandTR909"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nstack(kick, clap, hats)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nconst ride = s(\"rd*8\").bank(\"RolandTR909\").gain(.3)\nstack(kick, clap, hats, ride)",
+      "summary": [
+        "The 909: punchy kick, sampled hats and cymbals.",
+        "Offbeat open hat = house."
+      ],
+      "introduces": [
+        ".bank"
+      ],
+      "teaches": [
+        "B8"
+      ],
+      "tags": [
+        "drums",
+        "909"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "rd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "tr707",
+      "title": "The TR-707",
+      "goal": "Hear the 707: the light, plastic Chicago machine.",
+      "concept": "The TR-707 (1985) is all samples, thin and bright. It was cheap, so it was everywhere in early Chicago house: the “jack” rhythms were programmed on it, often with its **tambourine** running on 16ths.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Put the kick and clap on the TR-707.",
+          "hint": ".bank(\"RolandTR707\") on both lines.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR707"
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "cp"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR707"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add the 707 tambourine on 16ths, quiet.",
+          "hint": "const tamb = s(\"tb*16\").bank(\"RolandTR707\").gain(.3), and stack it.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0.0,
+                    0.0625,
+                    0.125,
+                    0.1875,
+                    0.25,
+                    0.3125,
+                    0.375,
+                    0.4375,
+                    0.5,
+                    0.5625,
+                    0.625,
+                    0.6875,
+                    0.75,
+                    0.8125,
+                    0.875,
+                    0.9375
+                  ],
+                  "s": "tb"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "tb"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR707"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add the 707 cowbell on the “and” of 2 and 4.",
+        "hint": "const bell = s(\"~ [~ cb] ~ [~ cb]\").bank(\"RolandTR707\").gain(.5), and stack it.",
+        "check": {
+          "all": [
+            {
+              "playsAt": {
+                "at": [
+                  0.375,
+                  0.875
+                ],
+                "s": "cb"
+              }
+            },
+            {
+              "every": {
+                "sel": {
+                  "s": "cb"
+                },
+                "where": [
+                  {
+                    "key": "bank",
+                    "eq": "RolandTR707"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR707\")\nstack(kick, clap)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR707\")\nconst tamb = s(\"tb*16\").bank(\"RolandTR707\").gain(.3)\nstack(kick, clap, tamb)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR707\")\nconst tamb = s(\"tb*16\").bank(\"RolandTR707\").gain(.3)\nconst bell = s(\"~ [~ cb] ~ [~ cb]\").bank(\"RolandTR707\").gain(.5)\nstack(kick, clap, tamb, bell)",
+      "summary": [
+        "The 707: thin, bright samples; the Chicago jack machine.",
+        "Tambourine on 16ths is its tell."
+      ],
+      "introduces": [
+        ".bank"
+      ],
+      "teaches": [
+        "B8"
+      ],
+      "tags": [
+        "drums",
+        "707",
+        "chicago house"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "tb",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "cb",
+          "bank": "RolandTR707"
+        }
+      ]
+    },
+    {
+      "id": "tr606",
+      "title": "The TR-606",
+      "goal": "Hear the 606: the tiny machine that came with the 303.",
+      "concept": "The TR-606 (1981) was sold alongside the TB-303 as a “band in a box”. It has no clap: a sharp little snare, ticking hats and two toms. Its hats are the sound of early acid and of a lot of minimal techno.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.4)\nstack(kick, hats)",
+      "tasks": [
+        {
+          "text": "Move the hats to the TR-606.",
+          "hint": ".bank(\"RolandTR606\") on the hats line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "hh"
+              },
+              "where": [
+                {
+                  "key": "bank",
+                  "eq": "RolandTR606"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Add the 606 snare on 2 and 4 (it has no clap).",
+          "hint": "const snare = s(\"~ sd ~ sd\").bank(\"RolandTR606\"), and stack it.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "sd"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "sd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR606"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "A 606 tom on the last 8th of the bar.",
+        "hint": "const tom = s(\"~ ~ ~ [~ lt]\").bank(\"RolandTR606\").gain(.6), and stack it.",
+        "check": {
+          "all": [
+            {
+              "playsAt": {
+                "at": [
+                  0.875
+                ],
+                "s": "lt"
+              }
+            },
+            {
+              "every": {
+                "sel": {
+                  "s": "lt"
+                },
+                "where": [
+                  {
+                    "key": "bank",
+                    "eq": "RolandTR606"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*8\").bank(\"RolandTR606\").gain(.4)\nstack(kick, hats)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*8\").bank(\"RolandTR606\").gain(.4)\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR606\")\nstack(kick, hats, snare)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*8\").bank(\"RolandTR606\").gain(.4)\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR606\")\nconst tom = s(\"~ ~ ~ [~ lt]\").bank(\"RolandTR606\").gain(.6)\nstack(kick, hats, snare, tom)",
+      "summary": [
+        "The 606: ticking hats, a small snare, no clap.",
+        "The 303’s companion."
+      ],
+      "introduces": [
+        ".bank"
+      ],
+      "teaches": [
+        "B8"
+      ],
+      "tags": [
+        "drums",
+        "acid house"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR606"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR606"
+        },
+        {
+          "s": "lt",
+          "bank": "RolandTR606"
+        }
+      ]
+    },
+    {
+      "id": "linndrum",
+      "title": "The LinnDrum",
+      "goal": "Hear the LinnDrum: the sampled kit of 80s pop and boogie.",
+      "concept": "The LinnDrum (1982) played real drum **samples** when everything else was analogue. Prince, Madonna and a thousand boogie records: a fat kick, a cracking snare, and a **shaker** that ran all through the song.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Put the kick on the LinnDrum, and swap the clap for its snare.",
+          "hint": ".bank(\"LinnDrum\") on the kick; const snare = s(\"~ sd ~ sd\").bank(\"LinnDrum\") instead of the clap.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "LinnDrum"
+                    }
+                  ]
+                }
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "sd"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "sd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "LinnDrum"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add the Linn shaker on 16ths.",
+          "hint": "const shaker = s(\"sh*16\").bank(\"LinnDrum\").gain(.35), and stack it.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0.0,
+                    0.0625,
+                    0.125,
+                    0.1875,
+                    0.25,
+                    0.3125,
+                    0.375,
+                    0.4375,
+                    0.5,
+                    0.5625,
+                    0.625,
+                    0.6875,
+                    0.75,
+                    0.8125,
+                    0.875,
+                    0.9375
+                  ],
+                  "s": "sh"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "sh"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "LinnDrum"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add a Linn ride on 8ths.",
+        "hint": "const ride = s(\"rd*8\").bank(\"LinnDrum\").gain(.3), and stack it.",
+        "check": {
+          "all": [
+            {
+              "playsAt": {
+                "at": [
+                  0.0,
+                  0.125,
+                  0.25,
+                  0.375,
+                  0.5,
+                  0.625,
+                  0.75,
+                  0.875
+                ],
+                "s": "rd"
+              }
+            },
+            {
+              "every": {
+                "sel": {
+                  "s": "rd"
+                },
+                "where": [
+                  {
+                    "key": "bank",
+                    "eq": "LinnDrum"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"LinnDrum\")\nconst snare = s(\"~ sd ~ sd\").bank(\"LinnDrum\")\nstack(kick, snare)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"LinnDrum\")\nconst snare = s(\"~ sd ~ sd\").bank(\"LinnDrum\")\nconst shaker = s(\"sh*16\").bank(\"LinnDrum\").gain(.35)\nstack(kick, snare, shaker)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"LinnDrum\")\nconst snare = s(\"~ sd ~ sd\").bank(\"LinnDrum\")\nconst shaker = s(\"sh*16\").bank(\"LinnDrum\").gain(.35)\nconst ride = s(\"rd*8\").bank(\"LinnDrum\").gain(.3)\nstack(kick, snare, shaker, ride)",
+      "summary": [
+        "The LinnDrum: sampled drums, the 80s pop kit.",
+        "A shaker on 16ths is its groove."
+      ],
+      "introduces": [
+        ".bank"
+      ],
+      "teaches": [
+        "B8"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "LinnDrum"
+        },
+        {
+          "s": "sd",
+          "bank": "LinnDrum"
+        },
+        {
+          "s": "sh",
+          "bank": "LinnDrum"
+        },
+        {
+          "s": "rd",
+          "bank": "LinnDrum"
+        }
+      ]
+    },
+    {
+      "id": "hr16",
+      "title": "The HR-16",
+      "goal": "Hear the Alesis HR-16: cheap, clean, early house.",
+      "concept": "The Alesis HR-16 (1987) was a cheap sampled kit with clean, slightly dull sounds. It turned up on lots of early house and techno records simply because producers could afford it.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Put the kick and clap on the HR-16.",
+          "hint": ".bank(\"AlesisHR16\") on both lines.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "AlesisHR16"
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "cp"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "AlesisHR16"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add its closed hats on 8ths.",
+          "hint": "const hats = s(\"hh*8\").bank(\"AlesisHR16\").gain(.4), and stack it.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0.0,
+                    0.125,
+                    0.25,
+                    0.375,
+                    0.5,
+                    0.625,
+                    0.75,
+                    0.875
+                  ],
+                  "s": "hh"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "hh"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "AlesisHR16"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add an HR-16 percussion hit on the “and” of 4.",
+        "hint": "const perc = s(\"~ ~ ~ [~ perc]\").bank(\"AlesisHR16\").gain(.5), and stack it.",
+        "check": {
+          "all": [
+            {
+              "playsAt": {
+                "at": [
+                  0.875
+                ],
+                "s": "perc"
+              }
+            },
+            {
+              "every": {
+                "sel": {
+                  "s": "perc"
+                },
+                "where": [
+                  {
+                    "key": "bank",
+                    "eq": "AlesisHR16"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"AlesisHR16\")\nconst clap = s(\"~ cp ~ cp\").bank(\"AlesisHR16\")\nstack(kick, clap)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"AlesisHR16\")\nconst clap = s(\"~ cp ~ cp\").bank(\"AlesisHR16\")\nconst hats = s(\"hh*8\").bank(\"AlesisHR16\").gain(.4)\nstack(kick, clap, hats)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"AlesisHR16\")\nconst clap = s(\"~ cp ~ cp\").bank(\"AlesisHR16\")\nconst hats = s(\"hh*8\").bank(\"AlesisHR16\").gain(.4)\nconst perc = s(\"~ ~ ~ [~ perc]\").bank(\"AlesisHR16\").gain(.5)\nstack(kick, clap, hats, perc)",
+      "summary": [
+        "The HR-16: cheap, clean samples on early house records."
+      ],
+      "introduces": [
+        ".bank"
+      ],
+      "teaches": [
+        "B8"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "AlesisHR16"
+        },
+        {
+          "s": "cp",
+          "bank": "AlesisHR16"
+        },
+        {
+          "s": "hh",
+          "bank": "AlesisHR16"
+        },
+        {
+          "s": "perc",
+          "bank": "AlesisHR16"
+        }
+      ]
+    },
+    {
+      "id": "default-kit",
+      "title": "The default kit",
+      "goal": "Use the mixed kit that plays when there is no .bank().",
+      "concept": "Leave `.bank()` off and Strudel plays its default kit: a mix of drums from many machines, with several **variations** of each sound. `bd:3` or `.n(3)` picks the fourth kick.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Remove .bank() from both parts to hear the default kit.",
+          "hint": "Delete .bank(\"RolandTR909\") on both lines.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "defined": false
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "cp"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "defined": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Pick the fourth kick variation.",
+          "hint": "s(\"bd:3*4\")",
+          "check": {
+            "some": {
+              "sel": {
+                "s": "bd"
+              },
+              "where": [
+                {
+                  "key": "n",
+                  "eq": 3
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add the default kit’s ride on 8ths.",
+        "hint": "const ride = s(\"rd*8\").gain(.3), and stack it.",
+        "check": {
+          "all": [
+            {
+              "playsAt": {
+                "at": [
+                  0.0,
+                  0.125,
+                  0.25,
+                  0.375,
+                  0.5,
+                  0.625,
+                  0.75,
+                  0.875
+                ],
+                "s": "rd"
+              }
+            },
+            {
+              "every": {
+                "sel": {
+                  "s": "rd"
+                },
+                "where": [
+                  {
+                    "key": "bank",
+                    "defined": false
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\")\nconst clap = s(\"~ cp ~ cp\")\nstack(kick, clap)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd:3*4\")\nconst clap = s(\"~ cp ~ cp\")\nstack(kick, clap)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd:3*4\")\nconst clap = s(\"~ cp ~ cp\")\nconst ride = s(\"rd*8\").gain(.3)\nstack(kick, clap, ride)",
+      "summary": [
+        "No .bank(): the default mixed kit.",
+        ":n or .n(n) picks a variation."
+      ],
+      "introduces": [
+        ":",
+        ".n"
+      ],
+      "teaches": [
+        "B8",
+        "I20"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd"
+        },
+        {
+          "s": "cp"
+        },
+        {
+          "s": "rd"
+        }
+      ]
+    },
+    {
+      "id": "gain-staging",
+      "title": "Gain staging",
+      "goal": "Set levels so nothing clips and the kick stays on top.",
+      "concept": "Every part has a `.gain`. Push them past 1 and the output **clips**: a harsh crackle that gets worse as parts add up. The rule of thumb: nothing above 1, most parts well under it, and the **kick louder than anything else** so the groove reads on a club system.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.8)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.9)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).gain(1.1)\nstack(kick, hats, bass)",
+      "tasks": [
+        {
+          "text": "Bring every part to 1 or below.",
+          "hint": "kick .7, hats .6, bass .8",
+          "check": {
+            "every": {
+              "sel": {},
+              "where": [
+                {
+                  "key": "gain",
+                  "lte": 1,
+                  "default": 0.8
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Put the kick on top: no part louder than it.",
+          "hint": "bass .6",
+          "check": {
+            "lte": [
+              {
+                "max": {
+                  "sel": {
+                    "where": [
+                      {
+                        "key": "s",
+                        "neq": "bd"
+                      }
+                    ]
+                  },
+                  "key": "gain",
+                  "default": 0.8
+                }
+              },
+              {
+                "max": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "key": "gain",
+                  "default": 0.8
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add a clap at .5: quieter than the kick, present.",
+        "hint": "const clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5), and stack it.",
+        "check": {
+          "every": {
+            "sel": {
+              "s": "cp"
+            },
+            "where": [
+              {
+                "key": "gain",
+                "lte": 0.5,
+                "default": 0.8
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.7)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.6)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).gain(.8)\nstack(kick, hats, bass)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.7)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.6)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).gain(.6)\nstack(kick, hats, bass)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.7)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.6)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).gain(.6)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.5)\nstack(kick, hats, bass, clap)",
+      "summary": [
+        "Nothing above 1; most parts well under.",
+        "The kick is the loudest thing."
+      ],
+      "introduces": [
+        ".gain"
+      ],
+      "teaches": [
+        "E10",
+        "B10"
+      ],
+      "tags": [
+        "mixing"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "carving",
+      "title": "Carving with high-pass",
+      "goal": "Give each part its own frequency space.",
+      "concept": "Kick and bass own the lows. Everything else has lows it doesn’t need, and they pile up into **mud**. A **high-pass filter** on claps, hats and pads removes what isn’t helping, and the kick comes through.\n\nThere is no EQ in Strudel (gap G6); `.hpf` and `.lpf` are the tools.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500)\nstack(kick, clap, hats, pad, bass)",
+      "tasks": [
+        {
+          "text": "High-pass the clap and the hats at 200 Hz or more.",
+          "hint": ".hpf(300) on the clap and the hats.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": [
+                  "cp",
+                  "oh"
+                ]
+              },
+              "where": [
+                {
+                  "key": "hcutoff",
+                  "gte": 200,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "High-pass the pad at 150 Hz or more, and leave the bass alone.",
+          "hint": ".hpf(200) on the pad.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "supersaw"
+                  },
+                  "where": [
+                    {
+                      "key": "hcutoff",
+                      "gte": 150,
+                      "default": 0
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "sawtooth"
+                  },
+                  "where": [
+                    {
+                      "key": "hcutoff",
+                      "defined": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Keep the pad out of the hats’ way too: low-pass it below 5000 Hz.",
+        "hint": ".lpf(3000) on the pad.",
+        "check": {
+          "every": {
+            "sel": {
+              "s": "supersaw"
+            },
+            "where": [
+              {
+                "key": "cutoff",
+                "lte": 5000,
+                "gt": 0
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").hpf(300)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5).hpf(300)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500)\nstack(kick, clap, hats, pad, bass)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").hpf(300)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5).hpf(300)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).hpf(200)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500)\nstack(kick, clap, hats, pad, bass)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").hpf(300)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5).hpf(300)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).hpf(200).lpf(3000)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500)\nstack(kick, clap, hats, pad, bass)",
+      "summary": [
+        "Kick and bass own the lows; high-pass everything else.",
+        "No EQ here: .hpf and .lpf do the carving."
+      ],
+      "introduces": [
+        ".hpf",
+        ".lpf"
+      ],
+      "teaches": [
+        "E11",
+        "I12"
+      ],
+      "tags": [
+        "mixing"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "one-orbit-per-effect",
+      "title": "One orbit per effect",
+      "goal": "Stop two parts fighting over the same reverb and delay.",
+      "concept": "Strudel has **one reverb and one delay per orbit**. Two parts on the same orbit with different settings overwrite each other, and the result is a silent, confusing mess (gap G4). Give each part that wants its own reverb or delay its own `.orbit(n)`.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.6)\nconst stab = note(\"[~ [c3,eb3,g3]]*2\").s(\"sawtooth\").gain(.4).room(.1).delay(.5).delaysync(3/16).delayfeedback(.5)\nstack(kick, clap, stab)",
+      "tasks": [
+        {
+          "text": "Move the stab to orbit 2, so its small room and its delay are its own.",
+          "hint": ".orbit(2) on the stab line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "sawtooth"
+              },
+              "where": [
+                {
+                  "key": "orbit",
+                  "eq": 2,
+                  "default": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Add hats with their own little room on orbit 3.",
+          "hint": "const hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).room(.3).orbit(3), and stack it.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "oh"
+              },
+              "where": [
+                {
+                  "key": "orbit",
+                  "eq": 3,
+                  "default": 1
+                },
+                {
+                  "key": "room",
+                  "gt": 0,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Keep the kick dry: make sure it stays on orbit 1 with no room.",
+        "hint": "Nothing to add: check the kick line has no .room or .orbit, then add .room(0) to make it explicit.",
+        "check": {
+          "all": [
+            {
+              "every": {
+                "sel": {
+                  "s": "bd"
+                },
+                "where": [
+                  {
+                    "key": "orbit",
+                    "eq": 1,
+                    "default": 1
+                  }
+                ]
+              }
+            },
+            {
+              "matches": "kick[^\\n]*\\.room\\(0\\)"
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.6)\nconst stab = note(\"[~ [c3,eb3,g3]]*2\").s(\"sawtooth\").gain(.4).room(.1).delay(.5).delaysync(3/16).delayfeedback(.5).orbit(2)\nstack(kick, clap, stab)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.6)\nconst stab = note(\"[~ [c3,eb3,g3]]*2\").s(\"sawtooth\").gain(.4).room(.1).delay(.5).delaysync(3/16).delayfeedback(.5).orbit(2)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).room(.3).orbit(3)\nstack(kick, clap, stab, hats)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").room(0)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").room(.6)\nconst stab = note(\"[~ [c3,eb3,g3]]*2\").s(\"sawtooth\").gain(.4).room(.1).delay(.5).delaysync(3/16).delayfeedback(.5).orbit(2)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).room(.3).orbit(3)\nstack(kick, clap, stab, hats)",
+      "summary": [
+        "One reverb and one delay per orbit.",
+        "Each part with its own settings gets its own orbit."
+      ],
+      "introduces": [
+        ".orbit",
+        ".room"
+      ],
+      "teaches": [
+        "E12",
+        "I14",
+        "I15"
+      ],
+      "tags": [
+        "mixing",
+        "effects"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "per-voice-compression",
+      "title": "Compression, per voice",
+      "goal": "Even out a clap and a bass with a compressor.",
+      "concept": "A **compressor** turns the loud moments down so the quiet ones can come up: punch and glue. Strudel’s is per voice, written as one string: `\"threshold:ratio:knee:attack:release\"`. `-20:4:3:.01:.1` means start squashing above −20 dB, 4 to 1, gently, fast in, quick out.\n\nThere is no master-bus compressor (gap G6): each part gets its own.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500)\nstack(kick, clap, bass)",
+      "tasks": [
+        {
+          "text": "Compress the clap.",
+          "hint": ".compressor(\"-20:4:3:.01:.1\") on the clap line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "cp"
+              },
+              "where": [
+                {
+                  "key": "compressor",
+                  "defined": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Compress the bass, a little harder.",
+          "hint": ".compressor(\"-18:6:3:.005:.08\") on the bass line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "sawtooth"
+              },
+              "where": [
+                {
+                  "key": "compressor",
+                  "defined": true
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Make up the level the compressor took: .postgain(1.2) on the clap.",
+        "hint": ".postgain(1.2) after the compressor on the clap line.",
+        "check": {
+          "matches": "clap[^\\n]*postgain\\("
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").compressor(\"-20:4:3:.01:.1\")\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500)\nstack(kick, clap, bass)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").compressor(\"-20:4:3:.01:.1\")\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).compressor(\"-18:6:3:.005:.08\")\nstack(kick, clap, bass)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").compressor(\"-20:4:3:.01:.1\").postgain(1.2)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).compressor(\"-18:6:3:.005:.08\")\nstack(kick, clap, bass)",
+      "summary": [
+        ".compressor(\"thr:ratio:knee:att:rel\") evens a part out.",
+        "Per voice only: no master compressor here."
+      ],
+      "introduces": [
+        ".compressor",
+        ".postgain"
+      ],
+      "teaches": [
+        "E9"
+      ],
+      "tags": [
+        "mixing"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "ducking",
+      "title": "Ducking",
+      "goal": "Make the bass dip whenever the kick hits.",
+      "concept": "**Sidechain ducking**: every kick hit pushes the bass down for a moment, so the two never fight and the track pumps. The kick does the ducking: `.duckorbit(2)` names the orbit to duck, `.duckdepth` how far, `.duckattack` how fast it comes back.\n\nThe ducked orbit must have something playing on it, or Strudel throws an error (gap G14).",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst bass = note(\"c2*8\").s(\"sawtooth\").lpf(500).gain(.7).orbit(2)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).orbit(3)\nstack(kick, bass, pad)",
+      "tasks": [
+        {
+          "text": "Duck the bass’s orbit from the kick, fairly deep.",
+          "hint": ".duckorbit(2).duckdepth(.6) on the kick line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "bd"
+              },
+              "where": [
+                {
+                  "key": "duckorbit",
+                  "eq": 2
+                },
+                {
+                  "key": "duckdepth",
+                  "gte": 0.5,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Let it come back a little slower.",
+          "hint": ".duckattack(.15) on the kick line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "bd"
+              },
+              "where": [
+                {
+                  "key": "duckattack",
+                  "gte": 0.1,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Pump harder: depth .9.",
+        "hint": ".duckdepth(.9)",
+        "check": {
+          "every": {
+            "sel": {
+              "s": "bd"
+            },
+            "where": [
+              {
+                "key": "duckdepth",
+                "gte": 0.8,
+                "default": 0
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth(.6)\nconst bass = note(\"c2*8\").s(\"sawtooth\").lpf(500).gain(.7).orbit(2)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).orbit(3)\nstack(kick, bass, pad)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth(.6).duckattack(.15)\nconst bass = note(\"c2*8\").s(\"sawtooth\").lpf(500).gain(.7).orbit(2)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).orbit(3)\nstack(kick, bass, pad)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth(.9).duckattack(.15)\nconst bass = note(\"c2*8\").s(\"sawtooth\").lpf(500).gain(.7).orbit(2)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).orbit(3)\nstack(kick, bass, pad)",
+      "summary": [
+        "The kick ducks an orbit: .duckorbit, .duckdepth, .duckattack.",
+        "The ducked orbit must be playing."
+      ],
+      "introduces": [
+        ".duckorbit",
+        ".duckdepth",
+        ".duckattack"
+      ],
+      "teaches": [
+        "E8",
+        "I8"
+      ],
+      "tags": [
+        "mixing"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "what-needs-a-daw",
+      "title": "What needs a DAW",
+      "goal": "Mix with the tools Strudel has, and know which ones it lacks.",
+      "concept": "Strudel has **no EQ** (no shelves, no parametric bands) and **no master limiter or bus compressor** (gap G6). What it has: `.gain` for level, `.hpf` and `.lpf` to carve, per-voice `.compressor`, and ducking. That gets a loop clean and punchy. A finished release still goes through a DAW for EQ, bus compression and limiting, and there is no shame in that.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.9)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.9)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.9)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).gain(.9)\nstack(kick, clap, hats, pad, bass)",
+      "tasks": [
+        {
+          "text": "Carve: high-pass the clap, hats and pad at 150 Hz or more.",
+          "hint": ".hpf(200) on the clap, the hats and the pad.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": [
+                  "cp",
+                  "oh",
+                  "supersaw"
+                ]
+              },
+              "where": [
+                {
+                  "key": "hcutoff",
+                  "gte": 150,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Level: bring the clap and hats to .6 and the bass to .7, below the kick.",
+          "hint": ".gain(.6) on the clap and hats, .gain(.7) on the bass.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": [
+                      "cp",
+                      "oh"
+                    ]
+                  },
+                  "where": [
+                    {
+                      "key": "gain",
+                      "lte": 0.6,
+                      "default": 0.8
+                    }
+                  ]
+                }
+              },
+              {
+                "lte": [
+                  {
+                    "max": {
+                      "sel": {
+                        "where": [
+                          {
+                            "key": "s",
+                            "neq": "bd"
+                          }
+                        ]
+                      },
+                      "key": "gain",
+                      "default": 0.8
+                    }
+                  },
+                  {
+                    "max": {
+                      "sel": {
+                        "s": "bd"
+                      },
+                      "key": "gain",
+                      "default": 0.8
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Tame the pad’s top with a low-pass at 4000 Hz, the nearest thing to a high shelf.",
+        "hint": ".lpf(4000) on the pad.",
+        "check": {
+          "every": {
+            "sel": {
+              "s": "supersaw"
+            },
+            "where": [
+              {
+                "key": "cutoff",
+                "lte": 4500,
+                "gt": 0
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.9)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.9).hpf(200)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.9).hpf(200)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).hpf(200)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).gain(.9)\nstack(kick, clap, hats, pad, bass)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.9)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.6).hpf(200)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.6).hpf(200)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).hpf(200)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).gain(.7)\nstack(kick, clap, hats, pad, bass)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.9)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain(.6).hpf(200)\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.6).hpf(200)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).hpf(200).lpf(4000)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).gain(.7)\nstack(kick, clap, hats, pad, bass)",
+      "summary": [
+        "No EQ, no master limiter: carve with hpf/lpf, level with gain.",
+        "A release still goes through a DAW."
+      ],
+      "introduces": [
+        ".hpf",
+        ".gain"
+      ],
+      "teaches": [
+        "E10",
+        "E11"
+      ],
+      "tags": [
+        "mixing"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "signal-shapes",
+      "title": "Signal shapes",
+      "goal": "Move a cutoff with sine, saw and square waves.",
+      "concept": "A **signal** is a value that changes over time. `sine` rises and falls smoothly; `saw` ramps up and drops; `square` jumps between low and high. `.range(a, b)` scales it; `.slow(n)` stretches one cycle over n bars.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(600)\nstack(kick, bass)",
+      "tasks": [
+        {
+          "text": "Make the cutoff a sine between 300 and 1500 Hz over 4 bars.",
+          "hint": ".lpf(sine.range(300, 1500).slow(4)) instead of .lpf(600).",
+          "check": {
+            "all": [
+              {
+                "matches": "sine\\.range"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "sawtooth"
+                      },
+                      "key": "cutoff",
+                      "round": 0,
+                      "bars": [
+                        0,
+                        1,
+                        2,
+                        3
+                      ]
+                    }
+                  },
+                  3
+                ]
+              }
+            ]
+          },
+          "replacedLater": true
+        },
+        {
+          "text": "Now a saw: a ramp up over 4 bars, then back to the bottom.",
+          "hint": "saw.range(300, 1500).slow(4)",
+          "check": {
+            "all": [
+              {
+                "matches": "saw\\.range"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "sawtooth"
+                      },
+                      "key": "cutoff",
+                      "round": 0,
+                      "bars": [
+                        0,
+                        1,
+                        2,
+                        3
+                      ]
+                    }
+                  },
+                  3
+                ]
+              }
+            ]
+          },
+          "replacedLater": true
+        }
+      ],
+      "challenge": {
+        "text": "A square: two bars open, two bars closed.",
+        "hint": "square.range(300, 1500).slow(4)",
+        "check": {
+          "all": [
+            {
+              "matches": "square\\.range"
+            },
+            {
+              "gte": [
+                {
+                  "distinct": {
+                    "sel": {
+                      "s": "sawtooth"
+                    },
+                    "key": "cutoff",
+                    "round": 0,
+                    "bars": [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  }
+                },
+                2
+              ]
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(sine.range(300, 1500).slow(4))\nstack(kick, bass)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(saw.range(300, 1500).slow(4))\nstack(kick, bass)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(square.range(300, 1500).slow(4))\nstack(kick, bass)",
+      "summary": [
+        "sine, saw, square: smooth, ramp, jump.",
+        ".range scales; .slow stretches."
+      ],
+      "introduces": [
+        "sine",
+        ".range",
+        ".slow"
+      ],
+      "teaches": [
+        "I18"
+      ],
+      "tags": [
+        "sound design"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "perlin-and-rand",
+      "title": "Perlin and rand",
+      "goal": "Random values, smooth or jumpy, on a control.",
+      "concept": "`rand` is a new random value for every event: jittery, lively. `perlin` is random but smooth: it drifts. Use `rand` on hat levels for a human feel, `perlin` on a filter for slow weather.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).lpf(800)\nstack(kick, hats, pad)",
+      "tasks": [
+        {
+          "text": "Give the hats a random gain between .2 and .6.",
+          "hint": ".gain(rand.range(.2, .6)) on the hats.",
+          "check": {
+            "all": [
+              {
+                "matches": "rand\\.range"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "hh"
+                      },
+                      "key": "gain",
+                      "round": 2
+                    }
+                  },
+                  4
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Let perlin wander the pad’s cutoff between 400 and 2000 Hz over 8 bars.",
+          "hint": ".lpf(perlin.range(400, 2000).slow(8)) on the pad.",
+          "check": {
+            "all": [
+              {
+                "matches": "perlin"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "supersaw"
+                      },
+                      "key": "cutoff",
+                      "round": 0,
+                      "bars": [
+                        0,
+                        2,
+                        4,
+                        6
+                      ]
+                    }
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Scatter the hats across the stereo field with rand on pan.",
+        "hint": ".pan(rand) on the hats.",
+        "check": {
+          "gte": [
+            {
+              "distinct": {
+                "sel": {
+                  "s": "hh"
+                },
+                "key": "pan",
+                "round": 2
+              }
+            },
+            3
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(rand.range(.2, .6))\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).lpf(800)\nstack(kick, hats, pad)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(rand.range(.2, .6))\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).lpf(perlin.range(400, 2000).slow(8))\nstack(kick, hats, pad)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(rand.range(.2, .6)).pan(rand)\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).lpf(perlin.range(400, 2000).slow(8))\nstack(kick, hats, pad)",
+      "summary": [
+        "rand jumps per event; perlin drifts."
+      ],
+      "introduces": [
+        "rand"
+      ],
+      "teaches": [
+        "I18",
+        "E13"
+      ],
+      "tags": [
+        "sound design",
+        "randomness"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "stepped-sweeps",
+      "title": "Stepped sweeps",
+      "goal": "Make a sweep move on a held note with .segment.",
+      "concept": "A signal is read **once per event** (gap G3). A pad that holds one chord per bar reads its cutoff once per bar, so a sweep comes out as steps. `.segment(16)` chops the pad into 16 events per bar, so the sweep moves 16 times a bar.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).lpf(saw.range(300, 3000).slow(8))\nstack(kick, pad)",
+      "tasks": [
+        {
+          "text": "Chop the pad into 16 events per bar so the sweep moves inside the bar.",
+          "hint": ".segment(16) on the pad.",
+          "check": {
+            "all": [
+              {
+                "uses": "segment"
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "supersaw",
+                      "bar": 0
+                    }
+                  },
+                  48
+                ]
+              }
+            ]
+          },
+          "replacedLater": true
+        }
+      ],
+      "challenge": {
+        "text": "Coarser steps: 4 per bar.",
+        "hint": ".segment(4)",
+        "check": {
+          "all": [
+            {
+              "uses": "segment"
+            },
+            {
+              "eq": [
+                {
+                  "count": {
+                    "s": "supersaw",
+                    "bar": 0
+                  }
+                },
+                12
+              ]
+            }
+          ]
+        }
+      },
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).segment(16).lpf(saw.range(300, 3000).slow(8))\nstack(kick, pad)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").gain(.4).segment(4).lpf(saw.range(300, 3000).slow(8))\nstack(kick, pad)",
+      "summary": [
+        "Signals are read once per event.",
+        ".segment(n) retriggers n times a bar so a sweep moves on held notes."
+      ],
+      "introduces": [
+        ".seg"
+      ],
+      "teaches": [
+        "I18",
+        "E2"
+      ],
+      "tags": [
+        "sound design"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "tremolo-and-autopan",
+      "title": "Tremolo and auto-pan",
+      "goal": "Put a signal on gain and on pan.",
+      "concept": "A signal on **gain** is a tremolo: the level pulses. A signal on **pan** is an auto-pan: the sound swings between the speakers. Both need the part chopped with `.segment` so the signal is read often enough.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").segment(16).lpf(1200)\nstack(kick, pad)",
+      "tasks": [
+        {
+          "text": "Tremolo: a sine between .2 and .5 on the pad’s gain, four times a bar.",
+          "hint": ".gain(sine.range(.2, .5).fast(4))",
+          "check": {
+            "all": [
+              {
+                "matches": "gain\\(sine"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "supersaw",
+                        "bar": 0
+                      },
+                      "key": "gain",
+                      "round": 2
+                    }
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Auto-pan: a sine across the stereo field over 2 bars.",
+          "hint": ".pan(sine.slow(2))",
+          "check": {
+            "all": [
+              {
+                "matches": "pan\\(sine"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "supersaw",
+                        "bar": 0
+                      },
+                      "key": "pan",
+                      "round": 2
+                    }
+                  },
+                  4
+                ]
+              }
+            ]
+          },
+          "replacedLater": true
+        }
+      ],
+      "challenge": {
+        "text": "A triangle wave on the pan instead of a sine.",
+        "hint": ".pan(tri.slow(2))",
+        "check": {
+          "all": [
+            {
+              "matches": "pan\\(tri"
+            },
+            {
+              "gte": [
+                {
+                  "distinct": {
+                    "sel": {
+                      "s": "supersaw",
+                      "bar": 0
+                    },
+                    "key": "pan",
+                    "round": 2
+                  }
+                },
+                4
+              ]
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").segment(16).lpf(1200).gain(sine.range(.2, .5).fast(4))\nstack(kick, pad)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").segment(16).lpf(1200).gain(sine.range(.2, .5).fast(4)).pan(sine.slow(2))\nstack(kick, pad)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst pad = note(\"[c3,eb3,g3]\").s(\"supersaw\").segment(16).lpf(1200).gain(sine.range(.2, .5).fast(4)).pan(tri.slow(2))\nstack(kick, pad)",
+      "summary": [
+        "Signal on gain: tremolo. Signal on pan: auto-pan.",
+        "Chop the part with .segment first."
+      ],
+      "introduces": [
+        ".pan",
+        "sine"
+      ],
+      "teaches": [
+        "I18",
+        "I17"
+      ],
+      "tags": [
+        "sound design",
+        "effects"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "sixteen-bar-sweep",
+      "title": "The 16-bar sweep",
+      "goal": "Automate a filter and its resonance over a whole phrase.",
+      "concept": "The classic tension tool: a cutoff that opens over 16 bars while the resonance moves on its own clock. Long `.slow` values turn a signal into **automation**.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst acid = note(\"[c2 c2 c3 c2]*4\").s(\"sawtooth\").ftype(\"ladder\").lpf(500).lpq(15).decay(.2).sustain(0).gain(.6)\nstack(kick, acid)",
+      "tasks": [
+        {
+          "text": "Open the acid cutoff from 300 to 3000 Hz over 16 bars.",
+          "hint": ".lpf(saw.range(300, 3000).slow(16)) instead of .lpf(500).",
+          "check": {
+            "all": [
+              {
+                "lt": [
+                  {
+                    "valueAt": {
+                      "sel": {
+                        "s": "sawtooth",
+                        "bar": 0
+                      },
+                      "key": "cutoff"
+                    }
+                  },
+                  600
+                ]
+              },
+              {
+                "gt": [
+                  {
+                    "valueAt": {
+                      "sel": {
+                        "s": "sawtooth",
+                        "bar": 8
+                      },
+                      "key": "cutoff"
+                    }
+                  },
+                  {
+                    "plus": [
+                      {
+                        "valueAt": {
+                          "sel": {
+                            "s": "sawtooth",
+                            "bar": 0
+                          },
+                          "key": "cutoff"
+                        }
+                      },
+                      800
+                    ]
+                  }
+                ]
+              },
+              {
+                "gt": [
+                  {
+                    "valueAt": {
+                      "sel": {
+                        "s": "sawtooth",
+                        "bar": 15
+                      },
+                      "key": "cutoff"
+                    }
+                  },
+                  {
+                    "valueAt": {
+                      "sel": {
+                        "s": "sawtooth",
+                        "bar": 8
+                      },
+                      "key": "cutoff"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Move the resonance between 10 and 22 on an 8-bar sine.",
+          "hint": ".lpq(sine.range(10, 22).slow(8))",
+          "check": {
+            "gte": [
+              {
+                "distinct": {
+                  "sel": {
+                    "s": "sawtooth"
+                  },
+                  "key": "resonance",
+                  "round": 0,
+                  "bars": [
+                    0,
+                    2,
+                    4,
+                    6
+                  ]
+                }
+              },
+              3
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add hats whose high-pass rises over the same 16 bars.",
+        "hint": "const hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.4).hpf(saw.range(200, 3000).slow(16)), and stack it.",
+        "check": {
+          "gt": [
+            {
+              "valueAt": {
+                "sel": {
+                  "s": "hh",
+                  "bar": 15
+                },
+                "key": "hcutoff"
+              }
+            },
+            {
+              "plus": [
+                {
+                  "valueAt": {
+                    "sel": {
+                      "s": "hh",
+                      "bar": 0
+                    },
+                    "key": "hcutoff"
+                  }
+                },
+                1000
+              ]
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst acid = note(\"[c2 c2 c3 c2]*4\").s(\"sawtooth\").ftype(\"ladder\").lpf(saw.range(300, 3000).slow(16)).lpq(15).decay(.2).sustain(0).gain(.6)\nstack(kick, acid)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst acid = note(\"[c2 c2 c3 c2]*4\").s(\"sawtooth\").ftype(\"ladder\").lpf(saw.range(300, 3000).slow(16)).lpq(sine.range(10, 22).slow(8)).decay(.2).sustain(0).gain(.6)\nstack(kick, acid)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst acid = note(\"[c2 c2 c3 c2]*4\").s(\"sawtooth\").ftype(\"ladder\").lpf(saw.range(300, 3000).slow(16)).lpq(sine.range(10, 22).slow(8)).decay(.2).sustain(0).gain(.6)\nconst hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.4).hpf(saw.range(200, 3000).slow(16))\nstack(kick, acid, hats)",
+      "summary": [
+        "Long .slow values are automation.",
+        "Move cutoff and resonance on different clocks."
+      ],
+      "introduces": [
+        ".range",
+        ".slow",
+        ".lpq"
+      ],
+      "teaches": [
+        "E2",
+        "I11"
+      ],
+      "tags": [
+        "sound design",
+        "303"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "drop-hits",
+      "title": "Drop some hits",
+      "goal": "Thin a pattern out at random with degradeBy.",
+      "concept": "`.degradeBy(p)` drops each event with probability p. Strudel’s randomness is **deterministic**: the same code gives the same result every time, so a loop can be random and still repeatable.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4)\nstack(kick, hats)",
+      "tasks": [
+        {
+          "text": "Drop about a third of the hats.",
+          "hint": ".degradeBy(.3) on the hats.",
+          "check": {
+            "all": [
+              {
+                "uses": "degradeBy"
+              },
+              {
+                "lt": [
+                  {
+                    "count": {
+                      "s": "hh",
+                      "cycles": 8
+                    }
+                  },
+                  120
+                ]
+              },
+              {
+                "gt": [
+                  {
+                    "count": {
+                      "s": "hh",
+                      "cycles": 8
+                    }
+                  },
+                  40
+                ]
+              }
+            ]
+          },
+          "replacedLater": true
+        },
+        {
+          "text": "Do the same with mini-notation: a ? after the step.",
+          "hint": "s(\"hh*16?\") (and remove .degradeBy)",
+          "check": {
+            "all": [
+              {
+                "matches": "hh\\*16\\?"
+              },
+              {
+                "lt": [
+                  {
+                    "count": {
+                      "s": "hh",
+                      "cycles": 8
+                    }
+                  },
+                  120
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add rimshots on 8ths that only play half the time.",
+        "hint": "const perc = s(\"rim*8\").bank(\"RolandTR909\").gain(.4).degradeBy(.5), and stack it.",
+        "check": {
+          "all": [
+            {
+              "defines": "perc"
+            },
+            {
+              "lt": [
+                {
+                  "count": {
+                    "s": "rim",
+                    "cycles": 8
+                  }
+                },
+                60
+              ]
+            },
+            {
+              "gt": [
+                {
+                  "count": {
+                    "s": "rim",
+                    "cycles": 8
+                  }
+                },
+                10
+              ]
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4).degradeBy(.3)\nstack(kick, hats)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16?\").bank(\"RolandTR909\").gain(.4)\nstack(kick, hats)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16?\").bank(\"RolandTR909\").gain(.4)\nconst perc = s(\"rim*8\").bank(\"RolandTR909\").gain(.4).degradeBy(.5)\nstack(kick, hats, perc)",
+      "summary": [
+        ".degradeBy(p) and ? drop events at random.",
+        "Strudel’s randomness repeats exactly."
+      ],
+      "introduces": [
+        ".degradeBy",
+        "?"
+      ],
+      "teaches": [
+        "E13"
+      ],
+      "tags": [
+        "randomness",
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "rim",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "sometimes",
+      "title": "Sometimes",
+      "goal": "Change a random share of events with sometimesBy.",
+      "concept": "`.sometimesBy(p, f)` applies a function to a share of the events: pitch some rimshots up, make some hats quieter. `.sometimes`, `.often` and `.rarely` are shortcuts for 50%, 75% and 25%.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst perc = s(\"rim*8\").bank(\"RolandTR909\").gain(.5)\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4)\nstack(kick, perc, hats)",
+      "tasks": [
+        {
+          "text": "Pitch about a third of the rimshots up an octave.",
+          "hint": ".sometimesBy(.3, x => x.speed(2)) on perc.",
+          "check": {
+            "all": [
+              {
+                "uses": "sometimesBy"
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "rim",
+                    "cycles": 8
+                  },
+                  "where": [
+                    {
+                      "key": "speed",
+                      "eq": 2,
+                      "default": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "rim",
+                    "cycles": 8
+                  },
+                  "where": [
+                    {
+                      "key": "speed",
+                      "neq": 2,
+                      "default": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Make a fifth of the hats very quiet.",
+          "hint": ".sometimesBy(.2, x => x.gain(.1)) on the hats.",
+          "check": {
+            "some": {
+              "sel": {
+                "s": "hh",
+                "cycles": 8
+              },
+              "where": [
+                {
+                  "key": "gain",
+                  "eq": 0.1
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Rarely double a rimshot.",
+        "hint": ".rarely(x => x.ply(2)) on perc.",
+        "check": {
+          "all": [
+            {
+              "uses": "rarely"
+            },
+            {
+              "gt": [
+                {
+                  "count": {
+                    "s": "rim",
+                    "cycles": 8
+                  }
+                },
+                64
+              ]
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst perc = s(\"rim*8\").bank(\"RolandTR909\").gain(.5).sometimesBy(.3, x => x.speed(2))\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4)\nstack(kick, perc, hats)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst perc = s(\"rim*8\").bank(\"RolandTR909\").gain(.5).sometimesBy(.3, x => x.speed(2))\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4).sometimesBy(.2, x => x.gain(.1))\nstack(kick, perc, hats)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst perc = s(\"rim*8\").bank(\"RolandTR909\").gain(.5).sometimesBy(.3, x => x.speed(2)).rarely(x => x.ply(2))\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4).sometimesBy(.2, x => x.gain(.1))\nstack(kick, perc, hats)",
+      "summary": [
+        ".sometimesBy(p, f) changes a share of events.",
+        "sometimes / often / rarely are shortcuts."
+      ],
+      "introduces": [
+        ".sometimesBy"
+      ],
+      "teaches": [
+        "E13",
+        "I19"
+      ],
+      "tags": [
+        "randomness"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "rim",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "choose",
+      "title": "Choose",
+      "goal": "Pick a random value from a list on every event.",
+      "concept": "`choose(a, b, c)` returns one of its values at random for each event. On gain it makes accents; on scale degrees it writes a random melody that stays in key.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4)\nconst bass = n(\"0*8\").scale(\"C2:minor\").s(\"square\").decay(.15).sustain(0)\nstack(kick, hats, bass)",
+      "tasks": [
+        {
+          "text": "Hats at either .2 or .6, chosen per hit.",
+          "hint": ".gain(choose(.2, .6)) on the hats.",
+          "check": {
+            "all": [
+              {
+                "uses": "choose"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "hh",
+                        "cycles": 4
+                      },
+                      "key": "gain"
+                    }
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "A random bass line from degrees 0, 3 and 5.",
+          "hint": "n(choose(0, 3, 5)).struct(\"x*8\") instead of n(\"0*8\") on the bass.",
+          "check": {
+            "all": [
+              {
+                "matches": "choose\\(\\s*0\\s*,\\s*3\\s*,\\s*5"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "square",
+                        "cycles": 4
+                      },
+                      "key": "$note"
+                    }
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Pan each hat hard left or hard right.",
+        "hint": ".pan(choose(.1, .9)) on the hats.",
+        "check": {
+          "gte": [
+            {
+              "distinct": {
+                "sel": {
+                  "s": "hh",
+                  "cycles": 4
+                },
+                "key": "pan"
+              }
+            },
+            2
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(choose(.2, .6))\nconst bass = n(\"0*8\").scale(\"C2:minor\").s(\"square\").decay(.15).sustain(0)\nstack(kick, hats, bass)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(choose(.2, .6))\nconst bass = n(choose(0, 3, 5)).struct(\"x*8\").scale(\"C2:minor\").s(\"square\").decay(.15).sustain(0)\nstack(kick, hats, bass)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(choose(.2, .6)).pan(choose(.1, .9))\nconst bass = n(choose(0, 3, 5)).struct(\"x*8\").scale(\"C2:minor\").s(\"square\").decay(.15).sustain(0)\nstack(kick, hats, bass)",
+      "summary": [
+        "choose(…) picks a value per event.",
+        "On degrees it writes a melody that stays in key."
+      ],
+      "introduces": [
+        "choose"
+      ],
+      "teaches": [
+        "E13",
+        "I5"
+      ],
+      "tags": [
+        "randomness",
+        "melody"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "seeds",
+      "title": "Seeds",
+      "goal": "Pick a different, repeatable random variation.",
+      "concept": "Because Strudel’s randomness is deterministic, you can **choose which version** you get: `.seed(n)` gives a different but equally repeatable set of random choices. Try seeds until the pattern feels right, and it stays that way.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4).degradeBy(.4)\nstack(kick, hats)",
+      "tasks": [
+        {
+          "text": "Set a seed on the hats.",
+          "hint": ".seed(2) after .degradeBy(.4).",
+          "check": {
+            "all": [
+              {
+                "uses": "seed"
+              },
+              {
+                "lt": [
+                  {
+                    "count": {
+                      "s": "hh",
+                      "cycles": 8
+                    }
+                  },
+                  120
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Try another: seed 7.",
+          "hint": ".seed(7)",
+          "check": {
+            "matches": "seed\\(\\s*7\\s*\\)"
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add a rimshot pattern with its own seed, so it varies apart from the hats.",
+        "hint": "const perc = s(\"rim*8\").bank(\"RolandTR909\").gain(.4).degradeBy(.5).seed(3), and stack it.",
+        "check": {
+          "all": [
+            {
+              "defines": "perc"
+            },
+            {
+              "matches": "perc[^\\n]*seed\\("
+            },
+            {
+              "lt": [
+                {
+                  "count": {
+                    "s": "rim",
+                    "cycles": 8
+                  }
+                },
+                60
+              ]
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4).degradeBy(.4).seed(2)\nstack(kick, hats)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4).degradeBy(.4).seed(7)\nstack(kick, hats)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*16\").bank(\"RolandTR909\").gain(.4).degradeBy(.4).seed(7)\nconst perc = s(\"rim*8\").bank(\"RolandTR909\").gain(.4).degradeBy(.5).seed(3)\nstack(kick, hats, perc)",
+      "summary": [
+        ".seed(n) picks a repeatable random variation."
+      ],
+      "introduces": [
+        ".seed"
+      ],
+      "teaches": [
+        "E13"
+      ],
+      "tags": [
+        "randomness"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "rim",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "ear-kick",
+      "title": "Ear: a kick pattern",
+      "goal": "Hear a kick pattern and write it.",
+      "concept": "Press ▶ Play the reference and count along: 1 2 3 4. Where do the kicks land?",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd\").bank(\"RolandTR909\")\nstack(kick)",
+      "tasks": [
+        {
+          "text": "Listen with ▶ Play the reference, then write what you hear.",
+          "hint": "s(\"bd ~ bd bd\"): kicks on 1, 3 and 4.",
+          "check": {
+            "playsAt": {
+              "at": [
+                0,
+                0.5,
+                0.75
+              ],
+              "s": "bd"
+            }
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd ~ bd bd\").bank(\"RolandTR909\")\nstack(kick)",
+      "summary": [
+        "Listen first, then write."
+      ],
+      "introduces": [],
+      "teaches": [
+        "T1",
+        "B2"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ],
+      "reference": "setcpm(124/4)\nconst kick = s(\"bd ~ bd bd\").bank(\"RolandTR909\")\nstack(kick)"
+    },
+    {
+      "id": "ear-clap",
+      "title": "Ear: a clap pattern",
+      "goal": "Hear a clap pattern with a double and write it.",
+      "concept": "Claps on 2 and 4 are the usual; listen for the extra one.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Listen with ▶ Play the reference, then write what you hear.",
+          "hint": "s(\"~ cp ~ [cp cp]\"): the fourth beat is two claps.",
+          "check": {
+            "playsAt": {
+              "at": [
+                0.25,
+                0.75,
+                0.875
+              ],
+              "s": "cp"
+            }
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "summary": [
+        "Listen first, then write."
+      ],
+      "introduces": [],
+      "teaches": [
+        "T1",
+        "B3"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        }
+      ],
+      "reference": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR909\")\nstack(kick, clap)"
+    },
+    {
+      "id": "ear-hats",
+      "title": "Ear: closed and open hats",
+      "goal": "Hear where the open hats fall among the closed ones.",
+      "concept": "Eight hat hits per bar; two of them are open. Which two?",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.5)\nstack(kick, hats)",
+      "tasks": [
+        {
+          "text": "Listen with ▶ Play the reference, then write what you hear.",
+          "hint": "s(\"[hh hh oh hh]*2\"): the open hat is the third 8th of each half.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "oh"
+                }
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.125,
+                    0.375,
+                    0.5,
+                    0.625,
+                    0.875
+                  ],
+                  "s": "hh"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[hh hh oh hh]*2\").bank(\"RolandTR909\").gain(.5)\nstack(kick, hats)",
+      "summary": [
+        "Listen first, then write."
+      ],
+      "introduces": [],
+      "teaches": [
+        "T1",
+        "B5"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ],
+      "reference": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[hh hh oh hh]*2\").bank(\"RolandTR909\").gain(.5)\nstack(kick, hats)"
+    },
+    {
+      "id": "ear-two-bars",
+      "title": "Ear: a two-bar kick phrase",
+      "goal": "Hear a kick pattern that changes in the second bar.",
+      "concept": "Count two bars. The first is plain; the second has a variation at the end.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nstack(kick)",
+      "tasks": [
+        {
+          "text": "Listen with ▶ Play the reference, then write what you hear.",
+          "hint": "s(\"<[bd*4] [bd ~ bd [bd bd]]>\")",
+          "check": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "bd",
+                      "bar": 0
+                    }
+                  },
+                  4
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "times": {
+                      "s": "bd",
+                      "bar": 1
+                    }
+                  },
+                  [
+                    0,
+                    0.5,
+                    0.75,
+                    0.875
+                  ]
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"<[bd*4] [bd ~ bd [bd bd]]>\").bank(\"RolandTR909\")\nstack(kick)",
+      "summary": [
+        "Listen first, then write."
+      ],
+      "introduces": [],
+      "teaches": [
+        "T1",
+        "B2"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ],
+      "reference": "setcpm(124/4)\nconst kick = s(\"<[bd*4] [bd ~ bd [bd bd]]>\").bank(\"RolandTR909\")\nstack(kick)"
+    },
+    {
+      "id": "ear-two-notes",
+      "title": "Ear: two notes",
+      "goal": "Hear a two-note bass and write the notes.",
+      "concept": "The first note is a C. Is the second higher or lower, and by how much? (It is a minor third up.)",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst bass = note(\"c2 c2\").s(\"sawtooth\").lpf(800)\nstack(bass)",
+      "tasks": [
+        {
+          "text": "Listen with ▶ Play the reference, then write what you hear.",
+          "hint": "note(\"c2 eb2\")",
+          "check": {
+            "eq": [
+              {
+                "values": {
+                  "sel": {
+                    "s": "sawtooth"
+                  },
+                  "key": "$note"
+                }
+              },
+              [
+                "c2",
+                "eb2"
+              ]
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst bass = note(\"c2 eb2\").s(\"sawtooth\").lpf(800)\nstack(bass)",
+      "summary": [
+        "Listen first, then write."
+      ],
+      "introduces": [],
+      "teaches": [
+        "T2",
+        "B11"
+      ],
+      "tags": [
+        "melody",
+        "bass"
+      ],
+      "reference": "setcpm(124/4)\nconst bass = note(\"c2 eb2\").s(\"sawtooth\").lpf(800)\nstack(bass)"
+    },
+    {
+      "id": "ear-riff",
+      "title": "Ear: a three-note riff",
+      "goal": "Hear a riff and write its notes.",
+      "concept": "Three notes going up, then a rest. They are the first three notes of a minor chord.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst riff = note(\"c3 c3 c3 ~\").s(\"square\").lpf(1200)\nstack(riff)",
+      "tasks": [
+        {
+          "text": "Listen with ▶ Play the reference, then write what you hear.",
+          "hint": "note(\"c3 eb3 g3 ~\")",
+          "check": {
+            "eq": [
+              {
+                "values": {
+                  "sel": {
+                    "s": "square"
+                  },
+                  "key": "$note"
+                }
+              },
+              [
+                "c3",
+                "eb3",
+                "g3"
+              ]
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst riff = note(\"c3 eb3 g3 ~\").s(\"square\").lpf(1200)\nstack(riff)",
+      "summary": [
+        "Listen first, then write."
+      ],
+      "introduces": [],
+      "teaches": [
+        "T2",
+        "B11"
+      ],
+      "tags": [
+        "melody"
+      ],
+      "reference": "setcpm(124/4)\nconst riff = note(\"c3 eb3 g3 ~\").s(\"square\").lpf(1200)\nstack(riff)"
+    },
+    {
+      "id": "ear-minor-major",
+      "title": "Ear: minor or major",
+      "goal": "Hear two chords and tell which is minor and which is major.",
+      "concept": "Bar 1 and bar 2 play a chord each on the same root. One is sad (minor, flat third), one bright (major). Write them in the order you hear.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst chords = note(\"<[c3,e3,g3] [c3,e3,g3]>\").s(\"sawtooth\").lpf(1500).gain(.5)\nstack(chords)",
+      "tasks": [
+        {
+          "text": "Listen with ▶ Play the reference, then write what you hear.",
+          "hint": "note(\"<[c3,eb3,g3] [c3,e3,g3]>\"): minor first (eb), then major (e).",
+          "check": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "values": {
+                      "sel": {
+                        "s": "sawtooth",
+                        "bar": 0
+                      },
+                      "key": "$pc",
+                      "unique": true,
+                      "sorted": true
+                    }
+                  },
+                  [
+                    0,
+                    3,
+                    7
+                  ]
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "values": {
+                      "sel": {
+                        "s": "sawtooth",
+                        "bar": 1
+                      },
+                      "key": "$pc",
+                      "unique": true,
+                      "sorted": true
+                    }
+                  },
+                  [
+                    0,
+                    4,
+                    7
+                  ]
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst chords = note(\"<[c3,eb3,g3] [c3,e3,g3]>\").s(\"sawtooth\").lpf(1500).gain(.5)\nstack(chords)",
+      "summary": [
+        "Listen first, then write."
+      ],
+      "introduces": [],
+      "teaches": [
+        "T2",
+        "I6"
+      ],
+      "tags": [
+        "chords"
+      ],
+      "reference": "setcpm(124/4)\nconst chords = note(\"<[c3,eb3,g3] [c3,e3,g3]>\").s(\"sawtooth\").lpf(1500).gain(.5)\nstack(chords)"
+    },
+    {
+      "id": "ear-roots",
+      "title": "Ear: the roots of a progression",
+      "goal": "Hear a four-chord progression and write its bass roots.",
+      "concept": "Four bars, one chord each. Follow the lowest note: it starts on C and moves. Write the four root notes as a bassline.",
+      "shape": "drill",
+      "starter": "setcpm(124/4)\nconst bass = chord(\"<Cm7 Cm7 Cm7 Cm7>\").rootNotes(2).s(\"sawtooth\").lpf(600)\nstack(bass)",
+      "tasks": [
+        {
+          "text": "Listen with ▶ Play the reference, then write what you hear.",
+          "hint": "chord(\"<Cm7 Fm7 Ab^7 Gm7>\").rootNotes(2): C, F, Ab, G.",
+          "check": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "lowestPitchClass": {
+                      "bar": 0
+                    }
+                  },
+                  0
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "lowestPitchClass": {
+                      "bar": 1
+                    }
+                  },
+                  5
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "lowestPitchClass": {
+                      "bar": 2
+                    }
+                  },
+                  8
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "lowestPitchClass": {
+                      "bar": 3
+                    }
+                  },
+                  7
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst bass = chord(\"<Cm7 Fm7 Ab^7 Gm7>\").rootNotes(2).s(\"sawtooth\").lpf(600)\nstack(bass)",
+      "summary": [
+        "Listen first, then write."
+      ],
+      "introduces": [],
+      "teaches": [
+        "T2",
+        "I7"
+      ],
+      "tags": [
+        "chords",
+        "bass"
+      ],
+      "reference": "setcpm(124/4)\nconst bass = chord(\"<Cm7 Fm7 Ab^7 Gm7>\").rootNotes(2).s(\"sawtooth\").lpf(600)\nstack(bass)"
+    }
+  ]
+}
