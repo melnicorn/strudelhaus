@@ -1,6 +1,7 @@
 // The cheat sheet: built from research.md §3 and the GUI allowlist, and tested (every example
 // must evaluate). "learnedIn" comes from the lessons' `introduces` lists.
-import { lessons } from '@/content/lessons';
+import { corePack } from '@/lib/lessons/packs';
+import type { Lesson } from '@/lib/lessons/types';
 import { METHODS, type MethodGroup } from '@/lib/sync/allowlist';
 
 export type Category = 'mini-notation' | 'sound' | 'pitch' | 'level' | 'envelope' | 'filter' | 'effects' | 'space' | 'synth' | 'time' | 'signals' | 'structure' | 'tempo';
@@ -114,10 +115,10 @@ const fromAllowlist: RefEntry[] = Object.keys(METHODS)
 
 export const REFERENCE: RefEntry[] = [...HAND, ...fromAllowlist];
 
-/** Lesson number where an entry is introduced, matched against lesson `introduces` lists. */
-export function learnedIn(entry: RefEntry): number | undefined {
+/** The core lesson where an entry is introduced, matched against lesson `introduces` lists. */
+export function learnedIn(entry: RefEntry): Lesson | undefined {
   const keys = [entry.name, `.${entry.name}`, entry.display];
-  return lessons.find((l) => l.introduces.some((i) => keys.includes(i) || i.replace(/^\./, '') === entry.name))?.number;
+  return corePack.lessons.find((l) => l.introduces.some((i) => keys.includes(i) || i.replace(/^\./, '') === entry.name));
 }
 
 export const CATEGORIES: Category[] = ['mini-notation', 'sound', 'pitch', 'level', 'envelope', 'filter', 'effects', 'space', 'synth', 'time', 'signals', 'structure', 'tempo'];

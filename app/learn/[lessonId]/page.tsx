@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { getLesson, lessons } from '@/content/lessons';
+import { corePack, getLesson } from '@/lib/lessons/packs';
 import { LessonClient } from '@/components/lesson/LessonClient';
 import { Page } from '@/components/ui/Page';
 
 export function generateStaticParams() {
-  return lessons.map((l) => ({ lessonId: l.id }));
+  return corePack.lessons.map((l) => ({ lessonId: l.id }));
 }
 
 export async function generateMetadata({ params }: PageProps<'/learn/[lessonId]'>) {

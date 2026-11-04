@@ -2,7 +2,9 @@
 // We walk a lesson the way a learner would: starter, then the code after each task (lesson.steps),
 // then the solution, then the challenge. At every stage exactly the tasks done so far may pass.
 import { describe, expect, it } from 'vitest';
-import { lessons } from '@/content/lessons';
+import { corePack } from '@/lib/lessons/packs';
+
+const lessons = corePack.lessons;
 import { buildContext } from '@/lib/lessons/checks';
 import type { CheckContext, Lesson, Task } from '@/lib/lessons/types';
 

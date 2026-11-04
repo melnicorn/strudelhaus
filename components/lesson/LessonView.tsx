@@ -4,7 +4,7 @@ import { Button, Chip, cn, Tabs } from '@heroui/react';
 import { TipButton } from '@/components/ui/TipButton';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { allowedMethods, getLesson, neighbours } from '@/content/lessons';
+import { allowedMethods, getLesson, neighbours, trackOf } from '@/lib/lessons/packs';
 import { BlockPanels } from '@/components/blocks/BlockPanels';
 import { GuiPolicyProvider } from '@/components/blocks/policy';
 import { Hint } from '@/components/ui/Hint';
@@ -61,8 +61,8 @@ interface BodyProps {
 }
 
 function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProgress, onReset }: BodyProps) {
-  const { prev, next } = neighbours(lesson.id);
-  const policy = useMemo(() => ({ methods: allowedMethods(lesson.id), composition: !!lesson.composition }), [lesson]);
+  const { prev, next } = neighbours(lesson);
+  const policy = useMemo(() => ({ methods: allowedMethods(lesson), composition: !!lesson.composition }), [lesson]);
   const [showHint, setShowHint] = useState<number | 'challenge' | null>(null);
   const [showSolution, setShowSolution] = useState(false);
   const [checkError, setCheckError] = useState<string | null>(null);
@@ -164,7 +164,9 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
             ◀ Learn
           </Link>
           <Chip size="sm">{TIER_LABEL[lesson.tier]}</Chip>
-          <Hint>Lesson {lesson.number}</Hint>
+          <Hint>
+            {trackOf(lesson).title} · {lesson.number}
+          </Hint>
         </nav>
         <h1 className="m-0 text-[22px] leading-tight font-bold">{lesson.title}</h1>
         <Panel title="Goal">
@@ -245,7 +247,7 @@ function LessonBody({ lesson, initialCode, passed, challengePassed, done, onProg
             </div>
           </Panel>
         )}
-        {lesson.number >= 10 && (
+        {lesson.library !== false && (
           <div className="flex flex-wrap items-center gap-3">
             <Button size="sm" variant="secondary" onPress={saveParts}>
               Save parts to library

@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { lessons } from '@/content/lessons';
+import { corePack } from '@/lib/lessons/packs';
 import { useProgressStore } from '@/lib/stores/progress';
+
+const lessons = corePack.lessons;
 
 /** "Start" or "Continue lesson N" depending on saved progress. Styled by the home page's card grid. */
 export function ContinueLesson({ className }: { className?: string }) {

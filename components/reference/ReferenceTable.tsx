@@ -10,7 +10,7 @@ import { TipButton } from '@/components/ui/TipButton';
 import { getEngine } from '@/lib/audio/engine';
 import { CATEGORIES, REFERENCE, learnedIn, type Category } from '@/lib/reference/entries';
 import { useProgressStore } from '@/lib/stores/progress';
-import { lessons } from '@/content/lessons';
+import { corePack } from '@/lib/lessons/packs';
 
 async function tryIt(example: string) {
   const engine = await getEngine();
@@ -26,14 +26,14 @@ export function ReferenceTable() {
   const [playing, setPlaying] = useState<string | null>(null);
   const { progress, load } = useProgressStore();
   useEffect(load, [load]);
-  const doneNumbers = new Set(lessons.filter((l) => progress[l.id]?.status === 'done').map((l) => l.number));
+  const doneIds = new Set(corePack.lessons.filter((l) => progress[l.id]?.status === 'done').map((l) => l.id));
 
   const q = query.trim().toLowerCase();
   const rows = REFERENCE.filter(
     (e) =>
       (category === 'all' || e.category === category) &&
       (!q || [e.name, e.display, e.aliases ?? '', e.does].some((t) => t.toLowerCase().includes(q))) &&
-      (!learnedOnly || doneNumbers.has(learnedIn(e) ?? -1)),
+      (!learnedOnly || doneIds.has(learnedIn(e)?.id ?? '')),
   );
 
   return (
@@ -89,8 +89,7 @@ export function ReferenceTable() {
           </thead>
           <tbody>
             {rows.map((e) => {
-              const lesson = learnedIn(e);
-              const l = lessons.find((x) => x.number === lesson);
+              const l = learnedIn(e);
               return (
                 <tr key={e.name} id={encodeURIComponent(e.name)} className="scroll-mt-4 target:bg-accent/12">
                   <td>
@@ -125,7 +124,7 @@ export function ReferenceTable() {
                   <td>
                     {l ? (
                       <a href={`/learn/${l.id}`} className={linkClass}>
-                        L{l.number}
+                        {l.number}. {l.title}
                       </a>
                     ) : (
                       ''

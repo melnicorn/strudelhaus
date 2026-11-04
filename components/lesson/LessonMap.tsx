@@ -6,7 +6,9 @@ import { useEffect } from 'react';
 import { Hint } from '@/components/ui/Hint';
 import { boxClass } from '@/components/ui/Page';
 import { Panel } from '@/components/ui/Panel';
-import { lessons } from '@/content/lessons';
+import { corePack } from '@/lib/lessons/packs';
+
+const lessons = corePack.lessons;
 import type { Tier } from '@/lib/lessons/types';
 import { useProgressStore } from '@/lib/stores/progress';
 import { MoveProgress } from './MoveProgress';
