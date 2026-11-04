@@ -1,0 +1,1036 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "electro",
+  "title": "Electro",
+  "description": "The robot funk of the 808: broken beats, syncopated 16th bass with slides, arpeggios and talking pads.",
+  "author": "Strudel Workshop",
+  "tags": [
+    "electro",
+    "808",
+    "bass",
+    "melody"
+  ],
+  "tracks": [
+    {
+      "id": "electro-basics",
+      "title": "Electro basics",
+      "blurb": "The 808 kit, a 16th bass with slides, a robotic arp, a vocoder-ish pad, then an electro cut.",
+      "kind": "skills",
+      "requires": [
+        "B5",
+        "B8",
+        "B12",
+        "I10"
+      ],
+      "tags": [
+        "808"
+      ],
+      "lessons": [
+        "the-808-kit",
+        "the-16th-bass",
+        "slides",
+        "the-robot-arp",
+        "vocoder-pads",
+        "electro-cut"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "the-808-kit",
+      "title": "The 808 kit",
+      "goal": "Program a broken electro beat on the TR-808.",
+      "concept": "Electro is the robot funk of the early 80s: Kraftwerk’s machines, then Afrika Bambaataa’s *Planet Rock* in 1982, built on the **Roland TR-808**. The 808 has a long, booming kick, a snappy snare, and the famous **cowbell** and claves.\n\nUnlike house, electro drums are **broken**: the kick skips beats and lands on 16ths, the snare holds 2 and 4, and the cowbell plays a pattern of its own. `cb(3,8)` spreads three cowbells over eight steps.",
+      "shape": "concept",
+      "starter": "setcpm(130/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR808\")\nstack(kick)",
+      "tasks": [
+        {
+          "text": "Break the kick up: beat 1, the \"and\" of 2, and beat 4.",
+          "hint": "s(\"bd [~ bd] ~ [bd ~]\")",
+          "check": {
+            "playsAt": {
+              "at": [
+                0,
+                0.375,
+                0.75
+              ],
+              "s": "bd"
+            }
+          }
+        },
+        {
+          "text": "Add a part called snare: 808 snare on beats 2 and 4.",
+          "hint": "const snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\"), and stack it",
+          "check": {
+            "all": [
+              {
+                "defines": "snare"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "sd"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add a part called bell: three cowbells over eight steps, quiet.",
+          "hint": "const bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5), and stack it",
+          "check": {
+            "all": [
+              {
+                "defines": "bell"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.375,
+                    0.75
+                  ],
+                  "s": "cb"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add a part called rim: a rimshot on the last 16th of every beat.",
+        "hint": "const rim = s(\"[~ ~ ~ rim]*4\").bank(\"RolandTR808\").gain(.5), and stack it",
+        "check": {
+          "all": [
+            {
+              "defines": "rim"
+            },
+            {
+              "playsAt": {
+                "at": [
+                  0.1875,
+                  0.4375,
+                  0.6875,
+                  0.9375
+                ],
+                "s": "rim"
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nstack(kick)",
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nstack(kick, snare)"
+      ],
+      "solution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nstack(kick, snare, bell)",
+      "challengeSolution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst rim = s(\"[~ ~ ~ rim]*4\").bank(\"RolandTR808\").gain(.5)\nstack(kick, snare, bell, rim)",
+      "summary": [
+        "Electro drums skip beats and land on 16ths.",
+        "cb(3,8): three cowbells over eight steps.",
+        "The 808 kick, snare and cowbell set the era."
+      ],
+      "introduces": [
+        ".bank",
+        "(k,n,rot)"
+      ],
+      "concepts": [
+        "the broken beat"
+      ],
+      "teaches": [
+        "B5",
+        "B8",
+        "I2"
+      ],
+      "tags": [
+        "drums",
+        "808"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "cb",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "rim",
+          "bank": "RolandTR808"
+        }
+      ]
+    },
+    {
+      "id": "the-16th-bass",
+      "title": "The syncopated 16th bass",
+      "goal": "Write a bass on a 16-step grid with rests, short and dark.",
+      "concept": "Electro bass lives on the **16th grid**: a few notes, lots of rests, landing off the beat so it talks to the drums. Drexciya and Egyptian Lover made whole tracks from one such line.\n\nSixteen steps in quotes is one bar of 16ths; `~` is a rest. `n(\"0 … 7\").scale(\"C2:minor\")` keeps the notes in key and in the second octave. A fast **decay** with no **sustain** makes each note a blip; a **low-pass** keeps it dark.",
+      "shape": "concept",
+      "starter": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nstack(kick, snare, bell)",
+      "tasks": [
+        {
+          "text": "Add a part called bass: a square wave on 16 steps, mostly rests, in C minor, octave 2.",
+          "hint": "const bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\"), and stack it",
+          "check": {
+            "all": [
+              {
+                "defines": "bass"
+              },
+              {
+                "inKey": {
+                  "key": "C:minor",
+                  "sel": {
+                    "s": "square"
+                  }
+                }
+              },
+              {
+                "gte": [
+                  {
+                    "count": {
+                      "s": "square"
+                    }
+                  },
+                  5
+                ]
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "square"
+                  },
+                  "where": [
+                    {
+                      "key": "$midi",
+                      "lte": 48
+                    }
+                  ]
+                }
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "square"
+                  },
+                  "where": [
+                    {
+                      "key": "$time",
+                      "eq": 0.3125
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Make each note a blip: decay .1, no sustain.",
+          "hint": ".decay(.1).sustain(0) on the bass",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "square"
+              },
+              "where": [
+                {
+                  "key": "decay",
+                  "lte": 0.15,
+                  "default": 9
+                },
+                {
+                  "key": "sustain",
+                  "eq": 0,
+                  "default": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Darken it with a low-pass at 600 Hz.",
+          "hint": ".lpf(600) on the bass",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "square"
+              },
+              "where": [
+                {
+                  "key": "cutoff",
+                  "lte": 800,
+                  "gt": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Give the filter some resonance so the blips ping.",
+        "hint": ".lpq(8) on the bass",
+        "check": {
+          "every": {
+            "sel": {
+              "s": "square"
+            },
+            "where": [
+              {
+                "key": "resonance",
+                "gte": 6,
+                "default": 0
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\")\nstack(kick, snare, bell, bass)",
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0)\nstack(kick, snare, bell, bass)"
+      ],
+      "solution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\nstack(kick, snare, bell, bass)",
+      "challengeSolution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600).lpq(8)\nstack(kick, snare, bell, bass)",
+      "summary": [
+        "Sixteen steps in quotes is a bar of 16ths.",
+        "Few notes, many rests, off the beat: syncopation.",
+        "Short decay, no sustain, low-pass: the electro blip."
+      ],
+      "introduces": [
+        "n",
+        ".scale",
+        ".decay",
+        ".sustain",
+        ".lpf"
+      ],
+      "teaches": [
+        "B12",
+        "I2",
+        "I10",
+        "B14"
+      ],
+      "tags": [
+        "bass"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "cb",
+          "bank": "RolandTR808"
+        }
+      ]
+    },
+    {
+      "id": "slides",
+      "title": "Slides",
+      "goal": "Bend into notes with a pitch envelope.",
+      "concept": "The electro bass **slides**: the pitch glides up (or down) into a note. Strudel’s synths have no portamento, so we fake it with a **pitch envelope**: `.penv` is how many semitones the note starts away from itself, `.pattack` how long it takes to arrive.\n\nA pattern of `penv` values lines up step by step with the bass, so you choose which notes slide. `-3` starts three semitones below and rises; a positive number falls into the note.",
+      "shape": "concept",
+      "starter": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\nstack(kick, snare, bell, bass)",
+      "tasks": [
+        {
+          "text": "Slide up into the note on step 8 (the second group’s last step) from 3 semitones below.",
+          "hint": ".penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.08) on the bass",
+          "check": {
+            "some": {
+              "sel": {
+                "s": "square"
+              },
+              "where": [
+                {
+                  "key": "$time",
+                  "eq": 0.4375
+                },
+                {
+                  "key": "penv",
+                  "eq": -3,
+                  "default": 0
+                },
+                {
+                  "key": "pattack",
+                  "gt": 0,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Make the slide slower: .15 seconds.",
+          "hint": ".pattack(.15)",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "square"
+              },
+              "where": [
+                {
+                  "key": "pattack",
+                  "gte": 0.12,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add a second slide, falling into step 13 from 5 semitones above.",
+        "hint": "Change the last group to [5 0 0 0]",
+        "check": {
+          "some": {
+            "sel": {
+              "s": "square"
+            },
+            "where": [
+              {
+                "key": "$time",
+                "eq": 0.75
+              },
+              {
+                "key": "penv",
+                "eq": 5,
+                "default": 0
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.08)\nstack(kick, snare, bell, bass)"
+      ],
+      "solution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nstack(kick, snare, bell, bass)",
+      "challengeSolution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [5 0 0 0]\").pattack(.15)\nstack(kick, snare, bell, bass)",
+      "summary": [
+        ".penv(semitones) + .pattack(seconds) fakes a slide.",
+        "A penv pattern picks which steps slide.",
+        "Negative bends up into the note; positive falls into it."
+      ],
+      "introduces": [
+        ".penv",
+        ".pattack"
+      ],
+      "concepts": [
+        "slides"
+      ],
+      "teaches": [
+        "E1",
+        "I10"
+      ],
+      "tags": [
+        "bass",
+        "sound design"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "cb",
+          "bank": "RolandTR808"
+        }
+      ]
+    },
+    {
+      "id": "the-robot-arp",
+      "title": "The robotic arp",
+      "goal": "Play a chord one note at a time, in 16ths.",
+      "concept": "The **arpeggio** is electro’s melody: a chord played one note at a time, fast and even, like a sequencer. Kraftwerk’s *Trans-Europe Express* and *Numbers* run on them.\n\n`.arp(\"0 1 2 3\")` takes a chord and plays its notes in that order (0 is the lowest). `\"[0 1 2 3]*4\"` is sixteen notes a bar. Short notes keep it mechanical; a slow filter sweep makes the machine breathe.",
+      "shape": "concept",
+      "starter": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nstack(kick, snare, bell, bass)",
+      "tasks": [
+        {
+          "text": "Add a part called arp: a Cm7 chord on a triangle wave, arpeggiated up in 16ths.",
+          "hint": "const arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3]*4\").s(\"triangle\").gain(.4), and stack it",
+          "check": {
+            "all": [
+              {
+                "defines": "arp"
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "triangle"
+                    }
+                  },
+                  16
+                ]
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "triangle"
+                      },
+                      "key": "$midi"
+                    }
+                  },
+                  4
+                ]
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "triangle"
+                  },
+                  "where": [
+                    {
+                      "key": "$midi",
+                      "gte": 60
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "replacedLater": true
+        },
+        {
+          "text": "Make the notes short: decay .08, no sustain.",
+          "hint": ".decay(.08).sustain(0) on the arp",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "triangle"
+              },
+              "where": [
+                {
+                  "key": "decay",
+                  "lte": 0.1,
+                  "default": 9
+                },
+                {
+                  "key": "sustain",
+                  "eq": 0,
+                  "default": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Run it up and down instead: 0 1 2 3 2 1, twice a bar.",
+          "hint": ".arp(\"[0 1 2 3 2 1]*2\")",
+          "check": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "triangle"
+                    }
+                  },
+                  12
+                ]
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "triangle"
+                      },
+                      "key": "$midi"
+                    }
+                  },
+                  4
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Sweep a filter over the arp across 4 bars.",
+        "hint": ".lpf(sine.range(400, 3000).slow(4)) on the arp",
+        "check": {
+          "gte": [
+            {
+              "distinct": {
+                "sel": {
+                  "s": "triangle"
+                },
+                "key": "cutoff",
+                "round": 0,
+                "bars": [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              }
+            },
+            3
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3]*4\").s(\"triangle\").gain(.4)\nstack(kick, snare, bell, bass, arp)",
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3]*4\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nstack(kick, snare, bell, bass, arp)"
+      ],
+      "solution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3 2 1]*2\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nstack(kick, snare, bell, bass, arp)",
+      "challengeSolution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3 2 1]*2\").s(\"triangle\").gain(.4).decay(.08).sustain(0).lpf(sine.range(400, 3000).slow(4))\nstack(kick, snare, bell, bass, arp)",
+      "summary": [
+        ".arp(\"0 1 2 3\") plays a chord one note at a time.",
+        "\"[…]*4\" makes it 16ths.",
+        "Short notes keep it mechanical."
+      ],
+      "introduces": [
+        ".arp",
+        "note"
+      ],
+      "concepts": [
+        "arpeggios"
+      ],
+      "teaches": [
+        "I6",
+        "I19"
+      ],
+      "tags": [
+        "melody",
+        "chords"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "cb",
+          "bank": "RolandTR808"
+        }
+      ]
+    },
+    {
+      "id": "vocoder-pads",
+      "title": "Vocoder-ish pads",
+      "goal": "A slow, resonant pad that moves on its own.",
+      "concept": "Electro’s voice was the **vocoder**: a robot singing. We can’t vocode here, but a **pulse** wave with a slow attack and a **resonant filter** moving on a signal gets the nasal, talking quality.\n\n`.attack(.5)` fades each chord in; `.release(1)` lets it tail off. `sine.range(300, 2000).slow(8)` drives the cutoff up and down over eight bars, and `.lpq(10)` makes it vowel-like. A **high-pass** keeps the pad out of the bass’s way.",
+      "shape": "concept",
+      "starter": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3 2 1]*2\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nstack(kick, snare, bell, bass, arp)",
+      "tasks": [
+        {
+          "text": "Add a part called pad: a C minor triad on a pulse wave, slow attack, long release, quiet.",
+          "hint": "const pad = note(\"[c3,eb3,g3]\").s(\"pulse\").attack(.5).release(1).gain(.3), and stack it",
+          "check": {
+            "all": [
+              {
+                "defines": "pad"
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "pulse"
+                  }
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "pulse"
+                  },
+                  "where": [
+                    {
+                      "key": "attack",
+                      "gte": 0.4,
+                      "default": 0
+                    },
+                    {
+                      "key": "release",
+                      "gte": 0.5,
+                      "default": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Move a resonant filter over it: an 8-bar sine between 300 and 2000 Hz, resonance 10.",
+          "hint": ".lpf(sine.range(300, 2000).slow(8)).lpq(10) on the pad",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "pulse"
+                  },
+                  "where": [
+                    {
+                      "key": "resonance",
+                      "gte": 8,
+                      "default": 0
+                    }
+                  ]
+                }
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "pulse"
+                      },
+                      "key": "cutoff",
+                      "round": 0,
+                      "bars": [
+                        0,
+                        2,
+                        4,
+                        6
+                      ]
+                    }
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "High-pass the pad at 200 Hz so it stays out of the bass.",
+          "hint": ".hpf(200) on the pad",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "pulse"
+              },
+              "where": [
+                {
+                  "key": "hcutoff",
+                  "gte": 150,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Put the pad in its own room: orbit 2, room .5.",
+        "hint": ".orbit(2).room(.5) on the pad",
+        "check": {
+          "every": {
+            "sel": {
+              "s": "pulse"
+            },
+            "where": [
+              {
+                "key": "orbit",
+                "eq": 2,
+                "default": 1
+              },
+              {
+                "key": "room",
+                "gte": 0.4,
+                "default": 0
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3 2 1]*2\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nconst pad = note(\"[c3,eb3,g3]\").s(\"pulse\").attack(.5).release(1).gain(.3)\nstack(kick, snare, bell, bass, arp, pad)",
+        "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3 2 1]*2\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nconst pad = note(\"[c3,eb3,g3]\").s(\"pulse\").attack(.5).release(1).gain(.3)\n  .lpf(sine.range(300, 2000).slow(8)).lpq(10)\nstack(kick, snare, bell, bass, arp, pad)"
+      ],
+      "solution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3 2 1]*2\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nconst pad = note(\"[c3,eb3,g3]\").s(\"pulse\").attack(.5).release(1).gain(.3)\n  .lpf(sine.range(300, 2000).slow(8)).lpq(10).hpf(200)\nstack(kick, snare, bell, bass, arp, pad)",
+      "challengeSolution": "setcpm(130/4)\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(\"C2:minor\").s(\"square\").decay(.1).sustain(0).lpf(600)\n  .penv(\"[0 0 0 0] [0 0 0 -3] [0 0 0 0] [0 0 0 0]\").pattack(.15)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3 2 1]*2\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nconst pad = note(\"[c3,eb3,g3]\").s(\"pulse\").attack(.5).release(1).gain(.3)\n  .lpf(sine.range(300, 2000).slow(8)).lpq(10).hpf(200).orbit(2).room(.5)\nstack(kick, snare, bell, bass, arp, pad)",
+      "summary": [
+        "Pulse + slow attack + resonant moving filter: the robot voice.",
+        "sine.range(a, b).slow(8) drives the cutoff.",
+        "High-pass pads to clear the bass."
+      ],
+      "introduces": [
+        ".attack",
+        ".release",
+        ".lpq",
+        "sine",
+        ".hpf"
+      ],
+      "teaches": [
+        "I9",
+        "I10",
+        "I11",
+        "I18"
+      ],
+      "tags": [
+        "sound design",
+        "pads"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "cb",
+          "bank": "RolandTR808"
+        }
+      ]
+    },
+    {
+      "id": "electro-cut",
+      "title": "Project: an electro cut",
+      "goal": "Put the kit, the bass, the arp and the pad together in one key.",
+      "concept": "Everything from this pack in one loop. `const key` holds the key so the bass and the arp agree, and changing it later is one edit. Keep the pad quiet and high-passed; the kick and the bass own the low end.",
+      "shape": "project",
+      "starter": "setcpm(130/4)\nconst key = \"C:minor\"\nstack()",
+      "tasks": [
+        {
+          "text": "The 808 kit: a broken kick, snare on 2 and 4, a cowbell pattern.",
+          "hint": "const kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nstack(kick, snare, bell)",
+          "check": {
+            "all": [
+              {
+                "defines": "kick"
+              },
+              {
+                "defines": "snare"
+              },
+              {
+                "defines": "bell"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "sd"
+                }
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "cb"
+                  }
+                }
+              },
+              {
+                "not": {
+                  "playsAt": {
+                    "at": [
+                      0,
+                      0.25,
+                      0.5,
+                      0.75
+                    ],
+                    "s": "bd"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "A syncopated square bass in the key, short, dark.",
+          "hint": "const bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(key).s(\"square\").decay(.1).sustain(0).lpf(600)",
+          "check": {
+            "all": [
+              {
+                "defines": "bass"
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "square"
+                  }
+                }
+              },
+              {
+                "gte": [
+                  {
+                    "count": {
+                      "s": "square"
+                    }
+                  },
+                  5
+                ]
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "square"
+                  },
+                  "where": [
+                    {
+                      "key": "sustain",
+                      "eq": 0,
+                      "default": 1
+                    },
+                    {
+                      "key": "cutoff",
+                      "lte": 800,
+                      "gt": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "A triangle arp in 16ths with short notes.",
+          "hint": "const arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3]*4\").s(\"triangle\").gain(.4).decay(.08).sustain(0)",
+          "check": {
+            "all": [
+              {
+                "defines": "arp"
+              },
+              {
+                "gte": [
+                  {
+                    "count": {
+                      "s": "triangle"
+                    }
+                  },
+                  12
+                ]
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "triangle"
+                  },
+                  "where": [
+                    {
+                      "key": "decay",
+                      "lte": 0.15,
+                      "default": 9
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "A quiet pulse pad with a slow attack, high-passed.",
+          "hint": "const pad = note(\"[c3,eb3,g3]\").s(\"pulse\").attack(.5).release(1).gain(.3).hpf(200)",
+          "check": {
+            "all": [
+              {
+                "defines": "pad"
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "pulse"
+                  },
+                  "where": [
+                    {
+                      "key": "attack",
+                      "gte": 0.4,
+                      "default": 0
+                    },
+                    {
+                      "key": "hcutoff",
+                      "gte": 150,
+                      "default": 0
+                    },
+                    {
+                      "key": "gain",
+                      "lte": 0.4,
+                      "default": 0.8
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Double the snare every fourth bar.",
+        "hint": "Add .lastOf(4, x => x.fast(2)) to the snare",
+        "check": {
+          "gt": [
+            {
+              "count": {
+                "s": "sd",
+                "bar": 3
+              }
+            },
+            {
+              "count": {
+                "s": "sd",
+                "bar": 0
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(130/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nstack(kick, snare, bell)",
+        "setcpm(130/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(key).s(\"square\").decay(.1).sustain(0).lpf(600)\nstack(kick, snare, bell, bass)",
+        "setcpm(130/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(key).s(\"square\").decay(.1).sustain(0).lpf(600)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3]*4\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nstack(kick, snare, bell, bass, arp)"
+      ],
+      "solution": "setcpm(130/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\")\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(key).s(\"square\").decay(.1).sustain(0).lpf(600)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3]*4\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nconst pad = note(\"[c3,eb3,g3]\").s(\"pulse\").attack(.5).release(1).gain(.3).hpf(200)\nstack(kick, snare, bell, bass, arp, pad)",
+      "challengeSolution": "setcpm(130/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd [~ bd] ~ [bd ~]\").bank(\"RolandTR808\")\nconst snare = s(\"~ sd ~ sd\").bank(\"RolandTR808\").lastOf(4, x => x.fast(2))\nconst bell = s(\"cb(3,8)\").bank(\"RolandTR808\").gain(.5)\nconst bass = n(\"0 ~ 0 ~ ~ 0 ~ 3 ~ ~ 0 ~ 7 ~ ~ 0\").scale(key).s(\"square\").decay(.1).sustain(0).lpf(600)\nconst arp = note(\"[c4,eb4,g4,bb4]\").arp(\"[0 1 2 3]*4\").s(\"triangle\").gain(.4).decay(.08).sustain(0)\nconst pad = note(\"[c3,eb3,g3]\").s(\"pulse\").attack(.5).release(1).gain(.3).hpf(200)\nstack(kick, snare, bell, bass, arp, pad)",
+      "summary": [
+        "An electro cut: broken 808 drums, a 16th bass, an arp, a pad.",
+        "One const key keeps the bass and arp in tune.",
+        ".lastOf(4, …) marks the phrase."
+      ],
+      "introduces": [
+        ".lastOf",
+        ".fast"
+      ],
+      "teaches": [
+        "I5",
+        "I8",
+        "E10"
+      ],
+      "tags": [
+        "project",
+        "drums",
+        "bass",
+        "melody"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "sd",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "cb",
+          "bank": "RolandTR808"
+        }
+      ]
+    }
+  ]
+}

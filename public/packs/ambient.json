@@ -1,0 +1,652 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "ambient",
+  "title": "Ambient and downtempo",
+  "description": "Pads, drift, washes and a pulse without a kick: slow music made of space.",
+  "author": "Strudel Workshop",
+  "tags": [
+    "ambient",
+    "pads",
+    "effects"
+  ],
+  "tracks": [
+    {
+      "id": "drift",
+      "title": "Drift",
+      "blurb": "Pads, perlin, washes, a pulse, then a piece.",
+      "kind": "skills",
+      "requires": [
+        "I9",
+        "I14",
+        "I18"
+      ],
+      "lessons": [
+        "pads-without-drums",
+        "perlin-on-everything",
+        "washes",
+        "pulse-without-kick",
+        "a-drift"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "pads-without-drums",
+      "title": "Pads without drums",
+      "goal": "Make a chord that fades in and out instead of hitting.",
+      "concept": "Ambient music (Brian Eno named it, in 1978) is built from sounds that **arrive slowly** and leave slowly. A pad is a chord with a long **attack** (the fade in) and a long **release** (the fade out), so the edges of each note disappear.\n\nA **supersaw** through a closed low-pass filter is the softest pad the site has. Keep the gain low: pads add up.",
+      "shape": "concept",
+      "starter": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").lpf(800).gain(.4)\nstack(pad)",
+      "tasks": [
+        {
+          "text": "Give the pad a one-second attack.",
+          "hint": ".attack(1) on the pad line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "supersaw"
+              },
+              "where": [
+                {
+                  "key": "attack",
+                  "gte": 0.8,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "And a two-second release, so each chord hangs on.",
+          "hint": ".release(2) on the pad line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "supersaw"
+              },
+              "where": [
+                {
+                  "key": "release",
+                  "gte": 1.5,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Alternate two chords, each lasting two bars.",
+        "hint": "note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").slow(2): angle brackets alternate, .slow(2) stretches each to two bars.",
+        "check": {
+          "neq": [
+            {
+              "values": {
+                "sel": {
+                  "s": "supersaw",
+                  "bar": 0
+                },
+                "key": "$pc",
+                "unique": true,
+                "sorted": true
+              }
+            },
+            {
+              "values": {
+                "sel": {
+                  "s": "supersaw",
+                  "bar": 2
+                },
+                "key": "$pc",
+                "unique": true,
+                "sorted": true
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").lpf(800).gain(.4).attack(1)\nstack(pad)"
+      ],
+      "solution": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").lpf(800).gain(.4).attack(1).release(2)\nstack(pad)",
+      "challengeSolution": "setcpm(80/4)\nconst pad = note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").slow(2).s(\"supersaw\").lpf(800).gain(.4).attack(1).release(2)\nstack(pad)",
+      "summary": [
+        "A pad is a chord with a slow attack and a long release.",
+        "supersaw + a closed lpf is the softest pad here."
+      ],
+      "introduces": [
+        ".attack",
+        ".release"
+      ],
+      "concepts": [
+        "pads"
+      ],
+      "teaches": [
+        "I10",
+        "I9"
+      ],
+      "tags": [
+        "pads",
+        "sound design"
+      ]
+    },
+    {
+      "id": "perlin-on-everything",
+      "title": "Perlin on everything",
+      "goal": "Let smooth randomness move the filter and the stereo image.",
+      "concept": "**Perlin noise** is random but smooth: it wanders rather than jumps. Give it to a control and the sound drifts the way weather does.\n\n`perlin.range(300, 1500).slow(8)` wanders between 300 and 1500 Hz over about eight bars. Put it on `.lpf` and the pad breathes; on `.pan` and it drifts between the speakers. Use different `.slow` values so the movements never line up.",
+      "shape": "concept",
+      "starter": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").lpf(800).gain(.4).attack(1).release(2)\nstack(pad)",
+      "tasks": [
+        {
+          "text": "Replace the fixed cutoff with perlin wandering between 300 and 1500 Hz over 8 bars.",
+          "hint": ".lpf(perlin.range(300, 1500).slow(8)) instead of .lpf(800).",
+          "check": {
+            "all": [
+              {
+                "matches": "perlin"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "supersaw"
+                      },
+                      "key": "cutoff",
+                      "round": 0,
+                      "bars": [
+                        0,
+                        2,
+                        4,
+                        6
+                      ]
+                    }
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Drift the pad between the speakers with perlin on .pan, over 5 bars.",
+          "hint": ".pan(perlin.range(.2, .8).slow(5))",
+          "check": {
+            "gte": [
+              {
+                "distinct": {
+                  "sel": {
+                    "s": "supersaw"
+                  },
+                  "key": "pan",
+                  "round": 2,
+                  "bars": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              },
+              2
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Let the level breathe too: perlin between .3 and .5 on the gain.",
+        "hint": ".gain(perlin.range(.3, .5).slow(7)) instead of .gain(.4).",
+        "check": {
+          "gte": [
+            {
+              "distinct": {
+                "sel": {
+                  "s": "supersaw"
+                },
+                "key": "gain",
+                "round": 2,
+                "bars": [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              }
+            },
+            2
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8))\nstack(pad)"
+      ],
+      "solution": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\nstack(pad)",
+      "challengeSolution": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(perlin.range(.3, .5).slow(7)).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\nstack(pad)",
+      "summary": [
+        "perlin is smooth randomness: it wanders.",
+        "Different .slow values keep movements out of step."
+      ],
+      "introduces": [
+        "perlin",
+        ".range",
+        ".slow",
+        ".pan"
+      ],
+      "teaches": [
+        "I18",
+        "I17"
+      ],
+      "tags": [
+        "sound design",
+        "randomness"
+      ]
+    },
+    {
+      "id": "washes",
+      "title": "Washes",
+      "goal": "Drown the pad in reverb and a long delay.",
+      "concept": "Ambient space is made of **reverb** turned up past where a mixer would stop, and **delays** whose feedback is so high the echoes become a texture.\n\n`.room(.9)` is a huge hall. A delay of three eighths (`.delaysync(3/8)`) with feedback near .8 repeats for a long time. Keep the pad on its own **orbit** so these settings are the pad’s alone.",
+      "shape": "concept",
+      "starter": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\nstack(pad)",
+      "tasks": [
+        {
+          "text": "A very big reverb on the pad: room .8 or more.",
+          "hint": ".room(.9) on the pad line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "supersaw"
+              },
+              "where": [
+                {
+                  "key": "room",
+                  "gte": 0.8,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "A long delay: three eighths, feedback .8, on its own orbit 2.",
+          "hint": ".delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "supersaw"
+              },
+              "where": [
+                {
+                  "key": "delay",
+                  "gt": 0,
+                  "default": 0
+                },
+                {
+                  "key": "delaysync",
+                  "eq": 0.375
+                },
+                {
+                  "key": "delayfeedback",
+                  "gte": 0.7,
+                  "lt": 1,
+                  "default": 0
+                },
+                {
+                  "key": "orbit",
+                  "eq": 2,
+                  "default": 1
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Thin the pad out underneath so the wash doesn’t turn to mud: high-pass at 200 Hz.",
+        "hint": ".hpf(200)",
+        "check": {
+          "every": {
+            "sel": {
+              "s": "supersaw"
+            },
+            "where": [
+              {
+                "key": "hcutoff",
+                "gte": 150,
+                "default": 0
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\n  .room(.9)\nstack(pad)"
+      ],
+      "solution": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)\nstack(pad)",
+      "challengeSolution": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2).hpf(200)\nstack(pad)",
+      "summary": [
+        "Reverb and feedback past the usual limits make a wash.",
+        "One orbit per part keeps the settings apart."
+      ],
+      "introduces": [
+        ".room",
+        ".delay",
+        ".delaysync",
+        ".delayfeedback",
+        ".orbit",
+        ".hpf"
+      ],
+      "teaches": [
+        "I14",
+        "I15",
+        "E12"
+      ],
+      "tags": [
+        "effects"
+      ]
+    },
+    {
+      "id": "pulse-without-kick",
+      "title": "A pulse without a kick",
+      "goal": "Keep time without a drum kit.",
+      "concept": "Downtempo keeps a pulse, but not with a kick drum. A soft **sine** on each beat, short and quiet, is felt more than heard. A single rimshot every other bar is enough rhythm.\n\nThe pulse sits in its own space: no reverb, so it stays close while the pad is far away.",
+      "shape": "concept",
+      "starter": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)\nstack(pad)",
+      "tasks": [
+        {
+          "text": "Add a part called pulse: a short sine c2 on every beat, quiet.",
+          "hint": "const pulse = note(\"c2*4\").s(\"sine\").decay(.3).sustain(0).gain(.5), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "pulse"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.25,
+                    0.5,
+                    0.75
+                  ],
+                  "sel": {
+                    "s": "sine"
+                  },
+                  "cycles": 1
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "sine"
+                  },
+                  "where": [
+                    {
+                      "key": "sustain",
+                      "eq": 0,
+                      "default": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "replacedLater": true
+        },
+        {
+          "text": "Add a part called tick: one 606 rimshot on the last 16th of every other bar, in a room.",
+          "hint": "const tick = s(\"<~ [~ ~ ~ rim]>\").bank(\"RolandTR606\").gain(.3).room(.6).orbit(3), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "tick"
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "rim",
+                      "bar": 0
+                    }
+                  },
+                  0
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "rim",
+                      "bar": 1
+                    }
+                  },
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Let the pulse skip a beat now and then.",
+        "hint": ".degradeBy(.2) on the pulse line.",
+        "check": {
+          "all": [
+            {
+              "uses": "degradeBy"
+            },
+            {
+              "defines": "pulse"
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)\nconst pulse = note(\"c2*4\").s(\"sine\").decay(.3).sustain(0).gain(.5)\nstack(pad, pulse)"
+      ],
+      "solution": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)\nconst pulse = note(\"c2*4\").s(\"sine\").decay(.3).sustain(0).gain(.5)\nconst tick = s(\"<~ [~ ~ ~ rim]>\").bank(\"RolandTR606\").gain(.3).room(.6).orbit(3)\nstack(pad, pulse, tick)",
+      "challengeSolution": "setcpm(80/4)\nconst pad = note(\"[c3,eb3,g3,bb3]\").s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)).pan(perlin.range(.2, .8).slow(5))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)\nconst pulse = note(\"c2*4\").s(\"sine\").decay(.3).sustain(0).gain(.5).degradeBy(.2)\nconst tick = s(\"<~ [~ ~ ~ rim]>\").bank(\"RolandTR606\").gain(.3).room(.6).orbit(3)\nstack(pad, pulse, tick)",
+      "summary": [
+        "A quiet sine on the beat keeps time without drums.",
+        "A hit every other bar is plenty."
+      ],
+      "introduces": [
+        "sine",
+        ".degradeBy"
+      ],
+      "teaches": [
+        "B4",
+        "I19",
+        "I20"
+      ],
+      "tags": [
+        "drums",
+        "bass"
+      ],
+      "preload": [
+        {
+          "s": "rim",
+          "bank": "RolandTR606"
+        }
+      ]
+    },
+    {
+      "id": "a-drift",
+      "title": "Project: A drift",
+      "goal": "Put a pad, a pulse and the washes together in one key, slowly.",
+      "concept": "Everything from this pack in one piece, at 80 BPM or slower. One `const key` keeps the pad and the pulse in tune. Nothing hits; everything arrives.\n\nIf you arrange it, let the pad play alone for the first section: ambient pieces begin with the room, not the beat.",
+      "shape": "project",
+      "starter": "setcpm(80/4)\nconst key = \"C:minor\"\nstack()",
+      "tasks": [
+        {
+          "text": "A pad in the key, slow attack and release, with the breathing filter.",
+          "hint": "const pad = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8)), and stack(pad).",
+          "check": {
+            "all": [
+              {
+                "defines": "pad"
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "supersaw"
+                  }
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "supersaw"
+                  },
+                  "where": [
+                    {
+                      "key": "attack",
+                      "gte": 0.8,
+                      "default": 0
+                    },
+                    {
+                      "key": "release",
+                      "gte": 1.5,
+                      "default": 0
+                    }
+                  ]
+                }
+              },
+              {
+                "matches": "perlin"
+              }
+            ]
+          }
+        },
+        {
+          "text": "Wash it: big room, long delay, its own orbit.",
+          "hint": ".room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2) on the pad.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "supersaw"
+              },
+              "where": [
+                {
+                  "key": "room",
+                  "gte": 0.8,
+                  "default": 0
+                },
+                {
+                  "key": "delayfeedback",
+                  "gte": 0.7,
+                  "lt": 1,
+                  "default": 0
+                },
+                {
+                  "key": "orbit",
+                  "eq": 2,
+                  "default": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Add the sine pulse on the root, in the key.",
+          "hint": "const pulse = n(\"0*4\").scale(key).s(\"sine\").decay(.3).sustain(0).gain(.5), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "pulse"
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "sine"
+                  }
+                }
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.25,
+                    0.5,
+                    0.75
+                  ],
+                  "sel": {
+                    "s": "sine"
+                  },
+                  "cycles": 1
+                }
+              }
+            ]
+          },
+          "replacedLater": true
+        }
+      ],
+      "challenge": {
+        "text": "Arrange it: 8 bars of pad alone, then 16 with the pulse, then 8 of pad again.",
+        "hint": "const intro = stack(pad), const body = stack(pad, pulse), then arrange([8, intro], [16, body], [8, intro]).",
+        "check": {
+          "all": [
+            {
+              "final": "arrange"
+            },
+            {
+              "gte": [
+                {
+                  "rows": true
+                },
+                3
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "count": {
+                    "s": "sine",
+                    "bar": 0
+                  }
+                },
+                0
+              ]
+            },
+            {
+              "some": {
+                "sel": {
+                  "s": "sine",
+                  "bar": 8
+                }
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(80/4)\nconst key = \"C:minor\"\nconst pad = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8))\nstack(pad)",
+        "setcpm(80/4)\nconst key = \"C:minor\"\nconst pad = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)\nstack(pad)"
+      ],
+      "solution": "setcpm(80/4)\nconst key = \"C:minor\"\nconst pad = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)\nconst pulse = n(\"0*4\").scale(key).s(\"sine\").decay(.3).sustain(0).gain(.5)\nstack(pad, pulse)",
+      "challengeSolution": "setcpm(80/4)\nconst key = \"C:minor\"\nconst pad = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.4).attack(1).release(2).lpf(perlin.range(300, 1500).slow(8))\n  .room(.9).delay(.6).delaysync(3/8).delayfeedback(.8).orbit(2)\nconst pulse = n(\"0*4\").scale(key).s(\"sine\").decay(.3).sustain(0).gain(.5)\nconst intro = stack(pad)\nconst body = stack(pad, pulse)\narrange([8, intro], [16, body], [8, intro])",
+      "summary": [
+        "One key, one pad, one pulse, and a lot of space.",
+        "Begin with the room, not the beat."
+      ],
+      "introduces": [
+        "arrange"
+      ],
+      "concepts": [
+        "const key"
+      ],
+      "teaches": [
+        "I5",
+        "E10",
+        "E12"
+      ],
+      "tags": [
+        "project",
+        "pads"
+      ],
+      "composition": true
+    }
+  ]
+}

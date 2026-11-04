@@ -1,0 +1,1100 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "detroit-record",
+  "title": "A Detroit techno record",
+  "description": "One track built from nothing, a lesson at a time: pulse, strings, the chord, rolling hats, bass, variation, sections, the mix.",
+  "author": "Strudel Workshop",
+  "tags": [
+    "detroit techno",
+    "techno",
+    "strings",
+    "track"
+  ],
+  "tracks": [
+    {
+      "id": "detroit-record",
+      "title": "A Detroit techno record",
+      "blurb": "Every lesson starts from the code you finished in the one before, and the last one is a whole record.",
+      "kind": "line",
+      "requires": [
+        "B9",
+        "I6",
+        "I9",
+        "I18"
+      ],
+      "lessons": [
+        "the-pulse",
+        "the-strings",
+        "the-chord",
+        "rolling-hats",
+        "bass-in-the-gaps",
+        "variation-every-8",
+        "sections",
+        "the-mix"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "the-pulse",
+      "title": "The pulse",
+      "goal": "Start the record: a 909 kick and quiet open hats at 128 BPM.",
+      "concept": "Detroit techno was made by three high-school friends from Belleville, Michigan: **Juan Atkins**, **Derrick May** and **Kevin Saunderson**. They heard Kraftwerk and Parliament on the same radio show and built a music that was both: machine-steady and soulful.\n\nIt begins where every techno record begins, with the **pulse**: a TR-909 kick on every beat and open hats on the offbeats. We set `const key` now so every pitched part later agrees. This whole track grows across the next seven lessons; each one starts from the code you finish here.",
+      "shape": "concept",
+      "starter": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\n",
+      "tasks": [
+        {
+          "text": "Add a part called kick: a TR-909 kick on every beat.",
+          "hint": "const kick = s(\"bd*4\").bank(\"RolandTR909\"), then stack(kick).",
+          "check": {
+            "all": [
+              {
+                "defines": "kick"
+              },
+              {
+                "includesTimes": {
+                  "s": "bd",
+                  "at": [
+                    0,
+                    0.25,
+                    0.5,
+                    0.75
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR909"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add a part called hats: open hats on the offbeats, quiet.",
+          "hint": "const hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4), and stack(kick, hats).",
+          "check": {
+            "all": [
+              {
+                "defines": "hats"
+              },
+              {
+                "includesTimes": {
+                  "s": "oh",
+                  "at": [
+                    0.125,
+                    0.375,
+                    0.625,
+                    0.875
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "oh"
+                  },
+                  "where": [
+                    {
+                      "key": "gain",
+                      "lt": 0.6,
+                      "default": 0.8
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nstack(kick)"
+      ],
+      "solution": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nstack(kick, hats)",
+      "summary": [
+        "Techno starts with a steady 909 pulse.",
+        "const key up front keeps every later part in tune."
+      ],
+      "introduces": [
+        "s",
+        ".bank",
+        "stack"
+      ],
+      "concepts": [
+        "const key"
+      ],
+      "teaches": [
+        "B4",
+        "B6",
+        "B9"
+      ],
+      "tags": [
+        "drums",
+        "909"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "the-strings",
+      "title": "The strings",
+      "goal": "Add the Detroit string pad: wide, slow and high-passed.",
+      "concept": "The sound that made Detroit different from Chicago was **strings**: synthesized string pads borrowed from Italo disco and film scores, floating over the drums. Derrick May’s *Strings of Life* is named for them.\n\nA **supersaw** chord with a slow **attack** and a long **release** does the job. Strings carry no low end, so a **high-pass filter** at 300 Hz takes the mud out and leaves room for the kick. Scale degrees `0,2,4,6` in the key give a minor seventh chord.",
+      "shape": "concept",
+      "starter": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nstack(kick, hats)",
+      "tasks": [
+        {
+          "text": "Add a part called strings: a four-note chord in the key on a supersaw, soft, with a slow attack and a long release.",
+          "hint": "const strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "strings"
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "supersaw"
+                  }
+                }
+              },
+              {
+                "gte": [
+                  {
+                    "count": {
+                      "s": "supersaw"
+                    }
+                  },
+                  4
+                ]
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "supersaw"
+                  },
+                  "where": [
+                    {
+                      "key": "attack",
+                      "gte": 0.5,
+                      "default": 0
+                    },
+                    {
+                      "key": "release",
+                      "gte": 1,
+                      "default": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "High-pass the strings at 300 Hz.",
+          "hint": ".hpf(300) on the strings line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "supersaw"
+              },
+              "where": [
+                {
+                  "key": "hcutoff",
+                  "gte": 250,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5)\nstack(kick, hats, strings)"
+      ],
+      "solution": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nstack(kick, hats, strings)",
+      "summary": [
+        "Detroit strings: a supersaw chord with slow attack and release.",
+        "High-pass pads so they never fight the kick."
+      ],
+      "introduces": [
+        ".attack",
+        ".release",
+        ".hpf",
+        ".scale"
+      ],
+      "teaches": [
+        "I6",
+        "I10",
+        "I12"
+      ],
+      "tags": [
+        "strings",
+        "pads",
+        "chords"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "the-chord",
+      "title": "The chord",
+      "goal": "Add a short minor-ninth stab on the offbeats of 2 and 4.",
+      "concept": "Under the strings sits the **stab**: a chord hit short and hard. Detroit favoured the **minor ninth**, five notes that sound both dark and bright. Kevin Saunderson’s Inner City records are full of them.\n\nScale degrees `0,2,4,6,8` build it in the key. A **square** wave gives a hollow, synthetic tone; a quick **decay** with no **sustain** makes it a stab rather than a pad; a low-pass filter rounds its top off.",
+      "shape": "concept",
+      "starter": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nstack(kick, hats, strings)",
+      "tasks": [
+        {
+          "text": "Add a part called stab: a five-note chord in the key on a square wave, on the offbeats of beats 2 and 4.",
+          "hint": "const stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "stab"
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "square"
+                  }
+                }
+              },
+              {
+                "eq": [
+                  {
+                    "values": {
+                      "sel": {
+                        "s": "square"
+                      },
+                      "key": "$time",
+                      "unique": true,
+                      "sorted": true
+                    }
+                  },
+                  [
+                    0.25,
+                    0.75
+                  ]
+                ]
+              },
+              {
+                "gte": [
+                  {
+                    "count": {
+                      "s": "square"
+                    }
+                  },
+                  10
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Make it a stab: quick decay, no sustain.",
+          "hint": ".decay(.15).sustain(0) on the stab line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "square"
+              },
+              "where": [
+                {
+                  "key": "decay",
+                  "lte": 0.2,
+                  "default": 9
+                },
+                {
+                  "key": "sustain",
+                  "eq": 0,
+                  "default": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "text": "Round it off with a low-pass at 1200 Hz.",
+          "hint": ".lpf(1200) on the stab line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "square"
+              },
+              "where": [
+                {
+                  "key": "cutoff",
+                  "lte": 1500,
+                  "gt": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4)\nstack(kick, hats, strings, stab)",
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0)\nstack(kick, hats, strings, stab)"
+      ],
+      "solution": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nstack(kick, hats, strings, stab)",
+      "summary": [
+        "The Detroit stab is a minor ninth, hit short.",
+        "Short decay and no sustain turn a chord into a stab."
+      ],
+      "introduces": [
+        ".struct",
+        ".decay",
+        ".sustain",
+        ".lpf"
+      ],
+      "teaches": [
+        "I6",
+        "I10",
+        "B14"
+      ],
+      "tags": [
+        "chords",
+        "sound design"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "rolling-hats",
+      "title": "Rolling hats",
+      "goal": "Add 16th hats with accents and a light swing.",
+      "concept": "What makes a techno groove **roll** is the hi-hat line: closed hats on every 16th, louder on the beat, with a touch of **swing** so the grid breathes. The 909’s hats were sampled from real cymbals, which is why they cut through.\n\nA **gain pattern** in quotes sets a level per step; `.swingBy(.14, 8)` pushes every second 16th a little late, about 57% on an MPC.",
+      "shape": "concept",
+      "starter": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nstack(kick, hats, strings, stab)",
+      "tasks": [
+        {
+          "text": "Add a part called ticks: closed hats on every 16th with a gain pattern that accents the beat.",
+          "hint": "const ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\"), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "ticks"
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "hh"
+                    }
+                  },
+                  16
+                ]
+              },
+              {
+                "gt": [
+                  {
+                    "valueAt": {
+                      "sel": {
+                        "s": "hh"
+                      },
+                      "key": "gain",
+                      "index": 0,
+                      "default": 0.8
+                    }
+                  },
+                  {
+                    "valueAt": {
+                      "sel": {
+                        "s": "hh"
+                      },
+                      "key": "gain",
+                      "index": 1,
+                      "default": 0.8
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Swing them a little: about 57%.",
+          "hint": ".swingBy(.14, 8) on the ticks line.",
+          "check": {
+            "all": [
+              {
+                "gte": [
+                  {
+                    "timeAt": {
+                      "sel": {
+                        "s": "hh"
+                      },
+                      "index": 1
+                    }
+                  },
+                  0.0686
+                ]
+              },
+              {
+                "lte": [
+                  {
+                    "timeAt": {
+                      "sel": {
+                        "s": "hh"
+                      },
+                      "index": 1
+                    }
+                  },
+                  0.0776
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\")\nstack(kick, hats, strings, stab, ticks)"
+      ],
+      "solution": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nstack(kick, hats, strings, stab, ticks)",
+      "summary": [
+        "16th hats with accents make a techno groove roll.",
+        ".swingBy(.14, 8) is a light, 57% swing."
+      ],
+      "introduces": [
+        "patterned .gain",
+        ".swingBy"
+      ],
+      "teaches": [
+        "B3",
+        "I4",
+        "I1"
+      ],
+      "tags": [
+        "drums",
+        "swing"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "bass-in-the-gaps",
+      "title": "The bass in the gaps",
+      "goal": "Add an offbeat bass in the key, short and filtered.",
+      "concept": "Detroit bass lines sit **between the kicks**, on the offbeats, so the low end never doubles up. The notes come from the same key as the strings and the stab, which is what `const key` was for.\n\nA **sawtooth** two octaves down, with a short envelope and a low-pass around 600 Hz, is round and heavy. The pattern `[~ 0] [~ 0] [~ 3] [~ 5]` walks the root, the fourth and the fifth of the scale.",
+      "shape": "concept",
+      "starter": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nstack(kick, hats, strings, stab, ticks)",
+      "tasks": [
+        {
+          "text": "Add a part called bass: scale degrees in the key on a sawtooth, two octaves down, on every offbeat.",
+          "hint": "const bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "bass"
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "sawtooth"
+                  }
+                }
+              },
+              {
+                "eq": [
+                  {
+                    "values": {
+                      "sel": {
+                        "s": "sawtooth"
+                      },
+                      "key": "$time",
+                      "unique": true,
+                      "sorted": true
+                    }
+                  },
+                  [
+                    0.125,
+                    0.375,
+                    0.625,
+                    0.875
+                  ]
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Make it short and dark: quick decay, no sustain, low-pass at 600 Hz.",
+          "hint": ".decay(.15).sustain(0).lpf(600) on the bass line.",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "sawtooth"
+              },
+              "where": [
+                {
+                  "key": "sustain",
+                  "eq": 0,
+                  "default": 1
+                },
+                {
+                  "key": "cutoff",
+                  "lte": 800,
+                  "gt": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2)\nstack(kick, hats, strings, stab, ticks, bass)"
+      ],
+      "solution": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nstack(kick, hats, strings, stab, ticks, bass)",
+      "summary": [
+        "Offbeat bass keeps the low end clear of the kick.",
+        "Scale degrees in the shared key keep bass and chords agreeing."
+      ],
+      "introduces": [
+        "n",
+        ".octave"
+      ],
+      "teaches": [
+        "B12",
+        "I8",
+        "I5"
+      ],
+      "tags": [
+        "bass"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "variation-every-8",
+      "title": "Variation every eight",
+      "goal": "Add a two-bar clap and a hat fill every eighth bar.",
+      "concept": "A loop that never changes is a demo, not a record. Detroit tracks change on the **phrase**: every two bars a small difference, every eight a **fill**.\n\n`<a b>` alternates two patterns bar by bar, so the clap can answer itself. `.lastOf(8, x => x.ply(2))` doubles every hat in the last bar of every eight: a roll that announces the next phrase.",
+      "shape": "concept",
+      "starter": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nstack(kick, hats, strings, stab, ticks, bass)",
+      "tasks": [
+        {
+          "text": "Add a part called clap: a 909 clap on 2 and 4 in odd bars, with an extra double hit in even bars.",
+          "hint": "const clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6), and stack it.",
+          "check": {
+            "all": [
+              {
+                "defines": "clap"
+              },
+              {
+                "includesTimes": {
+                  "s": "cp",
+                  "at": [
+                    0.25,
+                    0.75
+                  ]
+                }
+              },
+              {
+                "neq": [
+                  {
+                    "times": {
+                      "s": "cp",
+                      "bar": 0
+                    }
+                  },
+                  {
+                    "times": {
+                      "s": "cp",
+                      "bar": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Make the hats roll in the last bar of every eight.",
+          "hint": ".lastOf(8, x => x.ply(2)) on the ticks line.",
+          "check": {
+            "all": [
+              {
+                "uses": "lastOf"
+              },
+              {
+                "gt": [
+                  {
+                    "count": {
+                      "s": "hh",
+                      "bar": 7
+                    }
+                  },
+                  {
+                    "count": {
+                      "s": "hh",
+                      "bar": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nstack(kick, hats, strings, stab, ticks, bass, clap)"
+      ],
+      "solution": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).lastOf(8, x => x.ply(2))\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nstack(kick, hats, strings, stab, ticks, bass, clap)",
+      "summary": [
+        "< > alternates bar by bar.",
+        ".lastOf(8, f) changes the last bar of every eight."
+      ],
+      "introduces": [
+        "< >",
+        ".lastOf",
+        ".ply"
+      ],
+      "teaches": [
+        "I19",
+        "E3"
+      ],
+      "tags": [
+        "drums",
+        "arrangement"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "sections",
+      "title": "Sections",
+      "goal": "Name the sections and arrange them, with a breakdown that drops the kick.",
+      "concept": "Detroit records are built for DJs and dancers alike: a drums-only **intro** to mix into, a long **main** section, a **breakdown** where the kick leaves and the strings take over, and an **outro** to mix out of.\n\nA section is a named `stack`. `arrange([16, intro], …)` plays each one for that many bars; every section restarts its own clock.",
+      "shape": "concept",
+      "starter": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).lastOf(8, x => x.ply(2))\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nstack(kick, hats, strings, stab, ticks, bass, clap)",
+      "tasks": [
+        {
+          "text": "Name four sections: intro (kick, hats, ticks), main (everything), breakdown (strings, stab, clap: no kick) and outro (kick, hats). Keep playing main for now.",
+          "hint": "const intro = stack(kick, hats, ticks), const main = stack(kick, hats, ticks, strings, stab, bass, clap), const breakdown = stack(strings, stab, clap), const outro = stack(kick, hats); end the code with main.",
+          "check": {
+            "all": [
+              {
+                "block": {
+                  "name": "intro",
+                  "kind": [
+                    "group",
+                    "section"
+                  ],
+                  "members": [
+                    "kick",
+                    "hats",
+                    "ticks"
+                  ]
+                }
+              },
+              {
+                "block": {
+                  "name": "main",
+                  "kind": [
+                    "group",
+                    "section"
+                  ],
+                  "members": [
+                    "kick",
+                    "strings",
+                    "stab",
+                    "bass",
+                    "clap"
+                  ]
+                }
+              },
+              {
+                "block": {
+                  "name": "breakdown",
+                  "kind": [
+                    "group",
+                    "section"
+                  ],
+                  "members": [
+                    "strings",
+                    "stab"
+                  ]
+                }
+              },
+              {
+                "block": {
+                  "name": "outro",
+                  "kind": [
+                    "group",
+                    "section"
+                  ],
+                  "members": [
+                    "kick",
+                    "hats"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Arrange them: 16 bars of intro, 32 of main, 16 of breakdown, 16 of outro.",
+          "hint": "Replace the last line with arrange([16, intro], [32, main], [16, breakdown], [16, outro]).",
+          "check": {
+            "all": [
+              {
+                "final": "arrange"
+              },
+              {
+                "gte": [
+                  {
+                    "rows": true
+                  },
+                  4
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "bd",
+                      "bar": 48
+                    }
+                  },
+                  0
+                ]
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "square",
+                    "bar": 16
+                  }
+                }
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "square",
+                      "bar": 0
+                    }
+                  },
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).lastOf(8, x => x.ply(2))\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nconst intro = stack(kick, hats, ticks)\nconst main = stack(kick, hats, ticks, strings, stab, bass, clap)\nconst breakdown = stack(strings, stab, clap)\nconst outro = stack(kick, hats)\nmain"
+      ],
+      "solution": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).lastOf(8, x => x.ply(2))\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nconst intro = stack(kick, hats, ticks)\nconst main = stack(kick, hats, ticks, strings, stab, bass, clap)\nconst breakdown = stack(strings, stab, clap)\nconst outro = stack(kick, hats)\narrange([16, intro], [32, main], [16, breakdown], [16, outro])",
+      "summary": [
+        "Sections are named stacks; arrange() plays them in turn.",
+        "A breakdown drops the kick and lets the strings carry the room."
+      ],
+      "introduces": [
+        "arrange"
+      ],
+      "concepts": [
+        "sections"
+      ],
+      "teaches": [
+        "E4",
+        "E6",
+        "E7"
+      ],
+      "tags": [
+        "arrangement"
+      ],
+      "composition": true,
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "the-mix",
+      "title": "Project: The mix",
+      "goal": "Clear the low end, set the levels and finish the arrangement.",
+      "concept": "Mixing in Strudel means three things: **cut what a part doesn’t need** (high-pass the hats), **keep every level under the kick** (nothing above .8 but the kick itself), and give the record its full **shape**.\n\nA fifth section, a **build** where the strings join the drums before the main section, makes the first drop land. Five sections, 96 bars: a record you could play out.",
+      "shape": "project",
+      "starter": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).lastOf(8, x => x.ply(2))\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nconst intro = stack(kick, hats, ticks)\nconst main = stack(kick, hats, ticks, strings, stab, bass, clap)\nconst breakdown = stack(strings, stab, clap)\nconst outro = stack(kick, hats)\narrange([16, intro], [32, main], [16, breakdown], [16, outro])",
+      "tasks": [
+        {
+          "text": "High-pass both hat parts at 400 Hz.",
+          "hint": ".hpf(400) on the hats line and on the ticks line.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "oh"
+                  },
+                  "where": [
+                    {
+                      "key": "hcutoff",
+                      "gte": 300,
+                      "default": 0
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "hh"
+                  },
+                  "where": [
+                    {
+                      "key": "hcutoff",
+                      "gte": 300,
+                      "default": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Set the bass level to .7, so nothing but the kick is above .8.",
+          "hint": ".gain(.7) on the bass line.",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "sawtooth",
+                    "cycles": 17
+                  },
+                  "where": [
+                    {
+                      "key": "gain",
+                      "lte": 0.8,
+                      "defined": true
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "cycles": 17,
+                    "where": [
+                      {
+                        "key": "s",
+                        "neq": "bd"
+                      }
+                    ]
+                  },
+                  "where": [
+                    {
+                      "key": "gain",
+                      "lte": 0.8,
+                      "default": 0.8
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add a build section (kick, hats, ticks, strings) between the intro and main, and arrange all five: 16, 16, 32, 16, 16.",
+          "hint": "const build = stack(kick, hats, ticks, strings), then arrange([16, intro], [16, build], [32, main], [16, breakdown], [16, outro]).",
+          "check": {
+            "all": [
+              {
+                "block": {
+                  "name": "build",
+                  "kind": [
+                    "group",
+                    "section"
+                  ],
+                  "members": [
+                    "strings"
+                  ]
+                }
+              },
+              {
+                "gte": [
+                  {
+                    "rows": true
+                  },
+                  5
+                ]
+              },
+              {
+                "gte": [
+                  {
+                    "rowStart": 4
+                  },
+                  48
+                ]
+              },
+              {
+                "gte": [
+                  {
+                    "rowBars": 4
+                  },
+                  16
+                ]
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "supersaw",
+                    "bar": 16
+                  }
+                }
+              },
+              {
+                "eq": [
+                  {
+                    "count": {
+                      "s": "square",
+                      "bar": 16
+                    }
+                  },
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).hpf(400)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).lastOf(8, x => x.ply(2)).hpf(400)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nconst intro = stack(kick, hats, ticks)\nconst main = stack(kick, hats, ticks, strings, stab, bass, clap)\nconst breakdown = stack(strings, stab, clap)\nconst outro = stack(kick, hats)\narrange([16, intro], [32, main], [16, breakdown], [16, outro])",
+        "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).hpf(400)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).lastOf(8, x => x.ply(2)).hpf(400)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600).gain(.7)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nconst intro = stack(kick, hats, ticks)\nconst main = stack(kick, hats, ticks, strings, stab, bass, clap)\nconst breakdown = stack(strings, stab, clap)\nconst outro = stack(kick, hats)\narrange([16, intro], [32, main], [16, breakdown], [16, outro])"
+      ],
+      "solution": "// A Detroit techno record\nsetcpm(128/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.4).hpf(400)\nconst strings = n(\"[0,2,4,6]\").scale(key).s(\"supersaw\").gain(.35).attack(.8).release(1.5).hpf(300)\nconst stab = n(\"[0,2,4,6,8]\").scale(key).s(\"square\").struct(\"[~ x]*2\").gain(.4).decay(.15).sustain(0).lpf(1200)\nconst ticks = s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .25 .35 .25]*4\").swingBy(.14, 8).lastOf(8, x => x.ply(2)).hpf(400)\nconst bass = n(\"[~ 0] [~ 0] [~ 3] [~ 5]\").scale(key).s(\"sawtooth\").octave(2).decay(.15).sustain(0).lpf(600).gain(.7)\nconst clap = s(\"<[~ cp ~ cp] [~ cp ~ [cp cp]]>\").bank(\"RolandTR909\").gain(.6)\nconst intro = stack(kick, hats, ticks)\nconst build = stack(kick, hats, ticks, strings)\nconst main = stack(kick, hats, ticks, strings, stab, bass, clap)\nconst breakdown = stack(strings, stab, clap)\nconst outro = stack(kick, hats)\narrange([16, intro], [16, build], [32, main], [16, breakdown], [16, outro])",
+      "summary": [
+        "High-pass what has no low end; keep every level under the kick.",
+        "A build before the main section makes the drop land.",
+        "Five sections, 96 bars: a record."
+      ],
+      "introduces": [
+        ".hpf",
+        ".gain"
+      ],
+      "concepts": [
+        "gain staging"
+      ],
+      "teaches": [
+        "E10",
+        "E11",
+        "E5"
+      ],
+      "tags": [
+        "project",
+        "track",
+        "mixing",
+        "arrangement"
+      ],
+      "composition": true,
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        }
+      ]
+    }
+  ]
+}

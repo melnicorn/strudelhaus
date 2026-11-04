@@ -1,1 +1,14 @@
-["deep-house.json", "dub-techno.json"]
+[
+  "practice-drills.json",
+  "practice-fix-it.json",
+  "practice-katas.json",
+  "deep-house.json",
+  "detroit-techno.json",
+  "chicago-house.json",
+  "uk-garage.json",
+  "electro.json",
+  "trance.json",
+  "hip-hop.json",
+  "ambient.json",
+  "dub-techno.json"
+]

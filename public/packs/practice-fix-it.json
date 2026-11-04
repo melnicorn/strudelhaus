@@ -1,0 +1,849 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "practice-fix-it",
+  "title": "Practice: fix it",
+  "description": "Each starter has one bug. The brief says what you hear; find what is wrong.",
+  "author": "Strudel Workshop",
+  "tags": [
+    "house",
+    "techno"
+  ],
+  "tracks": [
+    {
+      "id": "fix-it",
+      "title": "Fix it",
+      "blurb": "Twelve broken loops, one bug each.",
+      "kind": "skills",
+      "lessons": [
+        "missing-from-stack",
+        "tempo-too-fast",
+        "misspelled-bank",
+        "squeezed-kick",
+        "filtered-away",
+        "shared-delay",
+        "ducking-nothing",
+        "runaway-feedback",
+        "melody-not-chord",
+        "clipping",
+        "reassigned-name",
+        "commented-out"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "missing-from-stack",
+      "title": "The silent hats",
+      "goal": "The kick and clap play, but you hear no hats at all.",
+      "concept": "Defining a part gives it a name. A name on its own makes no sound.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Add hats to the stack: stack(kick, clap, hats).",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.25,
+                    0.5,
+                    0.75
+                  ],
+                  "s": "bd"
+                }
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.125,
+                    0.375,
+                    0.625,
+                    0.875
+                  ],
+                  "s": "oh"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nstack(kick, clap, hats)",
+      "summary": [
+        "A part only plays once it is in the stack."
+      ],
+      "introduces": [],
+      "teaches": [
+        "B9"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "tempo-too-fast",
+      "title": "Four times too fast",
+      "goal": "Everything races: the loop is over in a second.",
+      "concept": "Strudel counts cycles per minute, and our cycle is a bar of four beats.",
+      "shape": "fix",
+      "starter": "setcpm(124)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "setcpm(124/4): divide the BPM by the four beats in a bar.",
+          "check": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "gte": [
+                      {
+                        "bpm": true
+                      },
+                      120
+                    ]
+                  },
+                  {
+                    "lte": [
+                      {
+                        "bpm": true
+                      },
+                      128
+                    ]
+                  }
+                ]
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.25,
+                    0.5,
+                    0.75
+                  ],
+                  "s": "bd"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "summary": [
+        "setcpm takes cycles per minute: BPM/4."
+      ],
+      "introduces": [],
+      "teaches": [
+        "B1"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "misspelled-bank",
+      "title": "Sound not found",
+      "goal": "The clap plays, but the kick is missing and the panel warns about a sound.",
+      "concept": "Drum machine names are exact. Compare the kick’s bank with the clap’s.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR99\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Spell the bank RolandTR909 on the kick line.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.25,
+                    0.5,
+                    0.75
+                  ],
+                  "s": "bd"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR909"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "summary": [
+        "Bank names must match exactly."
+      ],
+      "introduces": [],
+      "teaches": [
+        "B8"
+      ],
+      "tags": [
+        "drums",
+        "909"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "squeezed-kick",
+      "title": "Eight kicks, not four",
+      "goal": "The kick stutters: twice as many hits as you asked for.",
+      "concept": "Brackets squeeze what is inside them into one step, and *4 repeats that step.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"[bd bd]*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Write the kick as s(\"bd*4\"): one bd per step, four steps.",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.25,
+                    0.5,
+                    0.75
+                  ],
+                  "s": "bd"
+                }
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "cp"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "summary": [
+        "[a b]*4 is eight hits; a*4 is four."
+      ],
+      "introduces": [],
+      "teaches": [
+        "B3"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "filtered-away",
+      "title": "Where did the hats go?",
+      "goal": "The hats are in the stack, but you hear only a faint tick, if anything.",
+      "concept": "A low-pass filter at 80 Hz leaves almost nothing of a hi-hat, which lives above 3 kHz.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.5).lpf(80)\nstack(kick, hats)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Remove .lpf(80) from the hats, or raise it to .lpf(8000).",
+          "check": {
+            "all": [
+              {
+                "playsAt": {
+                  "at": [
+                    0.0,
+                    0.125,
+                    0.25,
+                    0.375,
+                    0.5,
+                    0.625,
+                    0.75,
+                    0.875
+                  ],
+                  "s": "hh"
+                }
+              },
+              {
+                "not": {
+                  "some": {
+                    "sel": {
+                      "s": "hh"
+                    },
+                    "where": [
+                      {
+                        "key": "cutoff",
+                        "lt": 2000
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.5)\nstack(kick, hats)",
+      "summary": [
+        "A low-pass cutoff below a sound’s range silences it."
+      ],
+      "introduces": [],
+      "teaches": [
+        "B14"
+      ],
+      "tags": [
+        "drums",
+        "sound design"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "shared-delay",
+      "title": "The delay fights itself",
+      "goal": "The stab’s long echo keeps breaking up, and the hats echo oddly too.",
+      "concept": "Strudel has one delay per orbit. Two parts with different delay settings on the same orbit overwrite each other.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst stab = note(\"[~ [c3,eb3,g3]]*2\").s(\"sawtooth\").lpf(1200).delay(.5).delaysync(3/16).delayfeedback(.6)\nconst hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.4).delay(.2).delaysync(1/8).delayfeedback(.2)\nstack(kick, stab, hats)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Put the hats on their own orbit: add .orbit(2) to the hats line.",
+          "check": {
+            "all": [
+              {
+                "some": {
+                  "sel": {
+                    "s": "hh"
+                  },
+                  "where": [
+                    {
+                      "key": "delay",
+                      "gt": 0,
+                      "default": 0
+                    },
+                    {
+                      "key": "orbit",
+                      "neq": 1,
+                      "default": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "sawtooth"
+                  },
+                  "where": [
+                    {
+                      "key": "delay",
+                      "gt": 0,
+                      "default": 0
+                    },
+                    {
+                      "key": "orbit",
+                      "eq": 1,
+                      "default": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst stab = note(\"[~ [c3,eb3,g3]]*2\").s(\"sawtooth\").lpf(1200).delay(.5).delaysync(3/16).delayfeedback(.6)\nconst hats = s(\"hh*8\").bank(\"RolandTR909\").gain(.4).delay(.2).delaysync(1/8).delayfeedback(.2).orbit(2)\nstack(kick, stab, hats)",
+      "summary": [
+        "One delay (and one reverb) per orbit."
+      ],
+      "introduces": [],
+      "teaches": [
+        "E12",
+        "I15"
+      ],
+      "tags": [
+        "effects"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "ducking-nothing",
+      "title": "Duck target does not exist",
+      "goal": "Pressing Play gives an error about a duck target orbit.",
+      "concept": "Sidechain ducks another orbit. The kick says which one; it must be an orbit something plays on.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").duckorbit(3).duckdepth(.8)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).orbit(2)\nstack(kick, bass)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Point the kick at the bass’s orbit: .duckorbit(2).",
+          "check": {
+            "all": [
+              {
+                "every": {
+                  "sel": {
+                    "s": "bd"
+                  },
+                  "where": [
+                    {
+                      "key": "duckorbit",
+                      "eq": 2
+                    }
+                  ]
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "sawtooth"
+                  },
+                  "where": [
+                    {
+                      "key": "orbit",
+                      "eq": 2
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth(.8)\nconst bass = note(\"[~ c2]*4\").s(\"sawtooth\").lpf(500).orbit(2)\nstack(kick, bass)",
+      "summary": [
+        "duckorbit must name an orbit that plays."
+      ],
+      "introduces": [],
+      "teaches": [
+        "E8"
+      ],
+      "tags": [
+        "mixing",
+        "bass"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "runaway-feedback",
+      "title": "The echo never stops",
+      "goal": "The stab’s echoes pile up until everything is a wash of noise.",
+      "concept": "Delay feedback is how much of each echo comes back round. At 1, nothing ever dies away.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst stab = note(\"[~ [c3,eb3,g3]]*2\").s(\"sawtooth\").lpf(1200).delay(.5).delaysync(3/16).delayfeedback(1)\nstack(kick, stab)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Bring the feedback down: .delayfeedback(.6).",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "sawtooth"
+              },
+              "where": [
+                {
+                  "key": "delayfeedback",
+                  "gt": 0,
+                  "lt": 0.9,
+                  "default": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst stab = note(\"[~ [c3,eb3,g3]]*2\").s(\"sawtooth\").lpf(1200).delay(.5).delaysync(3/16).delayfeedback(.6)\nstack(kick, stab)",
+      "summary": [
+        "Keep delay feedback below 1."
+      ],
+      "introduces": [],
+      "teaches": [
+        "I15"
+      ],
+      "tags": [
+        "effects"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "melody-not-chord",
+      "title": "A chord that plays one note at a time",
+      "goal": "You wanted one chord stab, but you hear three notes in a row.",
+      "concept": "In mini-notation spaces make steps; commas make a chord.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst stab = note(\"c3 eb3 g3\").s(\"sawtooth\").lpf(1500).decay(.2).sustain(0)\nstack(kick, stab)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Write the notes with commas: note(\"[c3,eb3,g3]\").",
+          "check": {
+            "all": [
+              {
+                "gte": [
+                  {
+                    "maxChordSize": true
+                  },
+                  3
+                ]
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": "sawtooth"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst stab = note(\"[c3,eb3,g3]\").s(\"sawtooth\").lpf(1500).decay(.2).sustain(0)\nstack(kick, stab)",
+      "summary": [
+        "Commas stack notes into a chord; spaces put them in a row."
+      ],
+      "introduces": [],
+      "teaches": [
+        "I6"
+      ],
+      "tags": [
+        "chords"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "clipping",
+      "title": "Distorted and crackly",
+      "goal": "The kick crackles and the whole mix sounds harsh.",
+      "concept": "Gain above 1 pushes a sound past full scale and it clips.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(1.8)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Set the kick’s gain to 1 or less: .gain(.9).",
+          "check": {
+            "every": {
+              "sel": {},
+              "where": [
+                {
+                  "key": "gain",
+                  "lte": 1,
+                  "default": 0.8
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\").gain(.9)\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "summary": [
+        "Keep every gain at 1 or below."
+      ],
+      "introduces": [],
+      "teaches": [
+        "E10"
+      ],
+      "tags": [
+        "mixing"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "reassigned-name",
+      "title": "Assignment to constant",
+      "goal": "Pressing Play gives an error about assigning to a constant, and nothing plays.",
+      "concept": "A const can be defined once. Reusing the name later tries to overwrite it.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nhats = s(\"hh*8\").bank(\"RolandTR909\").gain(.4)\nstack(kick, hats)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Give the second part its own name: const ticks = s(\"hh*8\")…, and stack(kick, hats, ticks).",
+          "check": {
+            "all": [
+              {
+                "defines": "ticks"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.125,
+                    0.375,
+                    0.625,
+                    0.875
+                  ],
+                  "s": "oh"
+                }
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.0,
+                    0.125,
+                    0.25,
+                    0.375,
+                    0.5,
+                    0.625,
+                    0.75,
+                    0.875
+                  ],
+                  "s": "hh"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst hats = s(\"[~ oh]*4\").bank(\"RolandTR909\").gain(.5)\nconst ticks = s(\"hh*8\").bank(\"RolandTR909\").gain(.4)\nstack(kick, hats, ticks)",
+      "summary": [
+        "Every part needs its own const name."
+      ],
+      "introduces": [],
+      "teaches": [
+        "B9"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    },
+    {
+      "id": "commented-out",
+      "title": "Nothing plays",
+      "goal": "Play does nothing: no sound, and the panel says the code made no pattern.",
+      "concept": "Two slashes turn the rest of a line into a comment. Check the last line.",
+      "shape": "fix",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\n// stack(kick, clap)",
+      "tasks": [
+        {
+          "text": "Find and fix it.",
+          "hint": "Remove the // in front of stack(kick, clap).",
+          "check": {
+            "all": [
+              {
+                "final": "stack"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0,
+                    0.25,
+                    0.5,
+                    0.75
+                  ],
+                  "s": "bd"
+                }
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "cp"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "steps": [],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR909\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR909\")\nstack(kick, clap)",
+      "summary": [
+        "A // comment silences the whole line."
+      ],
+      "introduces": [],
+      "teaches": [
+        "B9"
+      ],
+      "tags": [
+        "drums"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "oh",
+          "bank": "RolandTR909"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR909"
+        }
+      ]
+    }
+  ]
+}

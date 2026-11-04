@@ -1,0 +1,889 @@
+{
+  "format": "strudel-workshop-pack",
+  "version": 1,
+  "id": "chicago-house",
+  "title": "Chicago house",
+  "description": "The jack, 808 toms, the one-finger piano riff and the 303 as bass and lead: Chicago, 1985–87.",
+  "author": "Strudel Workshop",
+  "tags": [
+    "chicago house",
+    "acid house",
+    "house",
+    "707",
+    "808",
+    "303"
+  ],
+  "tracks": [
+    {
+      "id": "the-jack",
+      "title": "The jack",
+      "blurb": "From the jacking kick to a raw jack track with a piano riff and a 303.",
+      "kind": "skills",
+      "requires": [
+        "B5",
+        "B8",
+        "I6"
+      ],
+      "tags": [
+        "chicago house",
+        "707"
+      ],
+      "lessons": [
+        "the-jack",
+        "jacking-claps-and-toms",
+        "the-piano-riff",
+        "the-303-bass-and-lead",
+        "hand-played-filter",
+        "a-jack-track"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "the-jack",
+      "title": "The jack",
+      "goal": "Write the jacking 707 kick pattern Chicago house was built on.",
+      "concept": "Chicago house began in the early 80s at the Warehouse, the club that gave it its name, and on cheap Roland boxes: the TR-707 and TR-808. Its kick does more than four on the floor. A fifth kick on the **\"and\" of 4** gives the loop a push into the next bar: that stumble is the **jack**.\n\n`\"bd bd bd [bd bd]\"` keeps a kick on every beat and squeezes two into the last one, so the extra hit lands on the \"and\" of 4. Claps on 2 and 4 answer it.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd*4\").bank(\"RolandTR707\")\nstack(kick)",
+      "tasks": [
+        {
+          "text": "Add a fifth kick on the \"and\" of 4.",
+          "hint": "s(\"bd bd bd [bd bd]\")",
+          "check": {
+            "playsAt": {
+              "at": [
+                0,
+                0.25,
+                0.5,
+                0.75,
+                0.875
+              ],
+              "s": "bd"
+            }
+          }
+        },
+        {
+          "text": "Add a part called clap: a 707 clap on beats 2 and 4.",
+          "hint": "const clap = s(\"~ cp ~ cp\").bank(\"RolandTR707\"), and stack(kick, clap)",
+          "check": {
+            "all": [
+              {
+                "defines": "clap"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75
+                  ],
+                  "s": "cp"
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "cp"
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR707"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Add quiet 707 closed hats on every 8th.",
+        "hint": "const hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4), and stack it",
+        "check": {
+          "all": [
+            {
+              "playsAt": {
+                "at": [
+                  0.0,
+                  0.125,
+                  0.25,
+                  0.375,
+                  0.5,
+                  0.625,
+                  0.75,
+                  0.875
+                ],
+                "s": "hh"
+              }
+            },
+            {
+              "every": {
+                "sel": {
+                  "s": "hh"
+                },
+                "where": [
+                  {
+                    "key": "gain",
+                    "lt": 0.6,
+                    "default": 0.8
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nstack(kick)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR707\")\nstack(kick, clap)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nstack(kick, clap, hats)",
+      "summary": [
+        "The jack: four on the floor plus a kick on the \"and\" of 4.",
+        "[bd bd] in the last beat squeezes two kicks into one step.",
+        "The TR-707 is the Chicago machine."
+      ],
+      "introduces": [
+        "[ ]",
+        ".bank"
+      ],
+      "concepts": [
+        "the jack"
+      ],
+      "teaches": [
+        "B4",
+        "B5",
+        "B8"
+      ],
+      "tags": [
+        "drums",
+        "707"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR707"
+        }
+      ]
+    },
+    {
+      "id": "jacking-claps-and-toms",
+      "title": "Jacking claps and toms",
+      "goal": "Double the clap and add 808 toms on the offbeats.",
+      "concept": "Trax Records tracks are busy below the kick: claps that **double** on the way into beat 1, and **808 toms** bouncing on the offbeats. The 808 toms are pitched (low, mid, high: `lt`, `mt`, `ht`), so a tom pattern is almost a bassline.\n\n`\"~ cp ~ [cp cp]\"` doubles the last clap. `.mask(\"<1 0>\")` lets a part play one bar and rest the next, which is how these records breathe.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ cp\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nstack(kick, clap, hats)",
+      "tasks": [
+        {
+          "text": "Double the second clap: two claps in the last beat.",
+          "hint": "s(\"~ cp ~ [cp cp]\")",
+          "check": {
+            "playsAt": {
+              "at": [
+                0.25,
+                0.75,
+                0.875
+              ],
+              "s": "cp"
+            }
+          }
+        },
+        {
+          "text": "Add a part called toms: 808 low, mid, low, high toms on the offbeats.",
+          "hint": "const toms = s(\"[~ lt] [~ mt] [~ lt] [~ ht]\").bank(\"RolandTR808\").gain(.6), and stack it",
+          "check": {
+            "all": [
+              {
+                "defines": "toms"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.125,
+                    0.375,
+                    0.625,
+                    0.875
+                  ],
+                  "sel": {
+                    "s": [
+                      "lt",
+                      "mt",
+                      "ht"
+                    ]
+                  },
+                  "cycles": 1
+                }
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": [
+                      "lt",
+                      "mt",
+                      "ht"
+                    ]
+                  },
+                  "where": [
+                    {
+                      "key": "bank",
+                      "eq": "RolandTR808"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Let the toms play every other bar only.",
+        "hint": ".mask(\"<1 0>\") on the toms line",
+        "check": {
+          "all": [
+            {
+              "eq": [
+                {
+                  "count": {
+                    "s": [
+                      "lt",
+                      "mt",
+                      "ht"
+                    ],
+                    "bar": 0
+                  }
+                },
+                4
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "count": {
+                    "s": [
+                      "lt",
+                      "mt",
+                      "ht"
+                    ],
+                    "bar": 1
+                  }
+                },
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nstack(kick, clap, hats)"
+      ],
+      "solution": "setcpm(124/4)\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst toms = s(\"[~ lt] [~ mt] [~ lt] [~ ht]\").bank(\"RolandTR808\").gain(.6)\nstack(kick, clap, hats, toms)",
+      "challengeSolution": "setcpm(124/4)\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst toms = s(\"[~ lt] [~ mt] [~ lt] [~ ht]\").bank(\"RolandTR808\").gain(.6).mask(\"<1 0>\")\nstack(kick, clap, hats, toms)",
+      "summary": [
+        "[cp cp] doubles a clap into the next bar.",
+        "808 toms (lt, mt, ht) are pitched percussion.",
+        ".mask(\"<1 0>\") plays a part every other bar."
+      ],
+      "introduces": [
+        ".mask"
+      ],
+      "teaches": [
+        "B5",
+        "B7",
+        "B8"
+      ],
+      "tags": [
+        "drums",
+        "808"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "lt",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "mt",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "ht",
+          "bank": "RolandTR808"
+        }
+      ]
+    },
+    {
+      "id": "the-piano-riff",
+      "title": "The piano riff",
+      "goal": "Write a one-finger piano hook in a key.",
+      "concept": "The Chicago piano is a **riff**, not a chord: one finger stabbing a few notes of the scale, repeated until it sticks. Marshall Jefferson’s \"Move Your Body\" made it the sound of 1986.\n\n`n(\"0 ~ 3 ~ 5 ~ 3 0\").scale(key)` picks scale degrees, so the riff stays in key however you change the numbers. One `const key` at the top keeps every pitched part in tune.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nstack(kick, clap, hats)",
+      "tasks": [
+        {
+          "text": "Declare the key: C minor.",
+          "hint": "const key = \"C:minor\" on the line after setcpm",
+          "check": {
+            "eq": [
+              {
+                "key": true
+              },
+              "c:minor"
+            ]
+          },
+          "replacedLater": true
+        },
+        {
+          "text": "Add a part called riff: a piano playing scale degrees 0, 3, 5 in 8ths with rests between.",
+          "hint": "const riff = n(\"0 ~ 3 ~ 5 ~ 3 0\").scale(key).s(\"piano\").gain(.6), and stack it",
+          "check": {
+            "all": [
+              {
+                "defines": "riff"
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "piano"
+                  }
+                }
+              },
+              {
+                "gte": [
+                  {
+                    "count": {
+                      "s": "piano"
+                    }
+                  },
+                  4
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Move the whole thing to F minor by changing only the key.",
+        "hint": "const key = \"F:minor\"",
+        "check": {
+          "all": [
+            {
+              "eq": [
+                {
+                  "key": true
+                },
+                "f:minor"
+              ]
+            },
+            {
+              "inKey": {
+                "key": "F:minor",
+                "sel": {
+                  "s": "piano"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nstack(kick, clap, hats)"
+      ],
+      "solution": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst riff = n(\"0 ~ 3 ~ 5 ~ 3 0\").scale(key).s(\"piano\").gain(.6)\nstack(kick, clap, hats, riff)",
+      "challengeSolution": "setcpm(124/4)\nconst key = \"F:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst riff = n(\"0 ~ 3 ~ 5 ~ 3 0\").scale(key).s(\"piano\").gain(.6)\nstack(kick, clap, hats, riff)",
+      "summary": [
+        "A riff is a few scale degrees, repeated.",
+        "n(\"…\").scale(key) keeps it in key.",
+        "Change the key once and every part follows."
+      ],
+      "introduces": [
+        "n",
+        ".scale"
+      ],
+      "concepts": [
+        "const key"
+      ],
+      "teaches": [
+        "I5",
+        "B11"
+      ],
+      "tags": [
+        "piano",
+        "melody"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "piano"
+        }
+      ]
+    },
+    {
+      "id": "the-303-bass-and-lead",
+      "title": "303: bass or lead",
+      "goal": "Play the same 303 line low as a bass, then high as a lead.",
+      "concept": "Phuture bought a TB-303 to make basslines, and found its squelch instead: \"Acid Tracks\" (1987) is the 303 played **wrong on purpose**. The same line works two ways. Low and filtered, it is a bass. An octave up with the filter open, it is a lead.\n\nThe octave lives in the scale name: `scale(\"C1:minor\")` is low, `scale(\"C2:minor\")` an octave up. `.lpf` opens the filter and `.lpq` adds the squelch.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nstack(kick, clap, hats)",
+      "tasks": [
+        {
+          "text": "Add a part called acid: a sawtooth line in C1 minor, filtered at 400 Hz with resonance 10.",
+          "hint": "const acid = n(\"0 0 7 0 3 0 7 5\").scale(\"C1:minor\").s(\"sawtooth\").lpf(400).lpq(10), and stack it",
+          "check": {
+            "all": [
+              {
+                "defines": "acid"
+              },
+              {
+                "every": {
+                  "sel": {
+                    "s": "sawtooth"
+                  },
+                  "where": [
+                    {
+                      "key": "$midi",
+                      "lt": 48
+                    },
+                    {
+                      "key": "resonance",
+                      "gte": 8,
+                      "default": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "replacedLater": true
+        },
+        {
+          "text": "Lift it an octave and open the filter to 1200 Hz: now it is a lead.",
+          "hint": "scale(\"C2:minor\") and .lpf(1200)",
+          "check": {
+            "every": {
+              "sel": {
+                "s": "sawtooth"
+              },
+              "where": [
+                {
+                  "key": "$midi",
+                  "gte": 36
+                },
+                {
+                  "key": "cutoff",
+                  "gte": 1000
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Make every note a short pluck.",
+        "hint": ".decay(.15).sustain(0) on the acid line",
+        "check": {
+          "every": {
+            "sel": {
+              "s": "sawtooth"
+            },
+            "where": [
+              {
+                "key": "sustain",
+                "eq": 0,
+                "default": 1
+              },
+              {
+                "key": "decay",
+                "lte": 0.2,
+                "default": 9
+              }
+            ]
+          }
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(\"C1:minor\").s(\"sawtooth\").lpf(400).lpq(10)\nstack(kick, clap, hats, acid)"
+      ],
+      "solution": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(\"C2:minor\").s(\"sawtooth\").lpf(1200).lpq(10)\nstack(kick, clap, hats, acid)",
+      "challengeSolution": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(\"C2:minor\").s(\"sawtooth\").lpf(1200).lpq(10).decay(.15).sustain(0)\nstack(kick, clap, hats, acid)",
+      "summary": [
+        "The octave in the scale name moves the whole line.",
+        "Low and filtered: bass. High and open: lead.",
+        ".lpq is the squelch."
+      ],
+      "introduces": [
+        ".lpf",
+        ".lpq",
+        ".decay",
+        ".sustain"
+      ],
+      "teaches": [
+        "I9",
+        "I11",
+        "B14"
+      ],
+      "tags": [
+        "303",
+        "acid house",
+        "bass"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR707"
+        }
+      ]
+    },
+    {
+      "id": "hand-played-filter",
+      "title": "The hand-played filter",
+      "goal": "Automate the cutoff the way a hand on the knob would.",
+      "concept": "Acid records were played live: a hand on the 303’s cutoff knob, turning it up over a few bars and back down. A **signal** does the turning: `saw.range(300, 2500).slow(4)` climbs from 300 to 2500 Hz over four bars, then jumps back.\n\nA knob is not perfectly smooth. `.segment(8)` samples the signal eight times a bar, so the filter moves in small steps like a hand would.",
+      "shape": "concept",
+      "starter": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(\"C2:minor\").s(\"sawtooth\").lpf(1200).lpq(10)\nstack(kick, clap, hats, acid)",
+      "tasks": [
+        {
+          "text": "Replace the fixed cutoff with a 4-bar saw from 300 to 2500 Hz.",
+          "hint": ".lpf(saw.range(300, 2500).slow(4))",
+          "check": {
+            "all": [
+              {
+                "uses": "range"
+              },
+              {
+                "gte": [
+                  {
+                    "distinct": {
+                      "sel": {
+                        "s": "sawtooth"
+                      },
+                      "key": "cutoff",
+                      "round": 0,
+                      "bars": [
+                        0,
+                        1,
+                        2,
+                        3
+                      ]
+                    }
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Step it: sample the sweep eight times a bar.",
+          "hint": ".segment(8) at the end of the acid line",
+          "check": {
+            "all": [
+              {
+                "uses": "segment"
+              },
+              {
+                "uses": "range"
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Move the resonance too, on an 8-bar sine between 5 and 20.",
+        "hint": ".lpq(sine.range(5, 20).slow(8)) instead of .lpq(10)",
+        "check": {
+          "gte": [
+            {
+              "distinct": {
+                "sel": {
+                  "s": "sawtooth"
+                },
+                "key": "resonance",
+                "round": 0,
+                "bars": [
+                  0,
+                  2,
+                  4,
+                  6
+                ]
+              }
+            },
+            3
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(\"C2:minor\").s(\"sawtooth\").lpf(saw.range(300, 2500).slow(4)).lpq(10)\nstack(kick, clap, hats, acid)"
+      ],
+      "solution": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(\"C2:minor\").s(\"sawtooth\").lpf(saw.range(300, 2500).slow(4)).lpq(10).segment(8)\nstack(kick, clap, hats, acid)",
+      "challengeSolution": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(\"C2:minor\").s(\"sawtooth\").lpf(saw.range(300, 2500).slow(4)).lpq(sine.range(5, 20).slow(8)).segment(8)\nstack(kick, clap, hats, acid)",
+      "summary": [
+        "saw.range(a, b).slow(4): a four-bar climb and drop.",
+        ".segment(n) steps a signal like a hand on a knob.",
+        "Sweep resonance on a different length for variety."
+      ],
+      "introduces": [
+        "sine",
+        ".range",
+        ".slow",
+        ".seg"
+      ],
+      "teaches": [
+        "I18",
+        "E2"
+      ],
+      "tags": [
+        "303",
+        "acid house",
+        "sound design"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR707"
+        }
+      ]
+    },
+    {
+      "id": "a-jack-track",
+      "title": "Project: A jack track",
+      "goal": "Put the jack, the toms, the piano riff and the 303 together.",
+      "concept": "A Chicago track is raw: a jacking 707, 808 toms, one piano riff and a 303 doing the rest. Keep it loose and a little too loud.\n\nOne `const key` ties the riff and the acid line together. A hat fill every four bars (`.lastOf(4, …)`) marks the phrase the way a DJ hears it.",
+      "shape": "project",
+      "starter": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nstack(kick)",
+      "tasks": [
+        {
+          "text": "Add the clap (doubled), 707 hats on 8ths and the 808 toms, and stack them all.",
+          "hint": "const clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\"), const hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4) and const toms = s(\"[~ lt] [~ mt] [~ lt] [~ ht]\").bank(\"RolandTR808\").gain(.6)",
+          "check": {
+            "all": [
+              {
+                "defines": "clap"
+              },
+              {
+                "defines": "hats"
+              },
+              {
+                "defines": "toms"
+              },
+              {
+                "playsAt": {
+                  "at": [
+                    0.25,
+                    0.75,
+                    0.875
+                  ],
+                  "s": "cp"
+                }
+              },
+              {
+                "some": {
+                  "sel": {
+                    "s": [
+                      "lt",
+                      "mt",
+                      "ht"
+                    ]
+                  }
+                }
+              },
+              {
+                "all": [
+                  {
+                    "gte": [
+                      {
+                        "bpm": true
+                      },
+                      120
+                    ]
+                  },
+                  {
+                    "lte": [
+                      {
+                        "bpm": true
+                      },
+                      126
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "text": "Add the piano riff and the acid line, both in the key.",
+          "hint": "const riff = n(\"0 ~ 3 ~ 5 ~ 3 0\").scale(key).s(\"piano\").gain(.6) and const acid = n(\"0 0 7 0 3 0 7 5\").scale(key).s(\"sawtooth\").lpf(1200).lpq(10).octave(2)",
+          "check": {
+            "all": [
+              {
+                "defines": "riff"
+              },
+              {
+                "defines": "acid"
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "piano"
+                  }
+                }
+              },
+              {
+                "inKey": {
+                  "sel": {
+                    "s": "sawtooth"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "Make the hats fill in the last bar of every four.",
+          "hint": ".lastOf(4, x => x.fast(2)) on the hats line",
+          "check": {
+            "gt": [
+              {
+                "count": {
+                  "s": "hh",
+                  "bar": 3
+                }
+              },
+              {
+                "count": {
+                  "s": "hh",
+                  "bar": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "challenge": {
+        "text": "Sweep the acid filter over 8 bars.",
+        "hint": ".lpf(saw.range(300, 2500).slow(8)) instead of .lpf(1200) on the acid line",
+        "check": {
+          "gte": [
+            {
+              "distinct": {
+                "sel": {
+                  "s": "sawtooth"
+                },
+                "key": "cutoff",
+                "round": 0,
+                "bars": [
+                  0,
+                  2,
+                  4,
+                  6
+                ]
+              }
+            },
+            3
+          ]
+        }
+      },
+      "steps": [
+        "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst toms = s(\"[~ lt] [~ mt] [~ lt] [~ ht]\").bank(\"RolandTR808\").gain(.6)\nstack(kick, clap, hats, toms)",
+        "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4)\nconst toms = s(\"[~ lt] [~ mt] [~ lt] [~ ht]\").bank(\"RolandTR808\").gain(.6)\nconst riff = n(\"0 ~ 3 ~ 5 ~ 3 0\").scale(key).s(\"piano\").gain(.6)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(key).s(\"sawtooth\").lpf(1200).lpq(10).octave(2)\nstack(kick, clap, hats, toms, riff, acid)"
+      ],
+      "solution": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4).lastOf(4, x => x.fast(2))\nconst toms = s(\"[~ lt] [~ mt] [~ lt] [~ ht]\").bank(\"RolandTR808\").gain(.6)\nconst riff = n(\"0 ~ 3 ~ 5 ~ 3 0\").scale(key).s(\"piano\").gain(.6)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(key).s(\"sawtooth\").lpf(1200).lpq(10).octave(2)\nstack(kick, clap, hats, toms, riff, acid)",
+      "challengeSolution": "setcpm(124/4)\nconst key = \"C:minor\"\nconst kick = s(\"bd bd bd [bd bd]\").bank(\"RolandTR707\")\nconst clap = s(\"~ cp ~ [cp cp]\").bank(\"RolandTR707\")\nconst hats = s(\"hh*8\").bank(\"RolandTR707\").gain(.4).lastOf(4, x => x.fast(2))\nconst toms = s(\"[~ lt] [~ mt] [~ lt] [~ ht]\").bank(\"RolandTR808\").gain(.6)\nconst riff = n(\"0 ~ 3 ~ 5 ~ 3 0\").scale(key).s(\"piano\").gain(.6)\nconst acid = n(\"0 0 7 0 3 0 7 5\").scale(key).s(\"sawtooth\").lpf(saw.range(300, 2500).slow(8)).lpq(10).octave(2)\nstack(kick, clap, hats, toms, riff, acid)",
+      "summary": [
+        "A jack track: 707 jack, 808 toms, a piano riff, a 303.",
+        "One const key keeps the riff and the acid in tune.",
+        ".lastOf(4, f) marks the phrase with a fill."
+      ],
+      "introduces": [
+        ".lastOf",
+        ".fast"
+      ],
+      "teaches": [
+        "I19",
+        "I5",
+        "E10"
+      ],
+      "tags": [
+        "project",
+        "drums",
+        "piano",
+        "303"
+      ],
+      "preload": [
+        {
+          "s": "bd",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "cp",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "hh",
+          "bank": "RolandTR707"
+        },
+        {
+          "s": "lt",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "mt",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "ht",
+          "bank": "RolandTR808"
+        },
+        {
+          "s": "piano"
+        }
+      ]
+    }
+  ]
+}
