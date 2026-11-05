@@ -21,6 +21,8 @@ export const KEYS = {
   packs: 'sw:packs:v1',
   /** The assistant's API key and prompt. Deliberately not part of backups (lib/storage/backup.ts). */
   assistant: 'sw:assistant:v1',
+  /** Past assistant chats (transcripts only; see lib/assistant/history.ts). Not part of backups. */
+  chats: 'sw:chats:v1',
 } as const;
 
 let backend: KeyValue | null | undefined;

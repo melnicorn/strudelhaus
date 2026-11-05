@@ -8,6 +8,7 @@ import { agentStack, applyAgentChange, undoAgentChange } from '@/lib/assistant/a
 import { assistantConfigSchema, loadAssistantConfig, saveAssistantConfig, type AssistantConfig } from '@/lib/assistant/config';
 import { buildSystemPrompt } from '@/lib/assistant/prompt';
 import { buildContext, EDIT_TOOLS, planToolCall } from '@/lib/assistant/tools';
+import { loadHistory, messagesFromItems, newChatId, saveHistory, titleFor, upsert, type ChatRecord } from '@/lib/assistant/history';
 import { useEditorStore } from './editor';
 import { afterAssistantEdit } from './model';
 
@@ -49,7 +50,17 @@ interface AssistantStore {
   setUseSelection(use: boolean): void;
   send(text: string): Promise<void>;
   stop(): void;
+  /** Start a new chat; the current one stays in the history. */
   clear(): void;
+  /** Past chats, newest first (this browser only). */
+  history: ChatRecord[];
+  /** The panel shows the history list instead of the chat. */
+  showHistory: boolean;
+  setShowHistory(show: boolean): void;
+  /** Continue a past chat. */
+  resume(id: string): void;
+  deleteChat(id: string): void;
+  clearHistory(): void;
   /** Undo the assistant's latest change to the code. */
   undo(): void;
   /** Open the panel with a question about the current error. */
@@ -60,6 +71,10 @@ const MAX_STEPS = 8;
 let ids = 1;
 let messages: Message[] = [];
 let controller: AbortController | null = null;
+/** The current chat's record id and start time; a fresh chat gets a record at its first question. */
+let chatId = newChatId();
+let startedAt = Date.now();
+let saveTimer: ReturnType<typeof setTimeout> | undefined;
 
 function contextChips(useSelection: boolean): string[] {
   const { context, selection, code, problems } = useEditorStore.getState();
@@ -92,6 +107,26 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
   };
   const update = (id: number, text: string) =>
     set({ items: get().items.map((it) => (it.id === id && it.kind === 'assistant' ? { ...it, text } : it)) });
+  /** Writes the current chat into the history (debounced while a reply streams in). */
+  const persist = (now = false) => {
+    clearTimeout(saveTimer);
+    const run = () => {
+      const { items, history } = get();
+      const record: ChatRecord = {
+        id: chatId,
+        title: titleFor(items),
+        page: typeof location !== 'undefined' ? location.pathname : '',
+        startedAt,
+        updatedAt: Date.now(),
+        items: items.filter((it) => it.kind !== 'assistant' || it.text),
+      };
+      const next = upsert(history, record);
+      set({ history: next });
+      saveHistory(next);
+    };
+    if (now) run();
+    else saveTimer = setTimeout(run, 800);
+  };
 
   return {
     config: loadDefaults(),
@@ -100,7 +135,7 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
       if (get().loaded) return;
       const config = loadAssistantConfig();
       // Without a key there is nothing to chat with yet: start on the settings.
-      set({ config, loaded: true, showSettings: !config.apiKey });
+      set({ config, loaded: true, showSettings: !config.apiKey, history: loadHistory() });
     },
     setConfig(patch) {
       const config = { ...get().config, ...patch };
@@ -147,7 +182,8 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
         useSelection,
       });
       push({ kind: 'user', text: question, chips: contextChips(useSelection) });
-      set({ draft: '', busy: true, thinking: true, useSelection: true });
+      set({ draft: '', busy: true, thinking: true, useSelection: true, showHistory: false });
+      persist(true);
 
       const start = messages.length;
       messages = [...messages, { role: 'user', content: [{ type: 'text', text: context }, { type: 'text', text: question }] }];
@@ -183,6 +219,7 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
             reply += delta;
             set({ thinking: false });
             update(replyId, reply);
+            persist();
           });
           const message = await stream.finalMessage();
           messages = [...messages, { role: 'assistant', content: message.content as Anthropic.Beta.BetaContentBlockParam[] }];
@@ -225,6 +262,7 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
       } finally {
         controller = null;
         set({ busy: false, thinking: false, items: get().items.filter((it) => it.kind !== 'assistant' || it.text) });
+        persist(true);
       }
     },
     stop() {
@@ -232,8 +270,36 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
     },
     clear() {
       controller?.abort();
+      clearTimeout(saveTimer);
       messages = [];
-      set({ items: [] });
+      chatId = newChatId();
+      startedAt = Date.now();
+      set({ items: [], showHistory: false });
+    },
+    history: [],
+    showHistory: false,
+    setShowHistory: (showHistory) => set({ showHistory, showSettings: false }),
+    resume(id) {
+      const chat = get().history.find((c) => c.id === id);
+      if (!chat || get().busy) return;
+      clearTimeout(saveTimer);
+      chatId = chat.id;
+      startedAt = chat.startedAt;
+      messages = messagesFromItems(chat.items);
+      // Fresh ids: the counter restarts with the page, and keys must not collide with new items.
+      const items = chat.items.map((it) => ({ ...it, id: ids++ }) as ChatItem);
+      set({ items, showHistory: false, showSettings: false, focusRequest: get().focusRequest + 1 });
+    },
+    deleteChat(id) {
+      const history = get().history.filter((c) => c.id !== id);
+      set({ history });
+      saveHistory(history);
+      if (id === chatId) get().clear();
+    },
+    clearHistory() {
+      set({ history: [] });
+      saveHistory([]);
+      get().clear();
     },
     undo() {
       const { view } = useEditorStore.getState();

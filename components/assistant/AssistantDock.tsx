@@ -6,6 +6,7 @@ import { isMac } from '@/lib/platform';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import { useEditorStore } from '@/lib/stores/editor';
 import { useAssistantStore, type ChatItem } from '@/lib/stores/assistant';
+import { timeAgo } from '@/lib/assistant/history';
 import { AssistantSettings } from './AssistantSettings';
 
 const noSubscribe = () => () => {};
@@ -128,14 +129,22 @@ function Panel({ autoFocus = true }: { autoFocus?: boolean }) {
   const docked = useAssistantStore((s) => s.config.mode === 'docked');
   const hasKey = useAssistantStore((s) => !!s.config.apiKey);
   const settings = useAssistantStore((s) => s.showSettings);
-  const { setMode, setShowSettings, setPeek, clear } = useAssistantStore.getState();
+  const historyOpen = useAssistantStore((s) => s.showHistory);
+  const hasHistory = useAssistantStore((s) => s.history.length > 0);
+  const { setMode, setShowSettings, setShowHistory, setPeek, clear } = useAssistantStore.getState();
+  const view = settings ? 'settings' : historyOpen ? 'history' : 'chat';
   return (
     <>
       <div className="flex items-center gap-1 border-b border-border px-3 py-1.5">
-        <strong className="mr-auto text-sm">{settings ? 'Assistant settings' : 'Assistant'}</strong>
-        {!settings && (
+        <strong className="mr-auto text-sm">{view === 'settings' ? 'Assistant settings' : view === 'history' ? 'Past chats' : 'Assistant'}</strong>
+        {view === 'chat' && (
           <Button size="sm" variant="ghost" onPress={clear} aria-label="New chat">
             New chat
+          </Button>
+        )}
+        {hasKey && (hasHistory || historyOpen) && (
+          <Button size="sm" variant="ghost" onPress={() => setShowHistory(!historyOpen)} aria-label={historyOpen ? 'Back to chat' : 'Past chats'}>
+            {historyOpen ? '◀ Chat' : 'History'}
           </Button>
         )}
         {hasKey && (
@@ -156,8 +165,43 @@ function Panel({ autoFocus = true }: { autoFocus?: boolean }) {
           {docked ? 'Close' : 'Keep open'}
         </Button>
       </div>
-      {settings ? <AssistantSettings /> : <Chat autoFocus={autoFocus} />}
+      {view === 'settings' ? <AssistantSettings /> : view === 'history' ? <History /> : <Chat autoFocus={autoFocus} />}
     </>
+  );
+}
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+/** Past chats in this browser: pick one to continue it. */
+function History() {
+  const history = useAssistantStore((s) => s.history);
+  const { resume, deleteChat, clearHistory } = useAssistantStore.getState();
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-3 text-sm">
+      {history.length === 0 && <p className="m-0 text-xs text-muted">No past chats yet.</p>}
+      {history.map((chat) => (
+        <div key={chat.id} className="flex items-start gap-1 rounded-md border border-border px-2 py-1.5 hover:bg-default/60">
+          <button type="button" className="min-w-0 flex-1 text-left" onClick={() => resume(chat.id)}>
+            <div className="truncate">{chat.title}</div>
+            <div className="text-[11px] text-muted">
+              {timeAgo(chat.updatedAt)} · {plural(chat.items.filter((it) => it.kind === 'user').length, 'question')}
+              {chat.page && chat.page !== '/' && ` · ${chat.page.replace(/^\//, '').split('/')[0]}`}
+            </div>
+          </button>
+          <Button size="sm" variant="ghost" isIconOnly onPress={() => deleteChat(chat.id)} aria-label={`Delete chat: ${chat.title}`}>
+            ✕
+          </Button>
+        </div>
+      ))}
+      {history.length > 0 && (
+        <div className="mt-auto flex items-center justify-between pt-2 text-[11px] text-muted">
+          <span>Kept in this browser; the oldest go when there are more than 20.</span>
+          <Button size="sm" variant="ghost" onPress={clearHistory}>
+            Clear all
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -234,6 +278,8 @@ function Item({ item }: { item: ChatItem }) {
 function Suggestions() {
   const context = useEditorStore((s) => s.context);
   const send = useAssistantStore((s) => s.send);
+  const recent = useAssistantStore((s) => s.history).slice(0, 3);
+  const { resume, setShowHistory } = useAssistantStore.getState();
   const ideas = !context
     ? ['What is mini-notation?', 'How do I make a four-on-the-floor kick?', 'What makes a sound “acid”?']
     : context.mode === 'edit'
@@ -249,6 +295,19 @@ function Suggestions() {
           {idea}
         </Button>
       ))}
+      {recent.length > 0 && (
+        <>
+          <p className="mb-0 mt-3 text-xs text-muted">Or continue a past chat:</p>
+          {recent.map((chat) => (
+            <button key={chat.id} type="button" className="max-w-full truncate text-left text-xs underline-offset-2 hover:underline" onClick={() => resume(chat.id)}>
+              {chat.title} <span className="text-muted">· {timeAgo(chat.updatedAt)}</span>
+            </button>
+          ))}
+          <button type="button" className="text-xs text-muted underline-offset-2 hover:underline" onClick={() => setShowHistory(true)}>
+            All past chats…
+          </button>
+        </>
+      )}
     </div>
   );
 }

@@ -28,7 +28,9 @@ const BROWSE = '\u0000browse';
 export const PAD_COLORS = ['var(--color-pad-1)', 'var(--color-pad-2)', 'var(--color-pad-3)', 'var(--color-pad-4)'];
 
 /** The trigger of a row-name select, drawn as a small LCD. */
-export const LCD_TRIGGER = 'hw-lcd min-h-6 h-6 gap-0.5 rounded px-1.5 font-mono text-[11px] font-semibold shadow-none';
+// HeroUI puts the chevron at the trigger's right edge (absolutely), so the padding has to leave room for it.
+export const LCD_TRIGGER =
+  'hw-lcd min-h-6 h-6 gap-0.5 rounded pl-1.5 pr-4 font-mono text-[11px] font-semibold shadow-none [&_[data-slot=select-default-indicator]]:right-1 [&_[data-slot=select-default-indicator]]:size-2.5';
 
 /** A 16-step pad row per sound: one bar of 16th notes, beat-coloured, with a playhead. */
 export function StepGrid({ steps, rows, readOnly, onToggle, label, rowLabel = (r) => r, rowChoices, onRename, onBrowse }: Props) {

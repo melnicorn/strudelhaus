@@ -52,7 +52,8 @@ export function SimpleSelect({ value, onChange, options, renderValue, placeholde
       isDisabled={isDisabled}
     >
       <Select.Trigger className={cn('min-h-8 py-1 text-sm', triggerClassName)}>
-        {renderValue ? <span className="truncate">{renderValue(value)}</span> : <Select.Value />}
+        {/* The value repeats the chosen item's children, check mark included; only the text belongs here. */}
+        {renderValue ? <span className="truncate">{renderValue(value)}</span> : <Select.Value className="[&_[data-slot=list-box-item-indicator]]:hidden" />}
         <Select.Indicator />
       </Select.Trigger>
       <Select.Popover className="min-w-48">
