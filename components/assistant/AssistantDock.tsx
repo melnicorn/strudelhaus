@@ -1,11 +1,16 @@
 'use client';
 
 import { Button, cn, TextArea, ToggleButton } from '@heroui/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { isMac } from '@/lib/platform';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import { useEditorStore } from '@/lib/stores/editor';
 import { useAssistantStore, type ChatItem } from '@/lib/stores/assistant';
 import { AssistantSettings } from './AssistantSettings';
+
+const noSubscribe = () => () => {};
+/** Mac keyboards say ⌘ where others say Ctrl (false during server render). */
+const useIsMacKeyboard = () => useSyncExternalStore(noSubscribe, isMac, () => false);
 
 const HIDE_DELAY_MS = 350;
 let hideTimer: ReturnType<typeof setTimeout> | undefined;
@@ -27,7 +32,21 @@ const hoverOut = () => {
 export function AssistantToggle() {
   const docked = useAssistantStore((s) => s.config.mode === 'docked');
   const setMode = useAssistantStore((s) => s.setMode);
+  const mac = useIsMacKeyboard();
   useEffect(() => useAssistantStore.getState().load(), []);
+  // ⌘/ (Ctrl+/) from anywhere on the page; the code editor binds the same key in its own keymap.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== '/' || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
+      if ((e.target as HTMLElement | null)?.closest?.('.cm-editor')) return;
+      e.preventDefault();
+      clearTimeout(hideTimer);
+      useAssistantStore.getState().openChat();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+  const key = mac ? '⌘/' : 'Ctrl+/';
   return (
     <ToggleButton
       size="sm"
@@ -44,9 +63,9 @@ export function AssistantToggle() {
       onHoverEnd={() => {
         if (!docked) hoverOut();
       }}
-      aria-label={docked ? 'Assistant: docked. Press to close it (it then shows while hovered).' : 'Assistant: closed. Press to keep it open.'}
+      aria-label={docked ? `Assistant: docked. Press to close it (it then shows while hovered). ${key} opens the chat.` : `Assistant: closed. Press to keep it open. ${key} opens the chat.`}
     >
-      ✦ Assistant
+      ✦ Assistant <kbd className="ml-1 font-sans text-[10px] text-muted">{key}</kbd>
     </ToggleButton>
   );
 }
@@ -264,11 +283,16 @@ function Composer({ autoFocus }: { autoFocus: boolean }) {
     return from === to ? `line ${from}` : `lines ${from}–${to}`;
   });
   const hasError = useEditorStore((s) => !!(s.problems.error || s.problems.runtimeError));
+  const focusRequest = useAssistantStore((s) => s.focusRequest);
   const input = useRef<HTMLTextAreaElement>(null);
   // Not when the overlay opens on hover: focus would keep it open after the pointer leaves.
   useEffect(() => {
     if (autoFocus) input.current?.focus();
   }, [autoFocus]);
+  // ⌘/ (Ctrl+/): the chat was opened to type in; focus the prompt (also when already open).
+  useEffect(() => {
+    if (focusRequest) input.current?.focus();
+  }, [focusRequest]);
 
   return (
     <form

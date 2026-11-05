@@ -33,6 +33,10 @@ interface AssistantStore {
   /** The panel shows settings instead of the chat. */
   showSettings: boolean;
   setShowSettings(show: boolean): void;
+  /** Bumped by openChat(); the composer focuses itself when it changes. */
+  focusRequest: number;
+  /** ⌘/ (Ctrl+/): show the chat (floating, unless docked) and put the cursor in the prompt. */
+  openChat(): void;
 
   items: ChatItem[];
   busy: boolean;
@@ -110,6 +114,11 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
     setPeek: (peek) => set({ peek }),
     showSettings: false,
     setShowSettings: (showSettings) => set({ showSettings }),
+    focusRequest: 0,
+    openChat() {
+      const { config, focusRequest } = get();
+      set({ peek: true, showSettings: !config.apiKey, focusRequest: focusRequest + 1 });
+    },
 
     items: [],
     busy: false,
