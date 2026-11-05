@@ -1,55 +1,62 @@
 'use client';
 
-import { Button, cn, TextArea, ToggleButton, ToggleButtonGroup } from '@heroui/react';
+import { Button, cn, TextArea, ToggleButton } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import { useEditorStore } from '@/lib/stores/editor';
 import { useAssistantStore, type ChatItem } from '@/lib/stores/assistant';
 import { AssistantSettings } from './AssistantSettings';
 
-type Mode = 'closed' | 'overlay' | 'docked';
+const HIDE_DELAY_MS = 350;
+let hideTimer: ReturnType<typeof setTimeout> | undefined;
 
-/** Header switch for the assistant: off, over the page while hovered, or docked beside it. */
+/** Pointer enters the header button or the floating panel: show it; leaves both: hide it shortly after. */
+const hoverIn = () => {
+  clearTimeout(hideTimer);
+  useAssistantStore.getState().setPeek(true);
+};
+const hoverOut = () => {
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => useAssistantStore.getState().setPeek(false), HIDE_DELAY_MS);
+};
+
+/**
+ * Header button for the assistant. Pressed, the panel is docked open beside the page; released, it is
+ * closed but floats over the page while the button (or the panel itself) is hovered.
+ */
 export function AssistantToggle() {
-  const mode = useAssistantStore((s) => s.config.mode);
+  const docked = useAssistantStore((s) => s.config.mode === 'docked');
   const setMode = useAssistantStore((s) => s.setMode);
   useEffect(() => useAssistantStore.getState().load(), []);
   return (
-    <div className="ml-auto flex items-center gap-2">
-      <span className="text-xs text-muted">✦ Assistant</span>
-      <ToggleButtonGroup
-        size="sm"
-        selectionMode="single"
-        disallowEmptySelection
-        aria-label="Assistant panel"
-        selectedKeys={new Set([mode])}
-        onSelectionChange={(keys) => {
-          const next = [...keys][0] as Mode | undefined;
-          if (next) setMode(next);
-        }}
-      >
-        <ToggleButton id="closed" className="h-6 px-2 text-xs md:h-6" aria-label="Assistant off">
-          Off
-        </ToggleButton>
-        <ToggleButton id="overlay" className="h-6 px-2 text-xs md:h-6" aria-label="Assistant shows when you hover the right edge">
-          <ToggleButtonGroup.Separator />
-          Hover
-        </ToggleButton>
-        <ToggleButton id="docked" className="h-6 px-2 text-xs md:h-6" aria-label="Assistant docked beside the page">
-          <ToggleButtonGroup.Separator />
-          Docked
-        </ToggleButton>
-      </ToggleButtonGroup>
-    </div>
+    <ToggleButton
+      size="sm"
+      className="ml-auto h-6 px-2 text-xs md:h-6"
+      isSelected={docked}
+      onChange={(on) => {
+        clearTimeout(hideTimer);
+        useAssistantStore.getState().setPeek(false);
+        setMode(on ? 'docked' : 'closed');
+      }}
+      onHoverStart={() => {
+        if (!docked) hoverIn();
+      }}
+      onHoverEnd={() => {
+        if (!docked) hoverOut();
+      }}
+      aria-label={docked ? 'Assistant: docked. Press to close it (it then shows while hovered).' : 'Assistant: closed. Press to keep it open.'}
+    >
+      ✦ Assistant
+    </ToggleButton>
   );
 }
 
 /** The assistant chat: docked to the right of the page, or floating over it while hovered. */
 export function AssistantDock() {
-  const mode = useAssistantStore((s) => s.config.mode);
+  const docked = useAssistantStore((s) => s.config.mode === 'docked');
   const loaded = useAssistantStore((s) => s.loaded);
-  if (!loaded || mode === 'closed') return null;
-  if (mode === 'overlay') return <Overlay />;
+  if (!loaded) return null;
+  if (!docked) return <Overlay />;
   return (
     <aside className="flex w-[400px] shrink-0 flex-col border-l border-border bg-surface" aria-label="Assistant">
       <Panel />
@@ -57,38 +64,22 @@ export function AssistantDock() {
   );
 }
 
-const HIDE_DELAY_MS = 350;
-
 /**
- * Hover mode: a tab on the right edge; hovering it slides the panel over the page. It stays while
- * the pointer or keyboard focus is inside, and hides shortly after both leave (or on Escape).
+ * Not docked: the panel floats over the page's right edge while the header button or the panel is
+ * hovered, or while keyboard focus is inside it; Escape hides it.
  */
 function Overlay() {
   const peek = useAssistantStore((s) => s.peek);
   const setPeek = useAssistantStore((s) => s.setPeek);
-  const [hover, setHover] = useState(false);
   const [focused, setFocused] = useState(false);
   const box = useRef<HTMLDivElement>(null);
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
-  const shown = hover || focused || peek;
-
-  const enter = () => {
-    clearTimeout(timer.current);
-    setHover(true);
-  };
-  const leave = () => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      setHover(false);
-      setPeek(false);
-    }, HIDE_DELAY_MS);
-  };
+  useEffect(() => () => clearTimeout(hideTimer), []);
+  if (!peek && !focused) return null;
 
   return (
     <div
       ref={box}
-      className="pointer-events-none absolute inset-y-0 right-0 z-30 flex items-center"
+      className="absolute inset-y-0 right-0 z-30 flex"
       onFocus={() => setFocused(true)}
       onBlur={(e) => {
         if (!box.current?.contains(e.relatedTarget as Node | null)) setFocused(false);
@@ -97,40 +88,28 @@ function Overlay() {
         if (e.key !== 'Escape') return;
         (document.activeElement as HTMLElement | null)?.blur();
         setFocused(false);
-        setHover(false);
+        clearTimeout(hideTimer);
         setPeek(false);
       }}
     >
-      {shown ? (
-        <aside
-          className="pointer-events-auto flex h-full w-[400px] flex-col border-l border-border bg-surface shadow-2xl"
-          aria-label="Assistant"
-          onMouseEnter={enter}
-          onMouseLeave={leave}
-        >
-          <Panel autoFocus={peek} />
-        </aside>
-      ) : (
-        <button
-          type="button"
-          className="pointer-events-auto h-auto self-center rounded-l-md border border-r-0 border-border bg-surface px-1 py-3 text-xs text-muted shadow-md [writing-mode:vertical-rl] hover:text-foreground"
-          onMouseEnter={enter}
-          onMouseLeave={leave}
-          onClick={() => setPeek(true)}
-        >
-          ✦ Assistant
-        </button>
-      )}
+      <aside
+        className="flex h-full w-[400px] flex-col border-l border-border bg-surface shadow-2xl"
+        aria-label="Assistant"
+        onMouseEnter={hoverIn}
+        onMouseLeave={hoverOut}
+      >
+        <Panel autoFocus={false} />
+      </aside>
     </div>
   );
 }
 
 /** The panel's title bar and either the chat or the settings. */
 function Panel({ autoFocus = true }: { autoFocus?: boolean }) {
-  const mode = useAssistantStore((s) => s.config.mode);
+  const docked = useAssistantStore((s) => s.config.mode === 'docked');
   const hasKey = useAssistantStore((s) => !!s.config.apiKey);
   const settings = useAssistantStore((s) => s.showSettings);
-  const { setMode, setShowSettings, clear } = useAssistantStore.getState();
+  const { setMode, setShowSettings, setPeek, clear } = useAssistantStore.getState();
   return (
     <>
       <div className="flex items-center gap-1 border-b border-border px-3 py-1.5">
@@ -148,13 +127,14 @@ function Panel({ autoFocus = true }: { autoFocus?: boolean }) {
         <Button
           size="sm"
           variant="ghost"
-          onPress={() => setMode(mode === 'docked' ? 'overlay' : 'docked')}
-          aria-label={mode === 'docked' ? 'Unpin: show only on hover' : 'Pin: dock beside the page'}
+          onPress={() => {
+            clearTimeout(hideTimer);
+            setPeek(false);
+            setMode(docked ? 'closed' : 'docked');
+          }}
+          aria-label={docked ? 'Close: show only while hovered' : 'Keep open beside the page'}
         >
-          {mode === 'docked' ? 'Unpin' : 'Pin'}
-        </Button>
-        <Button size="sm" variant="ghost" isIconOnly onPress={() => setMode('closed')} aria-label="Turn the assistant off">
-          ✕
+          {docked ? 'Close' : 'Keep open'}
         </Button>
       </div>
       {settings ? <AssistantSettings /> : <Chat autoFocus={autoFocus} />}

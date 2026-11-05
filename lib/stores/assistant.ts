@@ -27,7 +27,7 @@ interface AssistantStore {
   load(): void;
   setConfig(patch: Partial<AssistantConfig>): void;
   setMode(mode: AssistantConfig['mode']): void;
-  /** Overlay mode: show the panel without hovering (e.g. "Ask the assistant"), until the pointer leaves it. */
+  /** While not docked: the panel is floating over the page (hovered, focused, or opened by "Ask the assistant"). */
   peek: boolean;
   setPeek(peek: boolean): void;
   /** The panel shows settings instead of the chat. */
@@ -235,8 +235,7 @@ export const useAssistantStore = create<AssistantStore>((set, get) => {
       if (result === 'already') push({ kind: 'notice', text: 'That change was already undone.' });
     },
     askAboutError() {
-      const { config, setMode, setShowSettings, setDraft } = get();
-      if (config.mode === 'closed') setMode('overlay');
+      const { setShowSettings, setDraft } = get();
       set({ peek: true });
       setShowSettings(false);
       setDraft('Why does my code give this error, and how do I fix it?');
