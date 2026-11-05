@@ -34,10 +34,10 @@ export function AssistantToggle() {
   const setMode = useAssistantStore((s) => s.setMode);
   const mac = useIsMacKeyboard();
   useEffect(() => useAssistantStore.getState().load(), []);
-  // ⌘/ (Ctrl+/) from anywhere on the page; the code editor binds the same key in its own keymap.
+  // ⌘; (Ctrl+;) from anywhere on the page; the code editor binds the same key in its own keymap.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== '/' || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
+      if (e.key !== ';' || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
       if ((e.target as HTMLElement | null)?.closest?.('.cm-editor')) return;
       e.preventDefault();
       clearTimeout(hideTimer);
@@ -46,7 +46,7 @@ export function AssistantToggle() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
-  const key = mac ? '⌘/' : 'Ctrl+/';
+  const key = mac ? '⌘;' : 'Ctrl+;';
   return (
     <ToggleButton
       size="sm"
@@ -289,7 +289,7 @@ function Composer({ autoFocus }: { autoFocus: boolean }) {
   useEffect(() => {
     if (autoFocus) input.current?.focus();
   }, [autoFocus]);
-  // ⌘/ (Ctrl+/): the chat was opened to type in; focus the prompt (also when already open).
+  // ⌘; (Ctrl+;): the chat was opened to type in; focus the prompt (also when already open).
   useEffect(() => {
     if (focusRequest) input.current?.focus();
   }, [focusRequest]);

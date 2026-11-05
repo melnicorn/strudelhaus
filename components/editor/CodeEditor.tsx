@@ -2,7 +2,7 @@
 
 import { cn } from '@heroui/react';
 import { useEffect, useRef } from 'react';
-import { defaultKeymap, history, historyKeymap, indentWithTab, toggleComment } from '@codemirror/commands';
+import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
 import { bracketMatching, indentOnInput } from '@codemirror/language';
 import { EditorState, Prec } from '@codemirror/state';
@@ -71,15 +71,14 @@ export function CodeEditor({ initialCode, onToggle, onUpdate, onStop, ariaLabel 
               { key: 'Mod-Enter', run: bind('onToggle') },
               { key: 'Alt-Enter', run: bind('onUpdate') },
               { key: 'Mod-.', run: bind('onStop') },
-              // ⌘/ opens the assistant chat everywhere, so comment toggling (CodeMirror's default) moves to ⌥⌘/.
+              // ⌘; opens the assistant chat (⌘/ stays CodeMirror's comment toggle).
               {
-                key: 'Mod-/',
+                key: 'Mod-;',
                 run: () => {
                   useAssistantStore.getState().openChat();
                   return true;
                 },
               },
-              { key: 'Alt-Mod-/', run: toggleComment },
             ]),
           ),
           lineNumbers(),

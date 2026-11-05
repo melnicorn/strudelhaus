@@ -35,7 +35,7 @@ interface AssistantStore {
   setShowSettings(show: boolean): void;
   /** Bumped by openChat(); the composer focuses itself when it changes. */
   focusRequest: number;
-  /** ⌘/ (Ctrl+/): show the chat (floating, unless docked) and put the cursor in the prompt. */
+  /** ⌘; (Ctrl+;): show the chat (floating, unless docked) and put the cursor in the prompt. */
   openChat(): void;
 
   items: ChatItem[];
