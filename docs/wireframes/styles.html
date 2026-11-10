@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Styles Wireframe</title>
+<style>
+  :root { --bg: #f4f3ef; --panel: #fff; --ink: #1d1d1b; --muted: #6b6a66; --line: #c9c7c0; --soft: #ebe9e3; --accent: #d9480f; --accent-soft: #ffe3d3;
+    --play: #2b8a3e; --play-soft: #d3f9d8; --warn: #b08900; --warn-soft: #fff3bf; --custom: #6741d9; --custom-soft: #e5dbff;
+    --code-bg: #1e1e1e; --code-ink: #e6e6e6; --code-str: #ce9178; --code-fn: #dcdcaa; --code-num: #b5cea8; --code-cm: #6a9955;
+    /* the instrument surface: always dark, like the code area */
+    --hw: #262522; --hw-2: #1c1b19; --hw-line: #3d3b36; --hw-ink: #e8e6df; --hw-muted: #8f8c83; --hw-cap: #33312d; --hw-cap-hi: #44423c;
+    --led: #ff8a3c; --led-dim: #4a2d1a; --go: #5bd36b; --go-dim: #1f3a24; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28;
+    --accent: #ff8a4c; --accent-soft: #4a2412; --play: #69db7c; --play-soft: #173b20; --warn: #ffd43b; --warn-soft: #3d3310; --custom: #b197fc; --custom-soft: #2f2350; } }
+  :root[data-theme="dark"] { --bg: #161614; --panel: #22221f; --ink: #ecebe6; --muted: #9a9890; --line: #3c3b37; --soft: #2c2c28;
+    --accent: #ff8a4c; --accent-soft: #4a2412; --play: #69db7c; --play-soft: #173b20; --warn: #ffd43b; --warn-soft: #3d3310; --custom: #b197fc; --custom-soft: #2f2350; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { padding: 16px; max-width: 1320px; margin: 0 auto; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 0; }
+  h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  p { margin: 4px 0; }
+  button { font: inherit; color: inherit; }
+  .mono, code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+  .anno { color: var(--accent); font-size: 12px; font-style: italic; }
+  .note { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 8px 12px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .muted { color: var(--muted); }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 0; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .spacer { flex: 1; }
+  .btn { border: 1px solid var(--line); background: var(--soft); padding: 5px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+  .btn.primary { background: var(--play); color: #fff; border-color: var(--play); }
+  .btn.small { padding: 2px 8px; font-size: 12px; }
+  .btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); background: var(--soft); white-space: nowrap; }
+  .chip.role { background: var(--custom-soft); border-color: var(--custom); color: var(--custom); }
+  .chip.shared { background: var(--play-soft); border-color: var(--play); }
+
+  /* mock browser bar: shows that the path comes from the config id */
+  .urlbar { display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin: 12px 0; }
+  .urlbar .path { flex: 1; }
+  .urlbar .path b { color: var(--accent); }
+
+  /* index: one card per config file */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .card { text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
+  .card:hover { border-color: var(--accent); }
+  .card.ghost { border-style: dashed; background: transparent; cursor: default; color: var(--muted); justify-content: center; }
+  .card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+
+  /* style page */
+  .head { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .seg { background: #0f0e0c; border: 1px solid #000; border-radius: 4px; padding: 3px 8px; font: 700 18px/1.1 ui-monospace, Menlo, monospace; color: var(--led); text-shadow: 0 0 8px rgba(255,138,60,.55); }
+  .seg small { font-size: 9px; letter-spacing: .1em; color: var(--hw-muted); text-shadow: none; margin-left: 4px; }
+  .cols { display: grid; grid-template-columns: 210px minmax(0, 1fr) minmax(0, 400px); gap: 12px; align-items: start; }
+  @media (max-width: 1060px) { .cols { grid-template-columns: 1fr; } }
+  .soundlist { display: flex; flex-direction: column; gap: 4px; }
+  .soundlist button { text-align: left; border: 1px solid transparent; background: none; border-radius: 6px; padding: 6px 8px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+  .soundlist button:hover { background: var(--soft); }
+  .soundlist button[aria-current="true"] { background: var(--accent-soft); border-color: var(--accent); }
+  .soundlist .meta { font-size: 11px; color: var(--muted); }
+  .why { font-size: 15px; margin: 6px 0 12px; max-width: 70ch; }
+
+  /* ingredient ladder */
+  .ladder { display: flex; flex-direction: column; gap: 8px; }
+  .ing { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: var(--panel); }
+  .ing.off { opacity: .55; background: transparent; border-style: dashed; }
+  .ing.replaced { opacity: .45; }
+  .ing .num { font: 700 11px ui-monospace, Menlo, monospace; color: var(--muted); text-align: center; margin-top: 4px; }
+  .ing .title { font-weight: 600; }
+  .ing .adds { font-size: 13px; }
+  .ing .listen { font-size: 12px; color: var(--muted); }
+  .ing .listen b { color: var(--ink); font-weight: 600; }
+  .ing .slice { color: var(--muted); overflow-wrap: anywhere; }
+  .toggle { width: 20px; height: 36px; background: #0f0e0c; border: 1px solid #000; border-radius: 4px; position: relative; cursor: pointer; padding: 0; display: block; margin: 0 auto; }
+  .toggle::after { content: ""; position: absolute; left: 2px; right: 2px; height: 14px; bottom: 2px; border-radius: 2px; background: linear-gradient(#56534c, #2b2a26); border: 1px solid #000; }
+  .toggle.on::after { bottom: auto; top: 2px; background: linear-gradient(#8fe39b, #3e9c4d); }
+  .toggle:disabled { cursor: not-allowed; opacity: .6; }
+
+  /* knobs with a sweet-spot band */
+  .hw { background: var(--hw); color: var(--hw-ink); border: 1px solid var(--hw-line); border-radius: 8px; padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 14px 22px; margin-top: 8px; user-select: none; }
+  .knobwrap { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; min-width: 230px; flex: 1; }
+  .knob { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; cursor: ns-resize; touch-action: none; }
+  .knob svg { display: block; }
+  .lbl { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--hw-muted); }
+  .val { font: 11px ui-monospace, Menlo, monospace; color: var(--led); background: var(--hw-2); border: 1px solid #000; border-radius: 3px; padding: 1px 5px; min-width: 48px; text-align: center; }
+  .verdict { font-size: 12px; color: var(--hw-muted); }
+  .verdict b { display: block; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+  .verdict.in b { color: var(--go); }
+  .verdict.out b { color: var(--led); }
+  .verdict .range { font-family: ui-monospace, Menlo, monospace; font-size: 11px; }
+
+  /* generated code */
+  .editor { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 10px 0; overflow-x: auto; }
+  .editor .ln { display: flex; white-space: pre; font: 12.5px/1.65 ui-monospace, "SF Mono", Menlo, Consolas, monospace; padding-right: 12px; }
+  .editor .ln .n { width: 30px; text-align: right; padding-right: 10px; color: #6e6e6e; flex: none; user-select: none; }
+  .editor .ln.changed { background: rgba(255,170,60,.28); }
+  .t-str { color: var(--code-str); } .t-fn { color: var(--code-fn); } .t-num { color: var(--code-num); } .t-cm { color: var(--code-cm); }
+  .side { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 12px; }
+  @media (max-width: 1060px) { .side { position: static; } }
+  .side ul { margin: 0; padding-left: 18px; font-size: 13px; }
+  details summary { cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  details pre { margin: 8px 0 0; max-height: 320px; overflow: auto; background: var(--soft); border-radius: 6px; padding: 8px; font: 11.5px/1.5 ui-monospace, Menlo, monospace; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Styles: the signature sounds of a genre, taken apart</h1>
+  <p>A wireframe for a new page. Everything below is drawn from the JSON at the bottom of this file, the same shape as the proposed <span class="mono">content/styles/*.json</span>. There is no audio here: Play is a mock, and the switches and knobs only rewrite the code.</p>
+  <div class="note">Three things to judge: (1) switching ingredients on and off as the way to hear what makes a sound; (2) knobs that mark a sweet spot and say what goes wrong outside it; (3) no style name in any route, only the <span class="mono">id</span> from each config.</div>
+
+  <div class="urlbar"><span class="muted">◀ ▶</span><span class="mono path" id="path"></span><span class="anno" id="pathnote"></span></div>
+  <div id="app"></div>
+</main>
+
+<!-- The whole page is drawn from this. "archetypes" would live in content/sounds/, each style in content/styles/. -->
+<script type="application/json" id="config">
+{
+  "archetypes": {
+    "kick-909": {
+      "name": "909 kick",
+      "role": "drums",
+      "why": "A punchy kick on every beat. Almost every style on this page is built on top of it.",
+      "pattern": "s(\"bd*4\")",
+      "ingredients": [
+        { "id": "default-kit", "name": "A plain kick", "code": "", "required": true, "adds": "Four kicks to the bar from the default kit." },
+        { "id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909's hard click and short, tight body.", "listenFor": "The attack gets sharper and the tail shorter." },
+        { "id": "gain", "name": "Level", "code": ".gain({gain})", "adds": "The kick sits on top of everything else.",
+          "knobs": [{ "param": "gain", "min": 0, "max": 1.5, "value": 1, "sweet": [0.9, 1.1], "below": "The bass covers it.", "above": "It clips and flattens the mix." }] }
+      ],
+      "lessons": ["2 · Four on the Floor", "7 · Drum Machine Shopping"]
+    },
+    "acid-line": {
+      "name": "Acid line",
+      "role": "bass / lead",
+      "why": "A plain saw through a resonant filter that is pushed until it squeals. The notes matter less than how the filter moves.",
+      "pattern": "note(\"a1 a1 a2 a1 c2 a1 e2 g1\").fast(2)",
+      "ingredients": [
+        { "id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A buzzy bass note with nothing done to it." },
+        { "id": "ladder", "name": "Ladder filter", "code": ".lpf({lpf}).ftype(\"ladder\")", "adds": "Cuts the top off so there is room to open it later.", "listenFor": "The buzz turns into a round thud.",
+          "knobs": [{ "param": "lpf", "unit": "hz", "log": true, "min": 80, "max": 5000, "value": 400, "sweet": [250, 700], "below": "Only a rumble is left.", "above": "Already open, so the envelope has nowhere to go." }] },
+        { "id": "res", "name": "Resonance", "code": ".lpq({lpq})", "needs": "ladder", "adds": "A whistling peak at the cutoff. This is the acid.", "listenFor": "A vowel-like squelch on each note.",
+          "knobs": [{ "param": "lpq", "min": 0, "max": 20, "value": 10, "sweet": [8, 14], "below": "Just a muffled bass.", "above": "The whistle drowns the note." }] },
+        { "id": "env", "name": "Filter envelope", "code": ".lpenv({lpenv}).lpdecay({lpdecay})", "needs": "ladder", "adds": "The filter snaps open on each note and falls shut.", "listenFor": "Each note says \"wow\".",
+          "knobs": [
+            { "param": "lpenv", "min": 0, "max": 8, "value": 4, "sweet": [3, 5], "below": "The filter barely moves.", "above": "Every note is a harsh chirp." },
+            { "param": "lpdecay", "unit": "s", "log": true, "min": 0.02, "max": 1, "value": 0.15, "sweet": [0.1, 0.25], "below": "A click, no squelch.", "above": "Notes run into each other." }
+          ] },
+        { "id": "drive", "name": "Drive", "code": ".distort({drive})", "adds": "Grit that makes the resonance scream.",
+          "knobs": [{ "param": "drive", "min": 0, "max": 4, "value": 1.5, "sweet": [1, 2.5], "below": "Clean and polite.", "above": "Fuzz; the notes are lost." }] }
+      ],
+      "pitfalls": ["High resonance with the cutoff too low gives a whistle and no bass."],
+      "lessons": ["19 · Squelch", "25 · Acid I: The Line"]
+    }
+  },
+  "styles": [
+    {
+      "id": "trance",
+      "name": "Trance",
+      "era": "1996–2002",
+      "tempo": 138,
+      "key": "A:minor",
+      "blurb": "Wide, detuned saws over a bass that never stops rolling.",
+      "context": "stack(\n  s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth(.6),\n  note(\"[~ a1 a1 a1]*4\").s(\"sawtooth\").lpf(400).decay(.12).sustain(0).orbit(2),\n  {sound}\n)",
+      "sounds": [
+        {
+          "id": "supersaw-lead",
+          "name": "Supersaw lead",
+          "role": "lead",
+          "why": "Many saws a little out of tune with each other, spread across the stereo field and washed in reverb. The detune is what makes it sound huge.",
+          "pattern": "note(\"<a4 f4 c5 g4>*2\")",
+          "ingredients": [
+            { "id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "The raw material: a bright, buzzy wave." },
+            { "id": "unison", "name": "Stack the voices", "code": ".s(\"supersaw\").unison({unison})", "replaces": "saw", "adds": "Several saws play each note at once.", "listenFor": "Nothing much yet: the copies are identical.",
+              "knobs": [{ "param": "unison", "step": 1, "min": 1, "max": 9, "value": 7, "sweet": [5, 7], "below": "Thin; you can pick out single voices.", "above": "Blurrier and heavier on the CPU for little gain." }] },
+            { "id": "detune", "name": "Detune them", "code": ".detune({detune})", "needs": "unison", "adds": "Each voice drifts slightly off pitch.", "listenFor": "The slow shimmer as the voices beat against each other. This is the trance sound.",
+              "knobs": [{ "param": "detune", "min": 0, "max": 1, "value": 0.3, "sweet": [0.2, 0.4], "below": "The voices line up and it is one saw again.", "above": "It reads as out of tune rather than wide." }] },
+            { "id": "spread", "name": "Spread them wide", "code": ".spread({spread})", "needs": "unison", "adds": "Voices are panned left to right.", "listenFor": "The sound moves out of the middle and wraps around you.",
+              "knobs": [{ "param": "spread", "min": 0, "max": 1, "value": 0.8, "sweet": [0.6, 0.9], "below": "Thick but narrow.", "above": "The middle goes hollow on a mono speaker." }] },
+            { "id": "lpf", "name": "Take the edge off", "code": ".lpf({lpf})", "adds": "Rolls off the fizz at the very top.",
+              "knobs": [{ "param": "lpf", "unit": "hz", "log": true, "min": 200, "max": 18000, "value": 6000, "sweet": [3500, 9000], "below": "Dull: it becomes a pad.", "above": "A fizzy top that fights the hats." }] },
+            { "id": "reverb", "name": "A big room", "code": ".room({room}).size({size})", "adds": "A long tail that fills the gaps between notes.", "listenFor": "Notes keep ringing after they stop.",
+              "knobs": [
+                { "param": "room", "min": 0, "max": 1, "value": 0.5, "sweet": [0.35, 0.6], "below": "Dry and close, like a demo.", "above": "The melody dissolves." },
+                { "param": "size", "min": 1, "max": 10, "value": 6, "sweet": [4, 8], "below": "A small box, not a hall.", "above": "The tail runs over the next chord." }
+              ] },
+            { "id": "delay", "name": "Dotted delay", "code": ".delay({delay}).delaysync(3/16).delayfeedback({fb})", "adds": "Echoes that land between the beats.", "listenFor": "A second, quieter melody answering the first.",
+              "knobs": [
+                { "param": "delay", "min": 0, "max": 1, "value": 0.4, "sweet": [0.25, 0.5], "below": "You can't hear the echo.", "above": "The echo is as loud as the note." },
+                { "param": "fb", "label": "feedback", "min": 0, "max": 0.9, "value": 0.5, "sweet": [0.35, 0.6], "below": "One repeat and gone.", "above": "Echoes pile up into the next chord." }
+              ] }
+          ],
+          "variations": [
+            { "name": "Anthem", "set": {} },
+            { "name": "Dark prog", "set": { "detune": 0.15, "lpf": 1800 }, "off": ["delay"] },
+            { "name": "Dry and upfront", "set": { "spread": 0.6 }, "off": ["reverb", "delay"] }
+          ],
+          "pitfalls": ["Detune past the sweet spot sounds wide alone and sour over the bass.", "Reverb and delay both at full hide the melody."],
+          "lessons": ["17 · Waveforms", "20 · Space"]
+        },
+        {
+          "id": "pluck",
+          "name": "Pluck",
+          "role": "arp",
+          "why": "The same supersaw, but the filter snaps shut a moment after each note. Short notes plus a dotted delay make one line sound like three.",
+          "pattern": "note(\"a3 c4 e4 a4 e4 c4 a3 e4\").fast(2)",
+          "ingredients": [
+            { "id": "supersaw", "name": "Supersaw", "code": ".s(\"supersaw\").unison(5).detune(.25)", "required": true, "adds": "The lead's raw tone, held for the full step." },
+            { "id": "short", "name": "Short notes", "code": ".decay({decay}).sustain(0)", "adds": "Each note dies away quickly.", "listenFor": "Gaps open up between the notes.",
+              "knobs": [{ "param": "decay", "unit": "s", "log": true, "min": 0.02, "max": 1, "value": 0.18, "sweet": [0.1, 0.25], "below": "A click with no pitch.", "above": "Notes smear together; it is a pad again." }] },
+            { "id": "fenv", "name": "Filter snap", "code": ".lpf({lpf}).lpenv({lpenv}).lpdecay({lpdecay})", "adds": "Bright at the start of the note, dark by the end.", "listenFor": "A \"tik\" on the front of every note.",
+              "knobs": [
+                { "param": "lpf", "unit": "hz", "log": true, "min": 100, "max": 5000, "value": 500, "sweet": [300, 900], "below": "The tail vanishes.", "above": "No snap: it starts bright and stays bright." },
+                { "param": "lpenv", "min": 0, "max": 8, "value": 4, "sweet": [3, 5], "below": "Dull, no attack.", "above": "Harsh and clicky." },
+                { "param": "lpdecay", "unit": "s", "log": true, "min": 0.02, "max": 1, "value": 0.12, "sweet": [0.08, 0.2], "below": "Only a click gets through.", "above": "The snap turns into a slow sweep." }
+              ] },
+            { "id": "res", "name": "A little resonance", "code": ".lpq({lpq})", "needs": "fenv", "adds": "A ping at the cutoff as it closes.",
+              "knobs": [{ "param": "lpq", "min": 0, "max": 20, "value": 6, "sweet": [4, 9], "below": "Soft and plain.", "above": "It whistles on every note." }] },
+            { "id": "delay", "name": "Dotted delay", "code": ".delay({delay}).delaysync(3/16).delayfeedback(.45)", "adds": "Echoes fill the gaps the short notes left.", "listenFor": "The pattern seems to double in speed.",
+              "knobs": [{ "param": "delay", "min": 0, "max": 1, "value": 0.45, "sweet": [0.3, 0.55], "below": "The line sounds sparse.", "above": "You can't tell notes from echoes." }] }
+          ],
+          "variations": [{ "name": "Classic", "set": {} }, { "name": "Glassy", "set": { "lpf": 900, "lpq": 9, "decay": 0.12 } }],
+          "pitfalls": ["Long decay and long delay together turn the arp to mush."],
+          "lessons": ["18 · Envelopes", "19 · Squelch"]
+        },
+        {
+          "id": "rolling-bass",
+          "name": "Rolling bass",
+          "role": "bass",
+          "why": "The bass plays the three sixteenths between the kicks and never the one under the kick. Kick and bass take turns, so both can be loud.",
+          "pattern": "note(\"a1*16\")",
+          "ingredients": [
+            { "id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A bass note on every sixteenth." },
+            { "id": "gap", "name": "Leave the kick's slot empty", "pattern": "note(\"[~ a1 a1 a1]*4\")", "adds": "Drops the first sixteenth of every beat.", "listenFor": "With In context on: the kick is suddenly clear and the bass gallops." },
+            { "id": "lpf", "name": "Keep it low", "code": ".lpf({lpf})", "adds": "Leaves the top of the mix for the lead.",
+              "knobs": [{ "param": "lpf", "unit": "hz", "log": true, "min": 80, "max": 2000, "value": 400, "sweet": [250, 600], "below": "Felt, not heard; gone on small speakers.", "above": "It buzzes over the pluck." }] },
+            { "id": "short", "name": "Short notes", "code": ".decay({decay}).sustain(0)", "adds": "Each note stops before the next begins.", "listenFor": "A drone becomes a rhythm.",
+              "knobs": [{ "param": "decay", "unit": "s", "log": true, "min": 0.02, "max": 0.5, "value": 0.12, "sweet": [0.08, 0.16], "below": "Ticks instead of notes.", "above": "The notes join up and the roll is lost." }] },
+            { "id": "duck", "name": "Duck under the kick", "code": ".orbit(2)", "adds": "Puts the bass on the orbit that the backing kick ducks.", "listenFor": "Only with In context on: the bass pumps in time with the kick." }
+          ],
+          "pitfalls": ["A bass note under the kick makes both sound smaller."],
+          "lessons": ["8 · Your First Bassline", "28 · Kick vs Bass"]
+        },
+        {
+          "id": "gated-pad",
+          "name": "Gated pad",
+          "role": "pad",
+          "why": "A held chord chopped into a sixteenth-note rhythm, so harmony and groove come from one part.",
+          "pattern": "note(\"<[a3,c4,e4] [f3,a3,c4] [c3,e3,g3] [g3,b3,d4]>\")",
+          "ingredients": [
+            { "id": "supersaw", "name": "A held chord", "code": ".s(\"supersaw\")", "required": true, "adds": "One long chord per bar." },
+            { "id": "dark", "name": "Darken it", "code": ".lpf({lpf})", "adds": "Pushes the pad behind the lead.",
+              "knobs": [{ "param": "lpf", "unit": "hz", "log": true, "min": 200, "max": 8000, "value": 1500, "sweet": [900, 2500], "below": "A low hum.", "above": "It competes with the lead." }] },
+            { "id": "gate", "name": "The gate", "code": ".struct(\"x x ~ x x ~ x x x ~ x x ~ x x ~\").clip({clip})", "adds": "Chops the chord into a rhythm.", "listenFor": "The chord starts to stutter in time.",
+              "knobs": [{ "param": "clip", "label": "gate length", "min": 0.1, "max": 1, "value": 0.5, "sweet": [0.4, 0.7], "below": "Dry ticks.", "above": "The gaps close and the rhythm goes." }] },
+            { "id": "sweep", "name": "Open it over 8 bars", "code": ".lpf(sine.range(600, {top}).slow(8))", "replaces": "dark", "adds": "The filter rises and falls on its own.", "listenFor": "The pad slowly brightens toward the drop.",
+              "knobs": [{ "param": "top", "label": "sweep top", "unit": "hz", "log": true, "min": 800, "max": 12000, "value": 4000, "sweet": [2500, 6000], "below": "Too small a change to notice.", "above": "Harsh at the peak." }] },
+            { "id": "reverb", "name": "Room", "code": ".room({room})", "adds": "Softens the hard edges of the gate.",
+              "knobs": [{ "param": "room", "min": 0, "max": 1, "value": 0.4, "sweet": [0.25, 0.5], "below": "Choppy and dry.", "above": "The tail fills the gaps you just cut." }] }
+          ],
+          "lessons": ["15 · The Minor 7th Stab", "22 · Movement"]
+        },
+        { "id": "kick", "extends": "kick-909", "why": "Punchy and alone on the beat: the rolling bass leaves it its own slot." },
+        {
+          "id": "acid-line",
+          "extends": "acid-line",
+          "name": "Acid line (breakdown)",
+          "why": "The acid house sound, tuned brighter and more resonant so it cuts through the reverb in a breakdown.",
+          "set": { "lpf": 700, "lpq": 14, "lpdecay": 0.1 }
+        },
+        {
+          "id": "riser",
+          "name": "Noise riser",
+          "role": "fx",
+          "why": "Eight bars of noise getting brighter and louder. It tells the room the drop is coming.",
+          "pattern": "s(\"white*16\")",
+          "ingredients": [
+            { "id": "noise", "name": "White noise", "code": "", "required": true, "adds": "A steady hiss." },
+            { "id": "sweep", "name": "Sweep the low end away", "code": ".hpf(saw.range(200, {top}).slow(8))", "adds": "The hiss thins out and rises in pitch over 8 bars.", "listenFor": "It seems to climb.",
+              "knobs": [{ "param": "top", "label": "sweep top", "unit": "hz", "log": true, "min": 1000, "max": 16000, "value": 8000, "sweet": [6000, 12000], "below": "It never gets tense.", "above": "It vanishes before the drop." }] },
+            { "id": "ramp", "name": "Get louder", "code": ".gain(saw.range(0, {gain}).slow(8))", "adds": "Starts silent and swells.",
+              "knobs": [{ "param": "gain", "min": 0, "max": 1.2, "value": 0.7, "sweet": [0.5, 0.8], "below": "Lost under the lead.", "above": "Louder than the drop it announces." }] },
+            { "id": "reverb", "name": "Room", "code": ".room(.6)", "adds": "A tail that hangs over the silence before the drop." }
+          ],
+          "lessons": ["30 · Tension and Release"]
+        }
+      ]
+    },
+    {
+      "id": "acid-house",
+      "name": "Acid house",
+      "era": "1987–1992",
+      "tempo": 124,
+      "key": "A:minor",
+      "blurb": "One squelching bassline and a drum machine.",
+      "context": "stack(\n  s(\"bd*4, ~ cp, [~ oh]*4\").bank(\"RolandTR909\"),\n  {sound}\n)",
+      "sounds": [
+        { "id": "acid-line", "extends": "acid-line" },
+        { "id": "kick", "extends": "kick-909" }
+      ]
+    }
+  ]
+}
+</script>
+
+<script>
+(function () {
+  const cfg = JSON.parse(document.getElementById('config').textContent);
+  const app = document.getElementById('app');
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  /** A sound with its archetype merged in; "set" overrides knob defaults. */
+  function resolve(sound) {
+    const base = sound.extends ? cfg.archetypes[sound.extends] : {};
+    const merged = { ...base, ...sound };
+    merged.ingredients = (merged.ingredients || []).map((ing) => ({
+      ...ing,
+      knobs: (ing.knobs || []).map((k) => ({ ...k, value: sound.set && k.param in sound.set ? sound.set[k.param] : k.value })),
+    }));
+    return merged;
+  }
+  const styles = cfg.styles.map((s) => ({ ...s, sounds: s.sounds.map(resolve) }));
+
+  // view state: which style and sound are open, and each sound's switches and knob values
+  const view = { style: null, sound: null, context: false, playing: false, changed: null };
+  const states = {};
+  function stateOf(style, sound) {
+    const key = style.id + '/' + sound.id;
+    if (!states[key]) {
+      const st = { on: {}, vals: {} };
+      sound.ingredients.forEach((ing) => { st.on[ing.id] = true; ing.knobs.forEach((k) => (st.vals[k.param] = k.value)); });
+      states[key] = st;
+    }
+    return states[key];
+  }
+
+  const fmt = (v, k) => {
+    if (k.unit === 'hz') return v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + ' kHz' : Math.round(v) + ' Hz';
+    if (k.unit === 's') return (v < 0.1 ? Math.round(v * 1000) + ' ms' : v.toFixed(2) + ' s');
+    return k.step === 1 ? String(v) : String(+v.toFixed(2));
+  };
+  const inCode = (v) => String(+(+v).toFixed(3)).replace(/^0\./, '.');
+  const norm = (k, v) => (k.log ? Math.log(v / k.min) / Math.log(k.max / k.min) : (v - k.min) / (k.max - k.min));
+  function denorm(k, t) {
+    t = Math.min(1, Math.max(0, t));
+    const v = k.log ? k.min * Math.pow(k.max / k.min, t) : k.min + t * (k.max - k.min);
+    if (k.step) return Math.round(v / k.step) * k.step;
+    return k.log ? +v.toPrecision(2) : Math.round(v * 100) / 100;
+  }
+
+  /** Which ingredients take part: on, not replaced by a later one, and with what they need. */
+  function active(sound, st) {
+    const on = sound.ingredients.filter((i) => st.on[i.id] && (!i.needs || st.on[i.needs]));
+    const replaced = new Set(on.map((i) => i.replaces).filter(Boolean));
+    return { list: on.filter((i) => !replaced.has(i.id)), replaced };
+  }
+
+  function codeLines(style, sound, st) {
+    const { list } = active(sound, st);
+    const pattern = [...list].reverse().find((i) => i.pattern);
+    const lines = [{ text: pattern ? pattern.pattern : sound.pattern, id: pattern ? pattern.id : null }];
+    list.forEach((i) => {
+      if (!i.code) return;
+      lines.push({ text: '  ' + i.code.replace(/\{(\w+)\}/g, (_, p) => inCode(st.vals[p])), id: i.id });
+    });
+    if (!view.context) return [{ text: `setcpm(${style.tempo}/4)`, id: null }, { text: '', id: null }, ...lines];
+    const [before, after] = style.context.split('{sound}');
+    const head = before.replace(/\s+$/, '').split('\n').map((text) => ({ text, id: null }));
+    return [{ text: `setcpm(${style.tempo}/4)`, id: null }, { text: '', id: null }, ...head, ...lines.map((l) => ({ ...l, text: '  ' + l.text })), ...after.replace(/^\n/, '').split('\n').map((text) => ({ text, id: null }))];
+  }
+
+  const hi = (text) => esc(text).replace(/(&quot;.*?&quot;)|(\.[a-zA-Z]+|\b(?:note|s|stack|setcpm)(?=\())|(\b\d*\.?\d+\b)/g,
+    (m, str, fn, num) => (str ? `<span class="t-str">${str}</span>` : fn ? `<span class="t-fn">${fn}</span>` : `<span class="t-num">${num}</span>`));
+
+  // --- knob drawing: a 270° arc with the sweet spot marked in green
+  const pt = (r, deg) => { const a = (deg * Math.PI) / 180; return [24 + r * Math.sin(a), 24 - r * Math.cos(a)]; };
+  function arc(r, a0, a1) {
+    const [x0, y0] = pt(r, a0), [x1, y1] = pt(r, a1);
+    return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+  }
+  const ang = (k, v) => -135 + 270 * Math.min(1, Math.max(0, norm(k, v)));
+  function knobHtml(ing, k, st, disabled) {
+    const v = st.vals[k.param];
+    const [x, y] = pt(11, ang(k, v));
+    const where = v < k.sweet[0] ? 'below' : v > k.sweet[1] ? 'above' : 'in';
+    const verdict = where === 'in'
+      ? `<div class="verdict in"><b>In the sweet spot</b><span class="range">${fmt(k.sweet[0], k)} – ${fmt(k.sweet[1], k)}</span></div>`
+      : `<div class="verdict out"><b>${where === 'below' ? 'Too low' : 'Too high'}</b>${esc(k[where])}</div>`;
+    return `<div class="knobwrap">
+      <span class="knob" data-ing="${ing.id}" data-param="${k.param}" title="Drag up or down. Double-click to reset."${disabled ? ' style="pointer-events:none"' : ''}>
+        <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="${arc(20, -135, 135)}" fill="none" stroke="#0d0c0a" stroke-width="4" stroke-linecap="round"/>
+          <path d="${arc(20, ang(k, k.sweet[0]), ang(k, k.sweet[1]))}" fill="none" stroke="var(--go)" stroke-width="4"/>
+          <circle cx="24" cy="24" r="14" fill="var(--hw-cap-hi)" stroke="#000"/>
+          <line x1="24" y1="24" x2="${x.toFixed(2)}" y2="${y.toFixed(2)}" stroke="${where === 'in' ? 'var(--go)' : 'var(--led)'}" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span class="lbl">${esc(k.label || k.param)}</span>
+        <span class="val">${fmt(v, k)}</span>
+      </span>${verdict}</div>`;
+  }
+
+  function renderIndex() {
+    document.getElementById('path').innerHTML = '/styles';
+    document.getElementById('pathnote').textContent = 'one card per file in content/styles/';
+    app.innerHTML = `
+      <div class="row" style="margin-bottom:12px"><h2>Styles</h2><span class="muted">Pick a style to hear what it is made of.</span></div>
+      <div class="cards">
+        ${styles.map((s) => `<button class="box card" data-style="${s.id}">
+          <div class="row"><b style="font-size:16px">${esc(s.name)}</b><span class="spacer"></span><span class="chip">${esc(s.era)}</span></div>
+          <div>${esc(s.blurb)}</div>
+          <div class="row"><span class="chip">${s.tempo} BPM</span><span class="chip">${esc(s.key)}</span><span class="chip">${s.sounds.length} sounds</span></div>
+          <ul>${s.sounds.map((x) => `<li>${esc(x.name)}</li>`).join('')}</ul>
+        </button>`).join('')}
+        <div class="box card ghost"><b>+ another style</b><span>Add <span class="mono">content/styles/&lt;file&gt;.json</span>. Its <span class="mono">id</span> becomes the path. No code changes.</span></div>
+      </div>`;
+  }
+
+  function renderStyle() {
+    const style = styles.find((s) => s.id === view.style);
+    const sound = style.sounds.find((s) => s.id === view.sound) || style.sounds[0];
+    view.sound = sound.id;
+    const st = stateOf(style, sound);
+    const { replaced } = active(sound, st);
+    document.getElementById('path').innerHTML = `/styles/<b>${esc(style.id)}</b>/<b>${esc(sound.id)}</b>`;
+    document.getElementById('pathnote').textContent = 'both parts are ids read from the config';
+    const usedBy = sound.extends ? styles.filter((s) => s.sounds.some((x) => x.extends === sound.extends)).map((s) => s.name) : [];
+    const allOn = sound.ingredients.every((i) => st.on[i.id]);
+    const nextOff = sound.ingredients.find((i) => !st.on[i.id]);
+    const raw = cfg.styles.find((s) => s.id === style.id).sounds.find((s) => s.id === sound.id);
+
+    app.innerHTML = `
+      <div class="head">
+        <button class="btn small" data-nav="index">◀ Styles</button>
+        <h2>${esc(style.name)}</h2><span class="chip">${esc(style.era)}</span>
+        <span class="seg">${style.tempo}<small>BPM</small></span><span class="seg">${esc(style.key.replace(':', ' '))}</span>
+        <span class="spacer"></span>
+        <button class="btn" data-act="context" aria-pressed="${view.context}" title="Play the sound over this style's backing loop">In context</button>
+        <button class="btn primary" data-act="play">${view.playing ? '■ Stop' : '▶ Play'}</button>
+      </div>
+      <div class="cols">
+        <div class="box"><h3>Signature sounds</h3><div class="soundlist">
+          ${style.sounds.map((s) => `<button data-sound="${s.id}" aria-current="${s.id === sound.id}"><span>${esc(s.name)}</span><span class="meta">${esc(s.role)} · ${s.ingredients.length} ingredients</span></button>`).join('')}
+        </div></div>
+
+        <div>
+          <div class="row"><h2>${esc(sound.name)}</h2><span class="chip role">${esc(sound.role)}</span>
+            ${usedBy.length > 1 ? `<span class="chip shared" title="One recipe in content/sounds/, tuned per style">shared with ${esc(usedBy.filter((n) => n !== style.name).join(', '))}</span>` : ''}</div>
+          <p class="why">${esc(sound.why)}</p>
+          <div class="row" style="margin-bottom:10px">
+            <button class="btn small" data-act="strip" title="Switch everything off and add it back one piece at a time">Build from scratch</button>
+            <button class="btn small" data-act="next"${nextOff ? '' : ' disabled'}>${nextOff ? 'Add: ' + esc(nextOff.name) + ' ▸' : 'All ingredients on'}</button>
+            ${allOn ? '' : '<button class="btn small" data-act="all">Switch all on</button>'}
+            <span class="spacer"></span>
+            ${(sound.variations || []).map((v, i) => `<button class="btn small" data-var="${i}" title="A named tuning from the config">${esc(v.name)}</button>`).join('')}
+          </div>
+          <div class="ladder">
+            ${sound.ingredients.map((ing, n) => {
+              const blocked = ing.needs && !st.on[ing.needs];
+              const on = st.on[ing.id] && !blocked;
+              const isReplaced = replaced.has(ing.id);
+              const slice = ing.pattern || ing.code || '';
+              return `<div class="ing${on ? '' : ' off'}${isReplaced ? ' replaced' : ''}">
+                <div><button class="toggle${on ? ' on' : ''}" data-toggle="${ing.id}" aria-pressed="${on}" aria-label="${esc(ing.name)}"${ing.required || blocked ? ' disabled' : ''}></button><div class="num">${n + 1}</div></div>
+                <div>
+                  <div class="row"><span class="title">${esc(ing.name)}</span>
+                    ${ing.required ? '<span class="chip">starting point</span>' : ''}
+                    ${isReplaced ? '<span class="chip">replaced by a later step</span>' : ''}
+                    ${blocked ? `<span class="chip">needs step ${sound.ingredients.findIndex((i) => i.id === ing.needs) + 1}</span>` : ''}
+                    <span class="spacer"></span>${slice ? `<span class="mono slice">${esc(slice.replace(/\{(\w+)\}/g, '…'))}</span>` : ''}</div>
+                  <div class="adds">${esc(ing.adds)}</div>
+                  ${ing.listenFor ? `<div class="listen"><b>Listen for:</b> ${esc(ing.listenFor)}</div>` : ''}
+                  ${ing.knobs.length && on && !isReplaced ? `<div class="hw">${ing.knobs.map((k) => knobHtml(ing, k, st)).join('')}</div>` : ''}
+                </div></div>`;
+            }).join('')}
+          </div>
+          <p class="anno">Switch any step off to hear what it was doing. A greyed step is on but overridden; a locked one needs an earlier step.</p>
+        </div>
+
+        <div class="side">
+          <div class="box"><h3>The code this makes</h3>
+            <div class="editor">${codeLines(style, sound, st).map((l, i) => `<div class="ln${l.id && l.id === view.changed ? ' changed' : ''}"><span class="n">${i + 1}</span><span>${hi(l.text)}</span></div>`).join('')}</div>
+            <div class="row" style="margin-top:10px"><button class="btn small">Open in Sandbox</button><button class="btn small">Save to Library</button></div>
+            <p class="anno">One line per ingredient that is on. The line you last touched is highlighted.</p>
+          </div>
+          ${sound.pitfalls ? `<div class="box"><h3>Common mistakes</h3><ul>${sound.pitfalls.map((p) => `<li>${esc(p)}</li>`).join('')}</ul></div>` : ''}
+          ${sound.lessons ? `<div class="box"><h3>Learn the pieces</h3><div class="row">${sound.lessons.map((l) => `<span class="chip">Lesson ${esc(l)}</span>`).join('')}</div></div>` : ''}
+          <div class="box"><details><summary>Config for this sound</summary><pre>${esc(JSON.stringify(raw, null, 2))}</pre></details></div>
+        </div>
+      </div>`;
+  }
+
+  function render() { (view.style ? renderStyle : renderIndex)(); }
+
+  app.addEventListener('click', (e) => {
+    const el = e.target.closest('button');
+    if (!el) return;
+    const style = styles.find((s) => s.id === view.style);
+    const sound = style && style.sounds.find((s) => s.id === view.sound);
+    const st = sound && stateOf(style, sound);
+    const d = el.dataset;
+    if (d.style) { view.style = d.style; view.sound = null; view.changed = null; }
+    else if (d.nav) { view.style = null; view.playing = false; }
+    else if (d.sound) { view.sound = d.sound; view.changed = null; }
+    else if (d.toggle) { st.on[d.toggle] = !st.on[d.toggle]; view.changed = d.toggle; }
+    else if (d.act === 'context') view.context = !view.context;
+    else if (d.act === 'play') view.playing = !view.playing;
+    else if (d.act === 'strip') { sound.ingredients.forEach((i) => (st.on[i.id] = !!i.required)); view.changed = null; }
+    else if (d.act === 'all') { sound.ingredients.forEach((i) => (st.on[i.id] = true)); view.changed = null; }
+    else if (d.act === 'next') { const n = sound.ingredients.find((i) => !st.on[i.id]); if (n) { st.on[n.id] = true; view.changed = n.id; } }
+    else if (d.var) {
+      const v = sound.variations[+d.var];
+      sound.ingredients.forEach((i) => { st.on[i.id] = !(v.off || []).includes(i.id); i.knobs.forEach((k) => (st.vals[k.param] = k.param in v.set ? v.set[k.param] : k.value)); });
+      view.changed = null;
+    } else return;
+    render();
+  });
+
+  // knob drag: the handlers live on the document so a re-render mid-drag doesn't drop them
+  let drag = null;
+  function knobAt(target) {
+    const el = target.closest && target.closest('.knob');
+    if (!el) return null;
+    const style = styles.find((s) => s.id === view.style);
+    const sound = style.sounds.find((s) => s.id === view.sound);
+    const ing = sound.ingredients.find((i) => i.id === el.dataset.ing);
+    return { st: stateOf(style, sound), ing, k: ing.knobs.find((x) => x.param === el.dataset.param) };
+  }
+  document.addEventListener('pointerdown', (e) => {
+    const hit = knobAt(e.target);
+    if (!hit) return;
+    e.preventDefault();
+    drag = { ...hit, y: e.clientY, t: norm(hit.k, hit.st.vals[hit.k.param]) };
+  });
+  document.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    drag.st.vals[drag.k.param] = denorm(drag.k, drag.t + (drag.y - e.clientY) / 160);
+    view.changed = drag.ing.id;
+    render();
+  });
+  document.addEventListener('pointerup', () => (drag = null));
+  document.addEventListener('dblclick', (e) => {
+    const hit = knobAt(e.target);
+    if (!hit) return;
+    hit.st.vals[hit.k.param] = hit.k.value;
+    view.changed = hit.ing.id;
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

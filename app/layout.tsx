@@ -28,6 +28,7 @@ const NAV = [
   ['/learn', 'Learn'],
   ['/sandbox', 'Sandbox'],
   ['/sounds', 'Sounds'],
+  ['/styles', 'Styles'],
   ['/library', 'Library'],
   ['/reference', 'Reference'],
   ['/dictionary', 'Dictionary'],

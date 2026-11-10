@@ -18,6 +18,8 @@ export interface KnobProps extends Range {
   bipolar?: boolean;
   /** Double-click goes back to this; the readout dims while on it. */
   defaultValue?: number;
+  /** [low, high]: a band marked on the dial; the arc turns green while the value is inside it. */
+  sweet?: [number, number];
   unit?: Unit;
   size?: 'sm' | 'md';
   isDisabled?: boolean;
@@ -30,7 +32,9 @@ export interface KnobProps extends Range {
 const START = Math.PI * 0.75;
 const SWEEP = Math.PI * 1.5;
 const C = 32;
-const polar = (a: number, r: number) => [C + r * Math.cos(a), C + r * Math.sin(a)] as const;
+// Rounded so the server and the browser print the same coordinates (their floats differ in the last digit).
+const round = (v: number) => Math.round(v * 1000) / 1000;
+const polar = (a: number, r: number) => [round(C + r * Math.cos(a)), round(C + r * Math.sin(a))] as const;
 function arc(a0: number, a1: number, r: number): string {
   if (Math.abs(a1 - a0) < 1e-4) return '';
   const [x0, y0] = polar(a0, r);
@@ -43,7 +47,7 @@ function arc(a0: number, a1: number, r: number): string {
  * type a value, double-click resets. Built on React Aria's slider state, so it is a slider to
  * the keyboard and to screen readers; the position is logarithmic when `log` is set.
  */
-export function Knob({ label, value, onChange, min, max, step, log, bipolar, defaultValue, unit = 'number', size = 'md', isDisabled, caption, className }: KnobProps) {
+export function Knob({ label, value, onChange, min, max, step, log, bipolar, defaultValue, sweet, unit = 'number', size = 'md', isDisabled, caption, className }: KnobProps) {
   const range: Range = { min, max, step, log };
   const [draft, setDraft] = useDraft(value);
   const commit = (v: number) => v !== value && onChange(v);
@@ -94,6 +98,7 @@ export function Knob({ label, value, onChange, min, max, step, log, bipolar, def
   const [qx, qy] = polar(a, 21);
   const detents = step && !log && (max - min) / step <= 24 ? (max - min) / step : 0;
   const atDefault = defaultValue !== undefined && Math.abs(draft - defaultValue) < 1e-9;
+  const inSweet = !!sweet && draft >= sweet[0] && draft <= sweet[1];
   const px_ = size === 'md' ? 56 : 44;
 
   return (
@@ -118,7 +123,10 @@ export function Knob({ label, value, onChange, min, max, step, log, bipolar, def
               const [x, y] = polar(START + (i / detents) * SWEEP, 30);
               return <circle key={i} cx={x} cy={y} r="1" fill="#6b685f" />;
             })}
-          <path d={bipolar ? arc(mid, a, 27) : arc(START, a, 27)} stroke="var(--color-led)" strokeWidth="4" fill="none" strokeLinecap="round" />
+          {sweet && (
+            <path d={arc(START + toPosition(range, sweet[0]) * SWEEP, START + toPosition(range, sweet[1]) * SWEEP, 31)} stroke="var(--color-go)" strokeWidth="2" fill="none" />
+          )}
+          <path d={bipolar ? arc(mid, a, 27) : arc(START, a, 27)} stroke={inSweet ? 'var(--color-go)' : 'var(--color-led)'} strokeWidth="4" fill="none" strokeLinecap="round" />
           <circle cx="32" cy="32" r="22" fill="url(#hw-cap)" stroke="#000" />
           <line x1={px} y1={py} x2={qx} y2={qy} stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
         </svg>

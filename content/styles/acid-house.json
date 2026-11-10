@@ -1,0 +1,16 @@
+{
+  "id": "acid-house",
+  "name": "Acid house",
+  "era": "1987–1992",
+  "tempo": 124,
+  "key": "A minor",
+  "blurb": "One squelching bassline and a drum machine.",
+  "context": [
+    { "id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR909\")" },
+    { "id": "tops", "code": "s(\"~ cp, [~ oh]*4\").bank(\"RolandTR909\").gain(.6)" }
+  ],
+  "sounds": [
+    { "id": "acid-line", "extends": "acid-line" },
+    { "id": "kick", "extends": "kick-909" }
+  ]
+}
