@@ -1,0 +1,47 @@
+{
+  "id": "rave-hardcore",
+  "name": "Rave / hardcore",
+  "family": "Breakbeat",
+  "era": "1990–1993",
+  "tempo": 145,
+  "key": "A minor",
+  "blurb": "Breakbeats, a hoover, piano chords and a stab from a sampler.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd ~ ~ ~ sd ~ ~ ~ ~ ~ bd ~ sd ~ ~ ~\").bank(\"AkaiMPC60\")"},
+    {"id": "tops", "code": "s(\"hh*8\").bank(\"AkaiMPC60\").gain(\"[.5 .3]*4\")"},
+    {"id": "bass", "code": "note(\"a1 ~ ~ a1 ~ ~ ~ ~\").s(\"sine\").decay(.4).sustain(0).distort(.4)"}
+  ],
+  "sounds": [
+    {"id": "hoover", "extends": "hoover"},
+    {
+      "id": "break",
+      "extends": "breakbeat",
+      "why": "A sped-up funk break in place of a drum machine. This is the step that turned house into hardcore, and later into jungle."
+    },
+    {
+      "id": "sub",
+      "extends": "sub-bass",
+      "pattern": "note(\"a1 ~ ~ a1 ~ ~ ~ ~\")",
+      "why": "A long, plain sub under the break. The drums are busy, so the bass is not.",
+      "set": {"decay": 0.45},
+      "sweet": {"decay": [0.3, 0.6]}
+    },
+    {
+      "id": "stab",
+      "extends": "chord-stab",
+      "name": "Rave stab",
+      "pattern": "note(\"<[a3,c4,e4] [a3,c4,e4] [g3,b3,d4] [f3,a3,c4]>\").struct(\"x ~ ~ x ~ ~ x ~\")",
+      "why": "A whole chord sampled as one key, bright and blunt, played like a drum.",
+      "set": {"lpf": 2500, "decay": 0.2},
+      "sweet": {"lpf": [1500, 4000], "decay": [0.14, 0.3]}
+    },
+    {
+      "id": "piano",
+      "extends": "piano-stab",
+      "name": "Piano riff",
+      "why": "Happy major-sounding piano over dark drums and bass. That clash is the whole mood of 1992.",
+      "pattern": "note(\"[a3,c4,e4] ~ [a3,c4,e4] [a3,c4,e4] ~ [f3,a3,c4] ~ [g3,b3,d4]\")"
+    },
+    {"id": "riser", "extends": "noise-riser", "why": "The swell into the drop, usually with the break filtered out underneath it."}
+  ]
+}

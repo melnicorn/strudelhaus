@@ -1,0 +1,46 @@
+{
+  "name": "808 kick",
+  "role": "drums",
+  "group": "kick",
+  "why": "A soft thud with a long, low boom after it. Where the 909 punches, the 808 blooms.",
+  "pattern": "s(\"bd*4\")",
+  "context": {"kick": null},
+  "ingredients": [
+    {"id": "plain", "name": "A plain kick", "required": true, "adds": "Four kicks to the bar from the default kit."},
+    {
+      "id": "bank",
+      "name": "The 808",
+      "code": ".bank(\"RolandTR808\")",
+      "adds": "A rounder attack and a tail that rings like a low note.",
+      "listenFor": "The click goes and a boom arrives."
+    },
+    {
+      "id": "round",
+      "name": "Round it off",
+      "code": ".lpf({lpf})",
+      "adds": "Takes away what is left of the click.",
+      "knobs": [
+        {
+          "param": "lpf",
+          "label": "cutoff",
+          "unit": "hz",
+          "log": true,
+          "min": 100,
+          "max": 8000,
+          "value": 3000,
+          "sweet": [1500, 6000],
+          "below": "All boom: it turns into a bass note.",
+          "above": "The click pokes out again."
+        }
+      ]
+    },
+    {
+      "id": "gain",
+      "name": "Level",
+      "code": ".gain({gain})",
+      "adds": "How far the kick sits above the rest.",
+      "knobs": [{"param": "gain", "min": 0, "max": 1.5, "value": 1, "sweet": [0.85, 1.1], "below": "The bass covers it.", "above": "It clips and flattens the mix."}]
+    }
+  ],
+  "lessons": ["02-four-on-the-floor", "07-drum-machine-shopping"]
+}

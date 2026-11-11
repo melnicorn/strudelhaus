@@ -1,16 +1,112 @@
 {
   "id": "acid-house",
   "name": "Acid house",
+  "family": "House",
   "era": "1987–1992",
   "tempo": 124,
   "key": "A minor",
   "blurb": "One squelching bassline and a drum machine.",
   "context": [
-    { "id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR909\")" },
-    { "id": "tops", "code": "s(\"~ cp, [~ oh]*4\").bank(\"RolandTR909\").gain(.6)" }
+    {"id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR909\")"},
+    {"id": "tops", "code": "s(\"~ cp ~ cp, [~ oh]*4\").bank(\"RolandTR909\").gain(.6)"},
+    {"id": "bass", "code": "note(\"a1 a1 a2 a1 c2 a1 e2 g1\").fast(2).s(\"sawtooth\").lpf(400).ftype(\"ladder\").lpq(10).lpenv(4).lpdecay(.15).gain(.7)"}
   ],
   "sounds": [
-    { "id": "acid-line", "extends": "acid-line" },
-    { "id": "kick", "extends": "kick-909" }
+    {"id": "acid-line", "extends": "acid-line", "group": "bass", "context": {"bass": null}},
+    {"id": "kick", "extends": "kick-909", "why": "Loud, dry and on every beat. With so little else in the track, the kick and the acid line are the whole record."},
+    {
+      "id": "tops",
+      "extends": "tops-909",
+      "why": "A clap and an open hat straight off the drum machine, with a little swing so the sixteenths jack.",
+      "set": {"swing": 0.14}
+    },
+    {
+      "id": "perc",
+      "name": "Rimshot and cowbell",
+      "role": "drums",
+      "group": "groove",
+      "why": "The 808's small sounds, placed off the grid of the kick. They are what make a drum-machine loop funky.",
+      "pattern": "s(\"~ ~ rim ~ ~ rim ~ ~ ~ rim ~ ~ rim ~ ~ ~\")",
+      "ingredients": [
+        {"id": "rim", "name": "A rimshot pattern", "required": true, "adds": "A click that never lands on a kick."},
+        {"id": "bank", "name": "The 808", "code": ".bank(\"RolandTR808\")", "adds": "The 808's dry, woody rimshot."},
+        {
+          "id": "cb",
+          "name": "Cowbell",
+          "layer": "s(\"cb(3,8)\").bank(\"RolandTR808\").gain({cb})",
+          "adds": "Three cowbells spread evenly over the bar.",
+          "listenFor": "A second rhythm that crosses the first.",
+          "knobs": [
+            {
+              "param": "cb",
+              "label": "cowbell level",
+              "min": 0,
+              "max": 1,
+              "value": 0.4,
+              "sweet": [0.25, 0.55],
+              "below": "You lose the cross-rhythm.",
+              "above": "A cowbell solo."
+            }
+          ]
+        },
+        {
+          "id": "room",
+          "name": "Room",
+          "code": ".room({room})",
+          "whole": true,
+          "adds": "A short room around both.",
+          "knobs": [{"param": "room", "label": "reverb", "min": 0, "max": 1, "value": 0.15, "sweet": [0.05, 0.25], "below": "Bone dry.", "above": "The clicks turn to splashes."}]
+        }
+      ],
+      "lessons": ["03-steps-and-rests", "12-off-the-grid"]
+    },
+    {
+      "id": "second-303",
+      "extends": "acid-line",
+      "name": "Second 303",
+      "why": "A second acid line an octave or two up that answers the first. It plays less, so each note counts.",
+      "pattern": "note(\"~ a3 ~ ~ c4 ~ a3 ~ ~ e4 ~ ~ a3 ~ g3 ~\")",
+      "set": {"lpf": 900, "drive": 1},
+      "sweet": {"lpf": [600, 1400]}
+    },
+    {"id": "stab", "extends": "chord-stab", "why": "A cheap sampled minor chord, hit off the beat. It is the only harmony in the track.", "set": {"room": 0.15}},
+    {
+      "id": "tom-fill",
+      "name": "Tom fill",
+      "role": "fx",
+      "group": "hook",
+      "why": "Four toms falling in pitch at the end of a phrase. On a record with no breakdown, this is how you mark a new section.",
+      "pattern": "s(\"~ ~ ~ [ht ht mt lt]\")",
+      "ingredients": [
+        {"id": "toms", "name": "Toms on the last beat", "required": true, "adds": "High, high, mid, low, in the last beat of the bar."},
+        {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909's round, tuned toms."},
+        {
+          "id": "fourth",
+          "name": "Only every fourth bar",
+          "code": ".mask(\"<0 0 0 1>\")",
+          "adds": "Silent for three bars, then the fill.",
+          "listenFor": "It now announces the next phrase."
+        },
+        {
+          "id": "room",
+          "name": "Room",
+          "code": ".room({room})",
+          "adds": "Lets the toms ring into the next bar.",
+          "knobs": [
+            {
+              "param": "room",
+              "label": "reverb",
+              "min": 0,
+              "max": 1,
+              "value": 0.3,
+              "sweet": [0.2, 0.45],
+              "below": "They stop dead.",
+              "above": "They wash over the next kick."
+            }
+          ]
+        }
+      ],
+      "lessons": ["13-every-fourth-bar"]
+    }
   ]
 }

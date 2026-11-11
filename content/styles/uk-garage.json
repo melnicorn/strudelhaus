@@ -1,0 +1,160 @@
+{
+  "id": "uk-garage",
+  "name": "UK garage",
+  "family": "House",
+  "era": "1997–2002",
+  "tempo": 132,
+  "key": "G minor",
+  "blurb": "A kick that skips a beat, shuffled hats and an organ bass.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd ~ ~ ~ ~ ~ ~ ~ ~ ~ bd ~ ~ ~ ~ ~\").bank(\"RolandTR909\")"},
+    {"id": "tops", "code": "s(\"~ sd ~ sd, hh*16\").bank(\"RolandTR909\").gain(\"[.6 .25]*8\").swingBy(.25, 8)"},
+    {"id": "bass", "code": "note(\"g2 ~ ~ g2 ~ [~ bb2] ~ d3\").s(\"sine\").transpose(\"0,12\").decay(.15).sustain(0)"}
+  ],
+  "sounds": [
+    {
+      "id": "two-step",
+      "name": "2-step drums",
+      "role": "drums",
+      "group": "groove",
+      "why": "House drums with the second and fourth kicks taken out and one put back late. The beat seems to trip and catch itself, twice a bar.",
+      "pattern": "s(\"bd ~ ~ ~ sd ~ ~ ~ ~ ~ bd ~ sd ~ ~ ~\")",
+      "context": {"kick": null, "tops": null},
+      "ingredients": [
+        {"id": "skeleton", "name": "The skeleton", "required": true, "adds": "Kick on 1, snare on 2, a kick just after 3, snare on 4."},
+        {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909's tight kick and snappy snare."},
+        {
+          "id": "hats",
+          "name": "Sixteenth hats",
+          "layer": "s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.5 .2 .35 .2]*4\")",
+          "adds": "Hats on every sixteenth, loud on the eighths and quiet between."
+        },
+        {
+          "id": "shuffle",
+          "name": "Shuffle it hard",
+          "code": ".swingBy({swing}, 8)",
+          "whole": true,
+          "adds": "Every second sixteenth is pushed late, much further than in house.",
+          "listenFor": "The hats start to skip. This is the garage bounce.",
+          "knobs": [
+            {
+              "param": "swing",
+              "step": 0.01,
+              "min": 0,
+              "max": 0.5,
+              "value": 0.25,
+              "sweet": [0.18, 0.34],
+              "below": "Straight: it sounds like slow drum and bass.",
+              "above": "The late hats collide with the next beat."
+            }
+          ]
+        },
+        {
+          "id": "ghost",
+          "name": "Ghost snares",
+          "layer": "s(\"~ ~ ~ sd ~ ~ ~ ~ ~ ~ ~ sd ~ ~ ~ ~\").bank(\"RolandTR909\").gain({ghost})",
+          "adds": "Quiet extra snares just before the main ones.",
+          "knobs": [
+            {
+              "param": "ghost",
+              "label": "ghost level",
+              "min": 0.05,
+              "max": 0.8,
+              "value": 0.2,
+              "sweet": [0.12, 0.3],
+              "below": "Too quiet to hear.",
+              "above": "They sound like extra backbeats."
+            }
+          ]
+        }
+      ],
+      "pitfalls": ["Putting the kick back on every beat turns it into house at once."],
+      "lessons": ["11-swing-it", "12-off-the-grid", "24-deep-groove"]
+    },
+    {
+      "id": "organ-bass",
+      "extends": "organ-bass",
+      "pattern": "note(\"g2 ~ ~ g2 ~ [~ bb2] ~ d3\")",
+      "why": "The house organ bass, carried over, but playing around the gaps the kick left."
+    },
+    {
+      "id": "sub",
+      "extends": "sub-bass",
+      "pattern": "note(\"g1 ~ ~ g1 ~ ~ ~ bb1\")",
+      "why": "The darker choice of bass: a plain sub that hits with the kick and then again where the kick is missing."
+    },
+    {
+      "id": "chop",
+      "name": "Vowel chop",
+      "role": "vocal",
+      "group": "hook",
+      "why": "Garage hooks are tiny slices of a singer, retuned and played like a keyboard. There are no vocal samples here, so a filter shaped like a mouth stands in for the voice.",
+      "pattern": "note(\"g4 ~ ~ bb4 ~ g4 ~ ~ d5 ~ ~ c5 ~ ~ bb4 ~\")",
+      "ingredients": [
+        {"id": "saw", "name": "A sawtooth melody", "code": ".s(\"sawtooth\")", "required": true, "adds": "A buzzy line with no voice in it."},
+        {
+          "id": "vowel",
+          "name": "Give it a mouth",
+          "code": ".vowel(\"<a e o a>\")",
+          "adds": "A filter that picks out the same frequencies as a sung \"ah\", \"eh\" or \"oh\".",
+          "listenFor": "The synth starts to say something."
+        },
+        {
+          "id": "short",
+          "name": "Chop it",
+          "code": ".decay({decay}).sustain(0)",
+          "adds": "Each note is cut short, like a slice of a longer word.",
+          "knobs": [
+            {
+              "param": "decay",
+              "unit": "seconds",
+              "min": 0.03,
+              "max": 0.6,
+              "value": 0.14,
+              "sweet": [0.09, 0.2],
+              "below": "Clicks.",
+              "above": "Whole sung notes, not chops."
+            }
+          ]
+        },
+        {
+          "id": "scoop",
+          "name": "Scoop into each note",
+          "code": ".penv({penv}).pdecay(.05)",
+          "adds": "Every note starts a little flat and slides up, as singers do.",
+          "knobs": [
+            {
+              "param": "penv",
+              "label": "scoop",
+              "unit": "int",
+              "step": 1,
+              "min": -12,
+              "max": 0,
+              "value": -4,
+              "sweet": [-6, -2],
+              "below": "A yelp.",
+              "above": "Flat and robotic."
+            }
+          ]
+        },
+        {
+          "id": "delay",
+          "name": "Echo",
+          "code": ".delay({delay}).delaysync(3/16).delayfeedback(.4)",
+          "adds": "Repeats that fall in the gaps.",
+          "knobs": [{"param": "delay", "min": 0, "max": 1, "value": 0.35, "sweet": [0.2, 0.5], "below": "Dry and exposed.", "above": "A crowd, not a voice."}]
+        }
+      ],
+      "lessons": ["18-envelopes", "20-space"]
+    },
+    {
+      "id": "stab",
+      "extends": "chord-stab",
+      "pattern": "note(\"[g3,bb3,d4,f4]\").struct(\"~ x ~ ~ x ~ ~ [~ x]\")",
+      "why": "A soft minor seventh stab between the kicks, borrowed from house and played with the same shuffle.",
+      "set": {"lpf": 700},
+      "sweet": {"lpf": [450, 1200]}
+    },
+    {"id": "pad", "extends": "string-pad", "pattern": "note(\"<[g3,bb3,d4,f4] [eb3,g3,bb3,d4]>\")", "why": "Warm chords from soul and R&B, held behind the beat."}
+  ]
+}

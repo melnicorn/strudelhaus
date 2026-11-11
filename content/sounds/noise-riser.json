@@ -1,0 +1,52 @@
+{
+  "name": "Noise riser",
+  "role": "fx",
+  "group": "hook",
+  "why": "Eight bars of noise getting brighter and louder. It tells the room that something is about to happen.",
+  "pattern": "s(\"white*16\")",
+  "ingredients": [
+    {"id": "noise", "name": "White noise", "code": ".gain(.3)", "required": true, "adds": "A steady hiss."},
+    {
+      "id": "sweep",
+      "name": "Sweep the low end away",
+      "code": ".hpf(saw.range(200, {top}).slow(8))",
+      "adds": "The hiss thins out and rises in pitch over 8 bars.",
+      "listenFor": "It seems to climb.",
+      "knobs": [
+        {
+          "param": "top",
+          "label": "sweep top",
+          "unit": "hz",
+          "log": true,
+          "min": 1000,
+          "max": 16000,
+          "value": 8000,
+          "sweet": [6000, 12000],
+          "below": "It never gets tense.",
+          "above": "It vanishes before the drop."
+        }
+      ]
+    },
+    {
+      "id": "ramp",
+      "name": "Get louder",
+      "code": ".gain(saw.range(.05, {gain}).slow(8))",
+      "replaces": "noise",
+      "adds": "Starts quiet and swells.",
+      "knobs": [
+        {
+          "param": "gain",
+          "label": "peak level",
+          "min": 0.1,
+          "max": 1.2,
+          "value": 0.6,
+          "sweet": [0.4, 0.8],
+          "below": "Lost under everything else.",
+          "above": "Louder than the drop it announces."
+        }
+      ]
+    },
+    {"id": "room", "name": "Room", "code": ".room(.6)", "adds": "A tail that hangs over the silence before the drop."}
+  ],
+  "lessons": ["27-the-sweep", "30-tension-and-release"]
+}

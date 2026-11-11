@@ -1,7 +1,7 @@
 // Turns a style's sound and its switches and knobs into Strudel code. Pure: used by the page,
 // by "Add to sandbox" and by the tests that evaluate every config.
 import { formatNumber } from '@/lib/sync/miniGrid';
-import type { Archetype, Ingredient, Sound, SoundState, Style, StyleSound, Variation } from './types';
+import { knobSchema, type Archetype, type Ingredient, type Knob, type Sound, type SoundState, type Style, type StyleSound, type Variation } from './types';
 
 /** Merges a style's sound with the recipe it extends. Throws when something is missing. */
 export function resolveSound(
@@ -12,22 +12,31 @@ export function resolveSound(
   const base = sound.extends ? archetypes[sound.extends] : undefined;
   if (sound.extends && !base) throw new Error(`Sound "${sound.id}" extends "${sound.extends}", which is not in content/sounds/.`);
   const merged = { ...base, ...sound };
-  for (const field of ['name', 'role', 'why', 'pattern', 'ingredients'] as const) {
+  for (const field of ['name', 'role', 'group', 'why', 'pattern', 'ingredients'] as const) {
     if (merged[field] === undefined) throw new Error(`Sound "${sound.id}" has no ${field}.`);
   }
   const set = sound.set ?? {};
+  const sweet = sound.sweet ?? {};
   const known = new Set(merged.ingredients!.flatMap((i) => (i.knobs ?? []).map((k) => k.param)));
-  for (const param of Object.keys(set)) {
+  for (const param of [...Object.keys(set), ...Object.keys(sweet)]) {
     if (!known.has(param)) throw new Error(`Sound "${sound.id}" sets "${param}", which is not one of its knobs.`);
   }
+  // A style's own value and sweet spot for a shared recipe's knob; the result must still be a valid knob.
+  const tune = (k: Knob): Knob => {
+    if (!(k.param in set) && !(k.param in sweet)) return k;
+    const tuned = knobSchema.safeParse({ ...k, value: set[k.param] ?? k.value, sweet: sweet[k.param] ?? k.sweet });
+    if (!tuned.success) throw new Error(`Sound "${sound.id}", knob "${k.param}": ${tuned.error.issues[0].message}`);
+    return tuned.data;
+  };
   return {
     id: sound.id,
     extends: sound.extends,
     name: merged.name!,
     role: merged.role!,
+    group: merged.group!,
     why: merged.why!,
     pattern: merged.pattern!,
-    ingredients: merged.ingredients!.map((i) => ({ ...i, knobs: (i.knobs ?? []).map((k) => (k.param in set ? { ...k, value: set[k.param] } : k)) })),
+    ingredients: merged.ingredients!.map((i) => ({ ...i, knobs: (i.knobs ?? []).map(tune) })),
     variations: merged.variations ?? [],
     pitfalls: merged.pitfalls ?? [],
     lessons: (merged.lessons ?? []).map((lessonId) => {
@@ -86,16 +95,24 @@ export interface CodeLine {
   ingredient?: string;
 }
 
-/** The sound alone as one expression: the pattern, then a line per ingredient that is on. */
+/**
+ * The sound alone as one expression: the pattern, then a line per ingredient that is on.
+ * Ingredients with a `layer` make it a stack of parts; `whole` ones then follow the stack.
+ */
 export function soundLines(sound: Sound, state: SoundState): CodeLine[] {
   const status = statuses(sound, state);
   const active = sound.ingredients.filter((i) => status[i.id] === 'on');
   const patterned = active.findLast((i) => i.pattern);
-  const lines: CodeLine[] = [{ text: patterned?.pattern ?? sound.pattern, ingredient: patterned?.id }];
+  const main: CodeLine[] = [{ text: patterned?.pattern ?? sound.pattern, ingredient: patterned?.id }];
+  const layers: CodeLine[] = [];
+  const after: CodeLine[] = [];
   for (const ing of active) {
-    if (ing.code) lines.push({ text: `  ${fill(ing.code, state)}`, ingredient: ing.id });
+    if (ing.code) (ing.whole ? after : main).push({ text: `  ${fill(ing.code, state)}`, ingredient: ing.id });
+    if (ing.layer) layers.push({ text: `  ${fill(ing.layer, state)},`, ingredient: ing.id });
   }
-  return lines;
+  if (layers.length === 0) return [...main, ...after];
+  main[main.length - 1] = { ...main[main.length - 1], text: `${main[main.length - 1].text},` };
+  return [{ text: 'stack(' }, ...main.map((l) => ({ ...l, text: `  ${l.text}` })), ...layers, { text: ')' }, ...after];
 }
 
 /** The backing loop's parts for this sound, after the sound's and its ingredients' overrides. */

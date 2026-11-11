@@ -1,23 +1,26 @@
 {
   "id": "trance",
   "name": "Trance",
+  "family": "Trance",
   "era": "1996–2002",
   "tempo": 138,
   "key": "A minor",
   "blurb": "Wide, detuned saws over a bass that never stops rolling.",
   "context": [
-    { "id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth(.6)" },
-    { "id": "bass", "code": "note(\"[~ a1 a1 a1]*4\").s(\"sawtooth\").lpf(400).decay(.12).sustain(0).orbit(2)" }
+    {"id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth(.6)"},
+    {"id": "tops", "code": "s(\"[~ oh]*4, ~ cp ~ cp\").bank(\"RolandTR909\").gain(.5)"},
+    {"id": "bass", "code": "note(\"[~ a1 a1 a1]*4\").s(\"sawtooth\").lpf(400).decay(.12).sustain(0).orbit(2)"}
   ],
   "sounds": [
     {
       "id": "supersaw-lead",
       "name": "Supersaw lead",
       "role": "lead",
+      "group": "hook",
       "why": "Many saws a little out of tune with each other, spread across the stereo field and washed in reverb. The detune is what makes it sound huge.",
       "pattern": "note(\"<a4 f4 c5 g4>*2\")",
       "ingredients": [
-        { "id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "The raw material: a bright, buzzy wave." },
+        {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "The raw material: a bright, buzzy wave."},
         {
           "id": "unison",
           "name": "Stack the voices",
@@ -26,7 +29,18 @@
           "adds": "Several saws play each note at once.",
           "listenFor": "It thickens. How much depends on the next two steps.",
           "knobs": [
-            { "param": "unison", "label": "voices", "unit": "int", "step": 1, "min": 1, "max": 9, "value": 7, "sweet": [5, 7], "below": "Thin; you can pick out single voices.", "above": "Blurrier and heavier on the CPU for little gain." }
+            {
+              "param": "unison",
+              "label": "voices",
+              "unit": "int",
+              "step": 1,
+              "min": 1,
+              "max": 9,
+              "value": 7,
+              "sweet": [5, 7],
+              "below": "Thin; you can pick out single voices.",
+              "above": "Blurrier and heavier on the CPU for little gain."
+            }
           ]
         },
         {
@@ -37,7 +51,15 @@
           "adds": "Each voice drifts slightly off pitch.",
           "listenFor": "The slow shimmer as the voices beat against each other. This is the trance sound.",
           "knobs": [
-            { "param": "detune", "min": 0, "max": 1, "value": 0.3, "sweet": [0.2, 0.4], "below": "The voices line up and it is one saw again.", "above": "It reads as out of tune rather than wide." }
+            {
+              "param": "detune",
+              "min": 0,
+              "max": 1,
+              "value": 0.3,
+              "sweet": [0.2, 0.4],
+              "below": "The voices line up and it is one saw again.",
+              "above": "It reads as out of tune rather than wide."
+            }
           ]
         },
         {
@@ -47,9 +69,7 @@
           "needs": "unison",
           "adds": "Voices are panned left to right.",
           "listenFor": "The sound moves out of the middle and wraps around you.",
-          "knobs": [
-            { "param": "spread", "min": 0, "max": 1, "value": 0.8, "sweet": [0.6, 0.9], "below": "Thick but narrow.", "above": "The middle goes hollow on a mono speaker." }
-          ]
+          "knobs": [{"param": "spread", "min": 0, "max": 1, "value": 0.8, "sweet": [0.6, 0.9], "below": "Thick but narrow.", "above": "The middle goes hollow on a mono speaker."}]
         },
         {
           "id": "lpf",
@@ -57,7 +77,18 @@
           "code": ".lpf({lpf})",
           "adds": "Rolls off the fizz at the very top.",
           "knobs": [
-            { "param": "lpf", "label": "cutoff", "unit": "hz", "log": true, "min": 200, "max": 18000, "value": 6000, "sweet": [3500, 9000], "below": "Dull: it becomes a pad.", "above": "A fizzy top that fights the hats." }
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 200,
+              "max": 18000,
+              "value": 6000,
+              "sweet": [3500, 9000],
+              "below": "Dull: it becomes a pad.",
+              "above": "A fizzy top that fights the hats."
+            }
           ]
         },
         {
@@ -67,8 +98,27 @@
           "adds": "A long tail that fills the gaps between notes.",
           "listenFor": "Notes keep ringing after they stop.",
           "knobs": [
-            { "param": "room", "label": "reverb", "min": 0, "max": 1, "value": 0.5, "sweet": [0.35, 0.6], "below": "Dry and close, like a demo.", "above": "The melody dissolves." },
-            { "param": "size", "label": "room size", "min": 1, "max": 10, "step": 0.5, "value": 6, "sweet": [4, 8], "below": "A small box, not a hall.", "above": "The tail runs over the next chord." }
+            {
+              "param": "room",
+              "label": "reverb",
+              "min": 0,
+              "max": 1,
+              "value": 0.5,
+              "sweet": [0.35, 0.6],
+              "below": "Dry and close, like a demo.",
+              "above": "The melody dissolves."
+            },
+            {
+              "param": "size",
+              "label": "room size",
+              "min": 1,
+              "max": 10,
+              "step": 0.5,
+              "value": 6,
+              "sweet": [4, 8],
+              "below": "A small box, not a hall.",
+              "above": "The tail runs over the next chord."
+            }
           ]
         },
         {
@@ -78,15 +128,24 @@
           "adds": "Echoes that land between the beats.",
           "listenFor": "A second, quieter melody answering the first.",
           "knobs": [
-            { "param": "delay", "min": 0, "max": 1, "value": 0.4, "sweet": [0.25, 0.5], "below": "You can't hear the echo.", "above": "The echo is as loud as the note." },
-            { "param": "fb", "label": "feedback", "min": 0, "max": 0.9, "value": 0.5, "sweet": [0.35, 0.6], "below": "One repeat and gone.", "above": "Echoes pile up into the next chord." }
+            {"param": "delay", "min": 0, "max": 1, "value": 0.4, "sweet": [0.25, 0.5], "below": "You can't hear the echo.", "above": "The echo is as loud as the note."},
+            {
+              "param": "fb",
+              "label": "feedback",
+              "min": 0,
+              "max": 0.9,
+              "value": 0.5,
+              "sweet": [0.35, 0.6],
+              "below": "One repeat and gone.",
+              "above": "Echoes pile up into the next chord."
+            }
           ]
         }
       ],
       "variations": [
-        { "name": "Anthem" },
-        { "name": "Dark prog", "set": { "detune": 0.15, "lpf": 1800 }, "off": ["delay"] },
-        { "name": "Dry and upfront", "set": { "spread": 0.6 }, "off": ["reverb", "delay"] }
+        {"name": "Anthem"},
+        {"name": "Dark prog", "set": {"detune": 0.15, "lpf": 1800}, "off": ["delay"]},
+        {"name": "Dry and upfront", "set": {"spread": 0.6}, "off": ["reverb", "delay"]}
       ],
       "pitfalls": ["Detune past the sweet spot sounds wide alone and sour over the bass.", "Reverb and delay both at full hide the melody."],
       "lessons": ["17-waveforms", "20-space"]
@@ -95,10 +154,11 @@
       "id": "pluck",
       "name": "Pluck",
       "role": "arp",
+      "group": "hook",
       "why": "The same supersaw, but the filter snaps shut a moment after each note. Short notes plus a dotted delay make one line sound like three.",
       "pattern": "note(\"a3 c4 e4 a4 e4 c4 a3 e4\").fast(2)",
       "ingredients": [
-        { "id": "supersaw", "name": "Supersaw", "code": ".s(\"supersaw\").unison(5).detune(.25)", "required": true, "adds": "The lead's raw tone, held for the full step." },
+        {"id": "supersaw", "name": "Supersaw", "code": ".s(\"supersaw\").unison(5).detune(.25)", "required": true, "adds": "The lead's raw tone, held for the full step."},
         {
           "id": "short",
           "name": "Short notes",
@@ -106,7 +166,16 @@
           "adds": "Each note dies away quickly.",
           "listenFor": "Gaps open up between the notes.",
           "knobs": [
-            { "param": "decay", "unit": "seconds", "min": 0.02, "max": 0.6, "value": 0.18, "sweet": [0.1, 0.25], "below": "A click with no pitch.", "above": "Notes smear together; it is a pad again." }
+            {
+              "param": "decay",
+              "unit": "seconds",
+              "min": 0.02,
+              "max": 0.6,
+              "value": 0.18,
+              "sweet": [0.1, 0.25],
+              "below": "A click with no pitch.",
+              "above": "Notes smear together; it is a pad again."
+            }
           ]
         },
         {
@@ -116,9 +185,40 @@
           "adds": "Bright at the start of the note, dark by the end.",
           "listenFor": "A \"tik\" on the front of every note.",
           "knobs": [
-            { "param": "lpf", "label": "cutoff", "unit": "hz", "log": true, "min": 100, "max": 5000, "value": 500, "sweet": [300, 900], "below": "The tail vanishes.", "above": "No snap: it starts bright and stays bright." },
-            { "param": "lpenv", "label": "env depth", "min": 0, "max": 8, "step": 0.1, "value": 4, "sweet": [3, 5], "below": "Dull, no attack.", "above": "Harsh and clicky." },
-            { "param": "lpdecay", "label": "env decay", "unit": "seconds", "min": 0.02, "max": 0.6, "value": 0.12, "sweet": [0.08, 0.2], "below": "Only a click gets through.", "above": "The snap turns into a slow sweep." }
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 100,
+              "max": 5000,
+              "value": 500,
+              "sweet": [300, 900],
+              "below": "The tail vanishes.",
+              "above": "No snap: it starts bright and stays bright."
+            },
+            {
+              "param": "lpenv",
+              "label": "env depth",
+              "min": 0,
+              "max": 8,
+              "step": 0.1,
+              "value": 4,
+              "sweet": [3, 5],
+              "below": "Dull, no attack.",
+              "above": "Harsh and clicky."
+            },
+            {
+              "param": "lpdecay",
+              "label": "env decay",
+              "unit": "seconds",
+              "min": 0.02,
+              "max": 0.6,
+              "value": 0.12,
+              "sweet": [0.08, 0.2],
+              "below": "Only a click gets through.",
+              "above": "The snap turns into a slow sweep."
+            }
           ]
         },
         {
@@ -128,7 +228,17 @@
           "needs": "fenv",
           "adds": "A ping at the cutoff as it closes.",
           "knobs": [
-            { "param": "lpq", "label": "resonance", "min": 0, "max": 20, "step": 0.5, "value": 6, "sweet": [4, 9], "below": "Soft and plain.", "above": "It whistles on every note." }
+            {
+              "param": "lpq",
+              "label": "resonance",
+              "min": 0,
+              "max": 20,
+              "step": 0.5,
+              "value": 6,
+              "sweet": [4, 9],
+              "below": "Soft and plain.",
+              "above": "It whistles on every note."
+            }
           ]
         },
         {
@@ -137,24 +247,31 @@
           "code": ".delay({delay}).delaysync(3/16).delayfeedback(.45)",
           "adds": "Echoes fill the gaps the short notes left.",
           "listenFor": "The pattern seems to double in speed.",
-          "knobs": [
-            { "param": "delay", "min": 0, "max": 1, "value": 0.45, "sweet": [0.3, 0.55], "below": "The line sounds sparse.", "above": "You can't tell notes from echoes." }
-          ]
+          "knobs": [{"param": "delay", "min": 0, "max": 1, "value": 0.45, "sweet": [0.3, 0.55], "below": "The line sounds sparse.", "above": "You can't tell notes from echoes."}]
         }
       ],
-      "variations": [{ "name": "Classic" }, { "name": "Glassy", "set": { "lpf": 900, "lpq": 9, "decay": 0.12 } }],
+      "variations": [{"name": "Classic"}, {"name": "Glassy", "set": {"lpf": 900, "lpq": 9, "decay": 0.12}}],
       "pitfalls": ["Long decay and long delay together turn the arp to mush."],
       "lessons": ["18-envelopes", "19-squelch"]
+    },
+    {"id": "kick", "extends": "kick-909", "why": "Punchy and alone on the beat: the rolling bass leaves it its own slot."},
+    {
+      "id": "tops",
+      "extends": "tops-909",
+      "why": "Dead straight and bright. Trance hats do not swing: the open hat on the offbeat is the engine of the track.",
+      "set": {"swing": 0, "decay": 0.15},
+      "sweet": {"swing": [0, 0.05]}
     },
     {
       "id": "rolling-bass",
       "name": "Rolling bass",
       "role": "bass",
+      "group": "bass",
       "why": "The bass plays the three sixteenths between the kicks and never the one under the kick. Kick and bass take turns, so both can be loud.",
       "pattern": "note(\"a1*16\")",
-      "context": { "bass": null, "kick": "s(\"bd*4\").bank(\"RolandTR909\")" },
+      "context": {"bass": null, "kick": "s(\"bd*4\").bank(\"RolandTR909\")"},
       "ingredients": [
-        { "id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A bass note on every sixteenth." },
+        {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A bass note on every sixteenth."},
         {
           "id": "gap",
           "name": "Leave the kick's slot empty",
@@ -168,7 +285,18 @@
           "code": ".lpf({lpf})",
           "adds": "Leaves the top of the mix for the lead.",
           "knobs": [
-            { "param": "lpf", "label": "cutoff", "unit": "hz", "log": true, "min": 80, "max": 2000, "value": 400, "sweet": [250, 600], "below": "Felt, not heard; gone on small speakers.", "above": "It buzzes over the pluck." }
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 80,
+              "max": 2000,
+              "value": 400,
+              "sweet": [250, 600],
+              "below": "Felt, not heard; gone on small speakers.",
+              "above": "It buzzes over the pluck."
+            }
           ]
         },
         {
@@ -178,18 +306,36 @@
           "adds": "Each note stops before the next begins.",
           "listenFor": "A drone becomes a rhythm.",
           "knobs": [
-            { "param": "decay", "unit": "seconds", "min": 0.02, "max": 0.4, "value": 0.12, "sweet": [0.08, 0.16], "below": "Ticks instead of notes.", "above": "The notes join up and the roll is lost." }
+            {
+              "param": "decay",
+              "unit": "seconds",
+              "min": 0.02,
+              "max": 0.4,
+              "value": 0.12,
+              "sweet": [0.08, 0.16],
+              "below": "Ticks instead of notes.",
+              "above": "The notes join up and the roll is lost."
+            }
           ]
         },
         {
           "id": "duck",
           "name": "Duck under the kick",
           "code": ".orbit(2)",
-          "context": { "kick": "s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth({depth})" },
+          "context": {"kick": "s(\"bd*4\").bank(\"RolandTR909\").duckorbit(2).duckdepth({depth})"},
           "adds": "The backing kick turns the bass down for a moment each time it hits.",
           "listenFor": "Only with In context on: the bass pumps in time with the kick.",
           "knobs": [
-            { "param": "depth", "label": "duck depth", "min": 0, "max": 1, "value": 0.6, "sweet": [0.5, 0.8], "below": "No pump; kick and bass blur.", "above": "The bass drops out completely on every beat." }
+            {
+              "param": "depth",
+              "label": "duck depth",
+              "min": 0,
+              "max": 1,
+              "value": 0.6,
+              "sweet": [0.5, 0.8],
+              "below": "No pump; kick and bass blur.",
+              "above": "The bass drops out completely on every beat."
+            }
           ]
         }
       ],
@@ -197,20 +343,98 @@
       "lessons": ["08-first-bassline", "28-kick-vs-bass"]
     },
     {
+      "id": "offbeat-bass",
+      "name": "Offbeat bass",
+      "role": "bass",
+      "group": "bass",
+      "why": "The older, simpler trance bass: one note between every pair of kicks. Kick, bass, kick, bass, like a pendulum.",
+      "pattern": "note(\"a1*8\")",
+      "context": {"bass": null, "kick": "s(\"bd*4\").bank(\"RolandTR909\")"},
+      "ingredients": [
+        {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A bass note twice a beat, on the kick and between."},
+        {
+          "id": "off",
+          "name": "Only the offbeat",
+          "pattern": "note(\"[~ a1]*4\")",
+          "adds": "Drops the note that lands on the kick.",
+          "listenFor": "With In context on: kick and bass take turns."
+        },
+        {
+          "id": "lpf",
+          "name": "Keep it low",
+          "code": ".lpf({lpf})",
+          "adds": "Leaves the top of the mix for the lead.",
+          "knobs": [
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 80,
+              "max": 2000,
+              "value": 500,
+              "sweet": [300, 800],
+              "below": "Felt, not heard.",
+              "above": "It buzzes over the lead."
+            }
+          ]
+        },
+        {
+          "id": "short",
+          "name": "Short notes",
+          "code": ".decay({decay}).sustain(0)",
+          "adds": "Each note stops well before the next kick.",
+          "knobs": [
+            {
+              "param": "decay",
+              "unit": "seconds",
+              "min": 0.03,
+              "max": 0.5,
+              "value": 0.18,
+              "sweet": [0.12, 0.25],
+              "below": "Ticks instead of notes.",
+              "above": "The notes join up."
+            }
+          ]
+        },
+        {
+          "id": "oct",
+          "name": "Jump an octave",
+          "pattern": "note(\"[~ a1] [~ a1] [~ a2] [~ a1]\")",
+          "needs": "off",
+          "adds": "The third note of each bar is an octave up.",
+          "listenFor": "A small hook appears in the bassline."
+        }
+      ],
+      "lessons": ["08-first-bassline", "28-kick-vs-bass"]
+    },
+    {
       "id": "gated-pad",
       "name": "Gated pad",
       "role": "pad",
+      "group": "harmony",
       "why": "A held chord chopped into a sixteenth-note rhythm, so harmony and groove come from one part.",
       "pattern": "note(\"<[a3,c4,e4] [f3,a3,c4] [c3,e3,g3] [g3,b3,d4]>\")",
       "ingredients": [
-        { "id": "supersaw", "name": "A held chord", "code": ".s(\"supersaw\")", "required": true, "adds": "One long chord per bar." },
+        {"id": "supersaw", "name": "A held chord", "code": ".s(\"supersaw\")", "required": true, "adds": "One long chord per bar."},
         {
           "id": "dark",
           "name": "Darken it",
           "code": ".lpf({lpf})",
           "adds": "Pushes the pad behind the lead.",
           "knobs": [
-            { "param": "lpf", "label": "cutoff", "unit": "hz", "log": true, "min": 200, "max": 8000, "value": 1500, "sweet": [900, 2500], "below": "A low hum.", "above": "It competes with the lead." }
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 200,
+              "max": 8000,
+              "value": 1500,
+              "sweet": [900, 2500],
+              "below": "A low hum.",
+              "above": "It competes with the lead."
+            }
           ]
         },
         {
@@ -220,7 +444,16 @@
           "adds": "Chops the chord into a rhythm.",
           "listenFor": "The chord starts to stutter in time.",
           "knobs": [
-            { "param": "clip", "label": "gate length", "min": 0.1, "max": 1, "value": 0.5, "sweet": [0.4, 0.7], "below": "Dry ticks.", "above": "The gaps close and the rhythm goes." }
+            {
+              "param": "clip",
+              "label": "gate length",
+              "min": 0.1,
+              "max": 1,
+              "value": 0.5,
+              "sweet": [0.4, 0.7],
+              "below": "Dry ticks.",
+              "above": "The gaps close and the rhythm goes."
+            }
           ]
         },
         {
@@ -231,7 +464,18 @@
           "adds": "The filter rises and falls on its own.",
           "listenFor": "The pad slowly brightens toward the drop.",
           "knobs": [
-            { "param": "top", "label": "sweep top", "unit": "hz", "log": true, "min": 800, "max": 12000, "value": 4000, "sweet": [2500, 6000], "below": "Too small a change to notice.", "above": "Harsh at the peak." }
+            {
+              "param": "top",
+              "label": "sweep top",
+              "unit": "hz",
+              "log": true,
+              "min": 800,
+              "max": 12000,
+              "value": 4000,
+              "sweet": [2500, 6000],
+              "below": "Too small a change to notice.",
+              "above": "Harsh at the peak."
+            }
           ]
         },
         {
@@ -240,51 +484,31 @@
           "code": ".room({room})",
           "adds": "Softens the hard edges of the gate.",
           "knobs": [
-            { "param": "room", "label": "reverb", "min": 0, "max": 1, "value": 0.4, "sweet": [0.25, 0.5], "below": "Choppy and dry.", "above": "The tail fills the gaps you just cut." }
+            {
+              "param": "room",
+              "label": "reverb",
+              "min": 0,
+              "max": 1,
+              "value": 0.4,
+              "sweet": [0.25, 0.5],
+              "below": "Choppy and dry.",
+              "above": "The tail fills the gaps you just cut."
+            }
           ]
         }
       ],
       "lessons": ["15-minor-seventh-stab", "22-movement"]
     },
-    { "id": "kick", "extends": "kick-909", "why": "Punchy and alone on the beat: the rolling bass leaves it its own slot." },
     {
       "id": "acid-line",
       "extends": "acid-line",
       "name": "Acid line (breakdown)",
       "why": "The acid house sound, tuned brighter and more resonant so it cuts through the reverb in a breakdown.",
-      "set": { "lpf": 700, "lpq": 14, "lpdecay": 0.1 }
+      "set": {"lpf": 700, "lpq": 14, "lpdecay": 0.1},
+      "sweet": {"lpf": [500, 1000], "lpq": [11, 16]}
     },
-    {
-      "id": "riser",
-      "name": "Noise riser",
-      "role": "fx",
-      "why": "Eight bars of noise getting brighter and louder. It tells the room the drop is coming.",
-      "pattern": "s(\"white*16\")",
-      "ingredients": [
-        { "id": "noise", "name": "White noise", "code": ".gain(.3)", "required": true, "adds": "A steady hiss." },
-        {
-          "id": "sweep",
-          "name": "Sweep the low end away",
-          "code": ".hpf(saw.range(200, {top}).slow(8))",
-          "adds": "The hiss thins out and rises in pitch over 8 bars.",
-          "listenFor": "It seems to climb.",
-          "knobs": [
-            { "param": "top", "label": "sweep top", "unit": "hz", "log": true, "min": 1000, "max": 16000, "value": 8000, "sweet": [6000, 12000], "below": "It never gets tense.", "above": "It vanishes before the drop." }
-          ]
-        },
-        {
-          "id": "ramp",
-          "name": "Get louder",
-          "code": ".gain(saw.range(.05, {gain}).slow(8))",
-          "replaces": "noise",
-          "adds": "Starts quiet and swells.",
-          "knobs": [
-            { "param": "gain", "label": "peak level", "min": 0.1, "max": 1.2, "value": 0.6, "sweet": [0.4, 0.8], "below": "Lost under the lead.", "above": "Louder than the drop it announces." }
-          ]
-        },
-        { "id": "reverb", "name": "Room", "code": ".room(.6)", "adds": "A tail that hangs over the silence before the drop." }
-      ],
-      "lessons": ["30-tension-and-release"]
-    }
+    {"id": "riser", "extends": "noise-riser", "why": "Eight bars of noise getting brighter and louder. It tells the room the drop is coming."},
+    {"id": "snare-roll", "extends": "snare-roll"},
+    {"id": "impact", "extends": "impact", "why": "The crash and boom on the first beat after the breakdown, when the kick comes back."}
   ]
 }

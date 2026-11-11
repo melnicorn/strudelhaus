@@ -1,0 +1,71 @@
+{
+  "name": "Synth kick",
+  "role": "drums",
+  "group": "kick",
+  "why": "A kick built from nothing but a sine wave whose pitch falls very fast. Because it is a note, you can tune it to the track.",
+  "pattern": "note(\"a1*4\")",
+  "context": {"kick": null},
+  "ingredients": [
+    {"id": "sine", "name": "A low sine", "code": ".s(\"sine\")", "required": true, "adds": "A bass note on every beat. Not a drum yet."},
+    {
+      "id": "short",
+      "name": "Make it short",
+      "code": ".decay({decay}).sustain(0)",
+      "adds": "The note dies away instead of holding.",
+      "listenFor": "A hum becomes a thump.",
+      "knobs": [
+        {
+          "param": "decay",
+          "unit": "seconds",
+          "min": 0.05,
+          "max": 0.8,
+          "value": 0.25,
+          "sweet": [0.15, 0.35],
+          "below": "A tick with no weight.",
+          "above": "It booms into the next beat."
+        }
+      ]
+    },
+    {
+      "id": "drop",
+      "name": "Drop the pitch",
+      "code": ".penv({penv}).pdecay({pdecay})",
+      "adds": "Each hit starts high and falls to the note in a few hundredths of a second.",
+      "listenFor": "A click appears on the front. This fall is the kick.",
+      "knobs": [
+        {
+          "param": "penv",
+          "label": "drop",
+          "unit": "int",
+          "step": 1,
+          "min": 0,
+          "max": 48,
+          "value": 30,
+          "sweet": [24, 36],
+          "below": "Soft, like a tom.",
+          "above": "A laser \"pew\" before the thump."
+        },
+        {
+          "param": "pdecay",
+          "label": "drop time",
+          "unit": "seconds",
+          "min": 0.01,
+          "max": 0.2,
+          "value": 0.05,
+          "sweet": [0.03, 0.08],
+          "below": "Only a click.",
+          "above": "You hear the pitch slide down."
+        }
+      ]
+    },
+    {
+      "id": "drive",
+      "name": "Drive",
+      "code": ".distort({drive})",
+      "adds": "Squares off the sine so it is heard on small speakers.",
+      "knobs": [{"param": "drive", "step": 0.1, "min": 0, "max": 3, "value": 0.8, "sweet": [0.4, 1.5], "below": "Clean and easy to lose.", "above": "Fuzz with no punch."}]
+    }
+  ],
+  "pitfalls": ["A long decay sounds huge alone and leaves no room for the bass."],
+  "lessons": ["17-waveforms", "18-envelopes"]
+}

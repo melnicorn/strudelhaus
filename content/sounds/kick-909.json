@@ -1,11 +1,12 @@
 {
   "name": "909 kick",
   "role": "drums",
+  "group": "kick",
   "why": "A punchy kick on every beat. Almost every style on this page is built on top of it.",
   "pattern": "s(\"bd*4\")",
-  "context": { "kick": null },
+  "context": {"kick": null},
   "ingredients": [
-    { "id": "plain", "name": "A plain kick", "required": true, "adds": "Four kicks to the bar from the default kit." },
+    {"id": "plain", "name": "A plain kick", "required": true, "adds": "Four kicks to the bar from the default kit."},
     {
       "id": "bank",
       "name": "The 909",
@@ -18,9 +19,7 @@
       "name": "Level",
       "code": ".gain({gain})",
       "adds": "The kick sits on top of everything else.",
-      "knobs": [
-        { "param": "gain", "min": 0, "max": 1.5, "value": 1, "sweet": [0.9, 1.1], "below": "The bass covers it.", "above": "It clips and flattens the mix." }
-      ]
+      "knobs": [{"param": "gain", "min": 0, "max": 1.5, "value": 1, "sweet": [0.9, 1.1], "below": "The bass covers it.", "above": "It clips and flattens the mix."}]
     }
   ],
   "lessons": ["02-four-on-the-floor", "07-drum-machine-shopping"]

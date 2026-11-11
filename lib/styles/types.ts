@@ -6,10 +6,20 @@ import { z } from 'zod';
 /** Ids become URL segments: lowercase letters, digits and hyphens. */
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'ids use lowercase letters, digits and hyphens');
 
+/** The slots every style fills, in the order the page lists them. A sound's `group` is one of these ids. */
+export const GROUPS = [
+  { id: 'kick', label: 'Kick' },
+  { id: 'groove', label: 'Tops and groove' },
+  { id: 'bass', label: 'Bass' },
+  { id: 'harmony', label: 'Harmony' },
+  { id: 'hook', label: 'Hooks and effects' },
+] as const;
+const group = z.enum(GROUPS.map((g) => g.id));
+
 /** One number in an ingredient's code, with the range where it sounds right for the style. */
 export const knobSchema = z
   .strictObject({
-    /** The `{name}` this knob fills in the ingredient's code. */
+    /** The `{name}` this knob fills in the ingredient's code or layer. */
     param: z.string().regex(/^[a-z][A-Za-z0-9]*$/),
     /** Shown under the knob; the param name by default. */
     label: z.string().optional(),
@@ -41,6 +51,10 @@ export const ingredientSchema = z.strictObject({
   code: z.string().optional(),
   /** Replaces the sound's note pattern while this ingredient is on. */
   pattern: z.string().optional(),
+  /** A whole second part played alongside, e.g. `s("~ cp").bank("RolandTR909")`: the sound becomes a stack. */
+  layer: z.string().optional(),
+  /** `code` goes on the whole stack (every layer) instead of the first part's chain. Swing, for one. */
+  whole: z.boolean().optional(),
   /** The starting point: always on. */
   required: z.boolean().optional(),
   /** An earlier ingredient this one only works with. */
@@ -64,6 +78,8 @@ export const variationSchema = z.strictObject({
 const soundFields = {
   name: z.string(),
   role: z.string(),
+  /** Which of the page's five slots it fills. */
+  group,
   /** What makes this sound belong to the style, in a sentence or two. */
   why: z.string(),
   /** The notes or hits, before any ingredient: `note("a1*16")`. */
@@ -86,11 +102,15 @@ export const styleSoundSchema = archetypeSchema.partial().extend({
   extends: z.string().optional(),
   /** New default values for the recipe's knobs, by param. */
   set: z.record(z.string(), z.number()).optional(),
+  /** New sweet spots for the recipe's knobs, by param: where it sounds right for this style. */
+  sweet: z.record(z.string(), z.tuple([z.number(), z.number()])).optional(),
 });
 
 export const styleSchema = z.strictObject({
   id,
   name: z.string(),
+  /** The wider family it belongs to ("House", "Techno"): the index lists styles under it. */
+  family: z.string(),
   era: z.string(),
   /** Beats per minute. */
   tempo: z.number().positive(),
@@ -101,6 +121,7 @@ export const styleSchema = z.strictObject({
   sounds: z.array(styleSoundSchema).min(1),
 });
 
+export type Group = (typeof GROUPS)[number]['id'];
 export type Knob = z.infer<typeof knobSchema>;
 export type Variation = z.infer<typeof variationSchema>;
 export type Archetype = z.infer<typeof archetypeSchema>;
@@ -118,6 +139,7 @@ export interface Sound {
   extends?: string;
   name: string;
   role: string;
+  group: Group;
   why: string;
   pattern: string;
   ingredients: Ingredient[];

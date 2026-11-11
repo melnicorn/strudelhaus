@@ -1,0 +1,92 @@
+{
+  "id": "chicago-house",
+  "name": "Chicago house",
+  "family": "House",
+  "era": "1986–1994",
+  "tempo": 122,
+  "key": "C minor",
+  "blurb": "Shuffling drum machines, an organ bass and piano chords.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR909\")"},
+    {"id": "tops", "code": "s(\"~ cp ~ cp, hh*8\").bank(\"RolandTR707\").gain(.5)"},
+    {"id": "bass", "code": "note(\"c2 ~ c2 [~ c2] ~ c2 ~ eb2\").s(\"sine\").transpose(\"0,12\").decay(.15).sustain(0)"}
+  ],
+  "sounds": [
+    {"id": "piano", "extends": "piano-stab", "pattern": "note(\"[c4,eb4,g4] ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ [bb3,d4,f4]\")"},
+    {"id": "kick", "extends": "kick-909", "why": "A firm kick on every beat. House was named for it: four on the floor, all night."},
+    {
+      "id": "hats",
+      "name": "Shuffled hats and clap",
+      "role": "drums",
+      "group": "groove",
+      "why": "Sixteenth-note hats with every second one late and quiet. That lilt is the difference between house and a metronome.",
+      "pattern": "s(\"hh*16\")",
+      "context": {"tops": null},
+      "ingredients": [
+        {"id": "hh", "name": "Sixteenth hats", "required": true, "adds": "Sixteen identical hats to the bar, from the default kit."},
+        {"id": "bank", "name": "The 707", "code": ".bank(\"RolandTR707\")", "adds": "The TR-707's bright, tight sampled hat."},
+        {
+          "id": "accent",
+          "name": "Loud, quiet, loud, quiet",
+          "code": ".gain(\"[.5 .25 .4 .25]*4\")",
+          "adds": "Hats on the beat and offbeat are louder than the ones between.",
+          "listenFor": "A machine-gun becomes a pulse."
+        },
+        {
+          "id": "clap",
+          "name": "Clap on 2 and 4",
+          "layer": "s(\"~ cp ~ cp\").bank(\"RolandTR707\").gain({clap})",
+          "adds": "The backbeat.",
+          "knobs": [
+            {
+              "param": "clap",
+              "label": "clap level",
+              "min": 0,
+              "max": 1.2,
+              "value": 0.7,
+              "sweet": [0.5, 0.9],
+              "below": "The beat loses its backbone.",
+              "above": "It is louder than the kick."
+            }
+          ]
+        },
+        {"id": "oh", "name": "Open hat", "layer": "s(\"[~ oh]*4\").bank(\"RolandTR707\").gain(.4)", "adds": "An open hat on every offbeat."},
+        {
+          "id": "swing",
+          "name": "Shuffle",
+          "code": ".swingBy({swing}, 8)",
+          "whole": true,
+          "adds": "Every second sixteenth arrives late.",
+          "listenFor": "The beat starts to skip.",
+          "knobs": [
+            {
+              "param": "swing",
+              "step": 0.01,
+              "min": 0,
+              "max": 0.5,
+              "value": 0.2,
+              "sweet": [0.12, 0.3],
+              "below": "Straight and stiff: techno, not house.",
+              "above": "It stumbles."
+            }
+          ]
+        }
+      ],
+      "lessons": ["06-sixteenths-and-dynamics", "11-swing-it"]
+    },
+    {"id": "organ-bass", "extends": "organ-bass", "pattern": "note(\"c2 ~ c2 [~ c2] ~ c2 ~ eb2\")"},
+    {
+      "id": "stab",
+      "extends": "chord-stab",
+      "name": "Parallel chord stab",
+      "why": "One minor seventh chord, sampled, then played from different keys. Every note moves by the same amount, which no pianist would do and every sampler does.",
+      "pattern": "note(\"<[c4,eb4,g4,bb4] [c4,eb4,g4,bb4] [eb4,gb4,bb4,db5] [f4,ab4,c5,eb5]>\").struct(\"~ x ~ [~ x] ~ x ~ ~\")"
+    },
+    {
+      "id": "strings",
+      "extends": "string-pad",
+      "pattern": "note(\"<[c4,eb4,g4,bb4] [ab3,c4,eb4,g4]>\")",
+      "why": "Soft strings held over the drums. They turn a drum track into a song."
+    }
+  ]
+}

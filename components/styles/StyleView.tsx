@@ -18,7 +18,7 @@ import { addPartToCode } from '@/lib/sounds/insert';
 import { useLibraryStore } from '@/lib/stores/library';
 import { useStylesStore } from '@/lib/stores/styles';
 import { applyVariation, buildCode, defaultState, soundLines, statuses, strippedState, verdict, type CodeLine, type IngredientStatus } from '@/lib/styles/build';
-import type { Ingredient, Knob as KnobSpec, Sound, SoundState, Style } from '@/lib/styles/types';
+import { GROUPS, type Ingredient, type Knob as KnobSpec, type Sound, type SoundState, type Style } from '@/lib/styles/types';
 import { usePlayer } from './usePlayer';
 
 const chip = 'rounded-full border border-border bg-surface-secondary px-2 py-px text-[11px] whitespace-nowrap';
@@ -70,20 +70,27 @@ export function StyleView({ style, soundId }: { style: Style; soundId: string })
       </div>
 
       <div className="grid grid-cols-[210px_minmax(0,1fr)_minmax(0,420px)] items-start gap-3 max-[1100px]:grid-cols-[210px_minmax(0,1fr)] max-[760px]:grid-cols-1">
-        <Panel title="Signature sounds" className="sticky top-3 max-[760px]:static">
+        <Panel title={`${style.sounds.length} sounds`} className="sticky top-3 max-[760px]:static">
           <nav className="flex flex-col gap-1" aria-label={`${style.name} sounds`}>
-            {style.sounds.map((s) => (
-              <Link
-                key={s.id}
-                href={`/styles/${style.id}/${s.id}` as Route}
-                aria-current={s.id === sound.id ? 'page' : undefined}
-                className={cn('flex flex-col rounded px-2 py-1.5 hover:bg-surface-secondary', s.id === sound.id && 'bg-accent/20 hover:bg-accent/20')}
-              >
-                <span>{s.name}</span>
-                <span className="text-[11px] text-muted">
-                  {s.role} · {s.ingredients.length} steps
-                </span>
-              </Link>
+            {GROUPS.filter((g) => style.sounds.some((s) => s.group === g.id)).map((g) => (
+              <div key={g.id} className="flex flex-col gap-0.5">
+                <h3 className="m-0 mt-1.5 px-2 text-[10px] font-semibold tracking-[0.08em] text-muted uppercase">{g.label}</h3>
+                {style.sounds
+                  .filter((s) => s.group === g.id)
+                  .map((s) => (
+                    <Link
+                      key={s.id}
+                      href={`/styles/${style.id}/${s.id}` as Route}
+                      aria-current={s.id === sound.id ? 'page' : undefined}
+                      className={cn('flex flex-col rounded px-2 py-1 hover:bg-surface-secondary', s.id === sound.id && 'bg-accent/20 hover:bg-accent/20')}
+                    >
+                      <span>{s.name}</span>
+                      <span className="text-[11px] text-muted">
+                        {s.role} · {s.ingredients.length} steps
+                      </span>
+                    </Link>
+                  ))}
+              </div>
             ))}
           </nav>
         </Panel>
@@ -181,7 +188,7 @@ interface StepProps {
 /** One ingredient: its switch, what it adds, and its knobs while it is on. */
 function Step({ number, ingredient: ing, status, needs, state, onToggle, onKnob }: StepProps) {
   const live = status === 'on';
-  const slice = (ing.pattern ?? ing.code ?? '').replace(/\{\w+\}/g, '…');
+  const slice = (ing.pattern ?? ing.code ?? ing.layer ?? '').replace(/\{\w+\}/g, '…');
   return (
     <li
       className={cn(
@@ -199,6 +206,7 @@ function Step({ number, ingredient: ing, status, needs, state, onToggle, onKnob 
           {ing.required && <span className={chip}>starting point</span>}
           {status === 'replaced' && <span className={chip}>replaced by a later step</span>}
           {status === 'blocked' && <span className={chip}>needs step {needs}</span>}
+          {ing.layer && <span className={chip}>a part of its own</span>}
           <span className="flex-1" />
           {slice && <code className="min-w-0 truncate text-xs text-muted">{slice}</code>}
         </div>

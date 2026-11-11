@@ -1,0 +1,57 @@
+{
+  "name": "Hats and ride",
+  "role": "drums",
+  "group": "groove",
+  "why": "Driving closed hats with a ride cymbal on the offbeat. The ride is what makes a techno loop feel like it is going somewhere.",
+  "pattern": "s(\"hh*8\")",
+  "context": {"tops": null},
+  "ingredients": [
+    {"id": "hh", "name": "Eighth-note hats", "required": true, "adds": "Closed hats twice a beat from the default kit."},
+    {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909's crisp sampled hats."},
+    {
+      "id": "accent",
+      "name": "Accent the offbeat",
+      "code": ".gain(\"[.4 .8]*4\")",
+      "adds": "The hat between the kicks is louder than the one on them.",
+      "listenFor": "The hats start to bounce against the kick."
+    },
+    {
+      "id": "ride",
+      "name": "Ride on the offbeat",
+      "layer": "s(\"[~ rd]*4\").bank(\"RolandTR909\").gain({ride})",
+      "adds": "A long, washy cymbal between the kicks.",
+      "listenFor": "A shimmer that joins the beats together.",
+      "knobs": [
+        {
+          "param": "ride",
+          "label": "ride level",
+          "min": 0,
+          "max": 1,
+          "value": 0.45,
+          "sweet": [0.3, 0.6],
+          "below": "You only notice it when it stops.",
+          "above": "A wash that hides the hats."
+        }
+      ]
+    },
+    {
+      "id": "clap",
+      "name": "Clap on 2 and 4",
+      "layer": "s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain({clap})",
+      "adds": "The backbeat.",
+      "knobs": [
+        {
+          "param": "clap",
+          "label": "clap level",
+          "min": 0,
+          "max": 1.2,
+          "value": 0.6,
+          "sweet": [0.4, 0.8],
+          "below": "The loop feels like it has no middle.",
+          "above": "It is louder than the kick."
+        }
+      ]
+    }
+  ],
+  "lessons": ["05-offbeat-hat", "06-sixteenths-and-dynamics"]
+}

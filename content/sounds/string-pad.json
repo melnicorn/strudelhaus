@@ -1,0 +1,75 @@
+{
+  "name": "String pad",
+  "role": "pad",
+  "group": "harmony",
+  "why": "Slow, soft chords that fade in and out behind everything else. They carry the mood while the drums carry the track.",
+  "pattern": "note(\"<[a3,c4,e4,g4] [f3,a3,c4,e4]>\")",
+  "ingredients": [
+    {"id": "saw", "name": "A sawtooth chord", "code": ".s(\"sawtooth\")", "required": true, "adds": "One bright, flat chord per bar."},
+    {
+      "id": "ens",
+      "name": "Make it an ensemble",
+      "code": ".s(\"supersaw\").unison(3).detune(.2)",
+      "replaces": "saw",
+      "adds": "Three slightly detuned saws play each note, like a string section.",
+      "listenFor": "A gentle shimmer where there was a buzz."
+    },
+    {
+      "id": "slow",
+      "name": "Fade in and out",
+      "code": ".attack({attack}).release({release})",
+      "adds": "Each chord swells up and trails away.",
+      "listenFor": "The hard start of each chord disappears.",
+      "knobs": [
+        {
+          "param": "attack",
+          "unit": "seconds",
+          "min": 0.01,
+          "max": 2,
+          "value": 0.4,
+          "sweet": [0.25, 0.8],
+          "below": "It hits like a stab.",
+          "above": "The chord is over before it arrives."
+        },
+        {
+          "param": "release",
+          "unit": "seconds",
+          "min": 0.05,
+          "max": 3,
+          "value": 1,
+          "sweet": [0.6, 1.8],
+          "below": "Chords stop dead.",
+          "above": "Each chord is still ringing through the next."
+        }
+      ]
+    },
+    {
+      "id": "dark",
+      "name": "Darken it",
+      "code": ".lpf({lpf})",
+      "adds": "Pushes the pad to the back.",
+      "knobs": [
+        {
+          "param": "lpf",
+          "label": "cutoff",
+          "unit": "hz",
+          "log": true,
+          "min": 200,
+          "max": 8000,
+          "value": 1800,
+          "sweet": [1000, 3000],
+          "below": "A low hum.",
+          "above": "It sits on top of the lead."
+        }
+      ]
+    },
+    {
+      "id": "room",
+      "name": "A big room",
+      "code": ".room({room}).roomsize(6)",
+      "adds": "A long tail that joins the chords together.",
+      "knobs": [{"param": "room", "label": "reverb", "min": 0, "max": 1, "value": 0.5, "sweet": [0.35, 0.7], "below": "Close and plain.", "above": "A fog with no chords in it."}]
+    }
+  ],
+  "lessons": ["16-progressions", "18-envelopes", "20-space"]
+}

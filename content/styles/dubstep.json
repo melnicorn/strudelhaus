@@ -1,0 +1,247 @@
+{
+  "id": "dubstep",
+  "name": "Dubstep",
+  "family": "Bass",
+  "era": "2005–2012",
+  "tempo": 140,
+  "key": "E minor",
+  "blurb": "Half-speed drums and a bass that wobbles.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd ~ ~ ~ ~ ~ ~ ~ sd ~ ~ ~ ~ ~ ~ ~\").bank(\"RolandTR909\")"},
+    {"id": "tops", "code": "s(\"hh*8\").bank(\"RolandTR909\").gain(\"[.4 .2]*4\")"},
+    {"id": "bass", "code": "note(\"<e1 e1 g1 d1>\").s(\"sine\").distort(.4)"}
+  ],
+  "sounds": [
+    {
+      "id": "wobble",
+      "name": "Wobble bass",
+      "role": "bass",
+      "group": "bass",
+      "why": "A held saw note whose filter opens and closes in time with the track. The speed of the wobble is the rhythm of the bassline.",
+      "pattern": "note(\"<e1 e1 g1 d1>\").struct(\"x*32\")",
+      "context": {"bass": null},
+      "ingredients": [
+        {"id": "saw", "name": "A held sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "One long, buzzy bass note per bar."},
+        {
+          "id": "dark",
+          "name": "Close the filter",
+          "code": ".lpf({lpf})",
+          "adds": "Most of the buzz is removed.",
+          "knobs": [
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 60,
+              "max": 3000,
+              "value": 300,
+              "sweet": [150, 500],
+              "below": "Silence.",
+              "above": "Just a buzz."
+            }
+          ]
+        },
+        {
+          "id": "wobble",
+          "name": "Wobble it",
+          "code": ".lpf(sine.range(120, {top}).fast({rate}))",
+          "replaces": "dark",
+          "adds": "The cutoff rises and falls a set number of times each bar.",
+          "listenFor": "\"Wub wub wub wub.\"",
+          "knobs": [
+            {
+              "param": "top",
+              "label": "wobble top",
+              "unit": "hz",
+              "log": true,
+              "min": 400,
+              "max": 6000,
+              "value": 1800,
+              "sweet": [1200, 2800],
+              "below": "A murmur.",
+              "above": "A harsh buzz at the top of each wobble."
+            },
+            {
+              "param": "rate",
+              "label": "wobbles per bar",
+              "unit": "int",
+              "step": 1,
+              "min": 1,
+              "max": 8,
+              "value": 4,
+              "sweet": [2, 6],
+              "below": "A slow swell, not a wobble.",
+              "above": "A flutter too fast to feel as rhythm."
+            }
+          ]
+        },
+        {
+          "id": "res",
+          "name": "Resonance",
+          "code": ".lpq({lpq})",
+          "adds": "A whistling peak that rides up and down with the wobble.",
+          "listenFor": "Each wobble says \"wow\".",
+          "knobs": [
+            {
+              "param": "lpq",
+              "label": "resonance",
+              "step": 0.5,
+              "min": 0,
+              "max": 20,
+              "value": 8,
+              "sweet": [5, 12],
+              "below": "Smooth and plain.",
+              "above": "The whistle is louder than the bass."
+            }
+          ]
+        },
+        {
+          "id": "drive",
+          "name": "Drive",
+          "code": ".distort({drive})",
+          "adds": "Grit, so the wobble growls.",
+          "knobs": [{"param": "drive", "step": 0.1, "min": 0, "max": 3, "value": 1, "sweet": [0.6, 1.8], "below": "Clean.", "above": "Fuzz that hides the wobble."}]
+        }
+      ],
+      "variations": [{"name": "Quarter notes"}, {"name": "Slow", "set": {"rate": 2}}, {"name": "Triplets", "set": {"rate": 3}}, {"name": "Fast", "set": {"rate": 8, "top": 1400}}],
+      "pitfalls": ["The same wobble speed for a whole track gets dull. Change it every bar or two."],
+      "lessons": ["19-squelch", "22-movement"]
+    },
+    {
+      "id": "drums",
+      "name": "Half-time drums",
+      "role": "drums",
+      "group": "groove",
+      "why": "The tempo is 140, but the snare lands only on beat 3, so it feels like 70. All that empty space is for the bass.",
+      "pattern": "s(\"bd ~ ~ ~ ~ ~ ~ ~ sd ~ ~ ~ ~ ~ ~ ~\")",
+      "context": {"kick": null, "tops": null},
+      "ingredients": [
+        {"id": "skeleton", "name": "Kick on 1, snare on 3", "required": true, "adds": "Two hits a bar, from the default kit."},
+        {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "A hard kick and a loud, cracking snare."},
+        {
+          "id": "late",
+          "name": "Extra kicks",
+          "pattern": "s(\"bd ~ ~ ~ ~ ~ bd ~ sd ~ ~ ~ ~ ~ ~ bd\")",
+          "adds": "A kick just before the snare and one at the very end of the bar.",
+          "listenFor": "The beat starts to lurch forward."
+        },
+        {
+          "id": "hats",
+          "name": "Hats",
+          "layer": "s(\"hh*8\").bank(\"RolandTR909\").gain(\"[.4 .2]*4\")",
+          "adds": "Eighth-note hats that keep the real tempo going.",
+          "listenFor": "You can now hear both speeds at once: fast hats, slow snare."
+        },
+        {
+          "id": "room",
+          "name": "A big empty room",
+          "code": ".room({room})",
+          "adds": "Reverb on the kick and snare.",
+          "knobs": [
+            {
+              "param": "room",
+              "label": "reverb",
+              "min": 0,
+              "max": 1,
+              "value": 0.25,
+              "sweet": [0.15, 0.4],
+              "below": "Dry and small.",
+              "above": "The space between hits fills up."
+            }
+          ]
+        }
+      ],
+      "lessons": ["03-steps-and-rests", "12-off-the-grid"]
+    },
+    {
+      "id": "sub",
+      "extends": "sub-bass",
+      "pattern": "note(\"<e1 e1 g1 d1>\")",
+      "why": "A long, clean sine under the wobble. The wobble is the character; this is the weight.",
+      "set": {"decay": 1.2, "drive": 0.3},
+      "sweet": {"decay": [0.8, 1.5]}
+    },
+    {
+      "id": "pad",
+      "extends": "string-pad",
+      "name": "Dark pad",
+      "pattern": "note(\"<[e3,g3,b3,d4] [c3,e3,g3,b3]>\")",
+      "why": "A cold, distant chord for the intro and breakdown, before the bass arrives.",
+      "set": {"lpf": 900},
+      "sweet": {"lpf": [500, 1500]}
+    },
+    {
+      "id": "siren",
+      "name": "Dub siren",
+      "role": "fx",
+      "group": "hook",
+      "why": "A tone that swings up and down in pitch, fed into an echo. It came to dubstep from Jamaican sound systems.",
+      "pattern": "note(\"<e5 ~>\")",
+      "ingredients": [
+        {"id": "square", "name": "A square wave", "code": ".s(\"square\")", "required": true, "adds": "A hollow, steady beep held for a bar."},
+        {
+          "id": "swing",
+          "name": "Swing the pitch",
+          "code": ".vib({vib}).vibmod({vibmod})",
+          "adds": "The pitch rises and falls several times a second.",
+          "listenFor": "A beep becomes a siren.",
+          "knobs": [
+            {"param": "vib", "label": "speed", "step": 0.5, "min": 0.5, "max": 12, "value": 4, "sweet": [2, 6], "below": "A slow moan.", "above": "A trill."},
+            {
+              "param": "vibmod",
+              "label": "range",
+              "step": 0.5,
+              "min": 0,
+              "max": 12,
+              "value": 5,
+              "sweet": [3, 8],
+              "below": "A gentle vibrato.",
+              "above": "It leaps about wildly."
+            }
+          ]
+        },
+        {
+          "id": "soft",
+          "name": "Soften it",
+          "code": ".lpf({lpf})",
+          "adds": "Takes the edge off the square wave.",
+          "knobs": [
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 300,
+              "max": 8000,
+              "value": 2000,
+              "sweet": [1200, 3500],
+              "below": "Muffled.",
+              "above": "Piercing."
+            }
+          ]
+        },
+        {
+          "id": "echo",
+          "name": "Long echo",
+          "code": ".delay(.6).delaytime(.32).delayfeedback({fb})",
+          "adds": "The siren repeats and trails off.",
+          "knobs": [
+            {
+              "param": "fb",
+              "label": "feedback",
+              "min": 0,
+              "max": 0.9,
+              "value": 0.6,
+              "sweet": [0.45, 0.75],
+              "below": "It stops when the note stops.",
+              "above": "The echoes never die."
+            }
+          ]
+        }
+      ],
+      "lessons": ["20-space", "22-movement"]
+    },
+    {"id": "impact", "extends": "impact", "why": "The hit on the first beat of the drop, after a bar of silence."}
+  ]
+}

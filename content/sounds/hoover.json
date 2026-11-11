@@ -1,0 +1,67 @@
+{
+  "name": "Hoover",
+  "role": "lead",
+  "group": "hook",
+  "why": "A thick, badly out-of-tune saw stack across three octaves that swoops up into every note. It sounds like a vacuum cleaner, which is where the name comes from.",
+  "pattern": "note(\"a2 ~ ~ a2 ~ ~ c3 ~\")",
+  "ingredients": [
+    {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A plain, buzzy note."},
+    {
+      "id": "stack",
+      "name": "Stack and detune hard",
+      "code": ".s(\"supersaw\").unison(5).detune({detune})",
+      "replaces": "saw",
+      "adds": "Five saws per note, much further apart than a trance lead.",
+      "listenFor": "It gets wide and a little sour. That sourness is the sound.",
+      "knobs": [{"param": "detune", "min": 0, "max": 1, "value": 0.6, "sweet": [0.45, 0.8], "below": "A polite trance lead.", "above": "Just out of tune."}]
+    },
+    {
+      "id": "oct",
+      "name": "Three octaves",
+      "code": ".transpose(\"-12,0,12\")",
+      "adds": "Every note also plays an octave below and an octave above.",
+      "listenFor": "It fills the whole range at once."
+    },
+    {
+      "id": "swoop",
+      "name": "Swoop up",
+      "code": ".penv({penv}).pdecay({pdecay})",
+      "adds": "Each note starts low and slides up to pitch.",
+      "listenFor": "The \"whooo\" at the start of each note.",
+      "knobs": [
+        {
+          "param": "penv",
+          "label": "swoop",
+          "unit": "int",
+          "step": 1,
+          "min": -24,
+          "max": 0,
+          "value": -12,
+          "sweet": [-14, -7],
+          "below": "A siren, not a note.",
+          "above": "No swoop: just a detuned chord."
+        },
+        {
+          "param": "pdecay",
+          "label": "swoop time",
+          "unit": "seconds",
+          "min": 0.02,
+          "max": 0.5,
+          "value": 0.12,
+          "sweet": [0.08, 0.2],
+          "below": "Too fast to hear as a slide.",
+          "above": "It never reaches the note."
+        }
+      ]
+    },
+    {
+      "id": "room",
+      "name": "Room",
+      "code": ".room({room})",
+      "adds": "The warehouse it is played in.",
+      "knobs": [{"param": "room", "label": "reverb", "min": 0, "max": 1, "value": 0.3, "sweet": [0.2, 0.45], "below": "Dry and small.", "above": "A blur."}]
+    }
+  ],
+  "pitfalls": ["Played as chords it turns to mud: the three octaves already are a chord."],
+  "lessons": ["17-waveforms", "21-grit-and-width"]
+}

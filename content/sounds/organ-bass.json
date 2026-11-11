@@ -1,0 +1,58 @@
+{
+  "name": "Organ bass",
+  "role": "bass",
+  "group": "bass",
+  "why": "The Korg M1 organ preset played low and short: a hollow, knocking bass that was on half the house records of the early 90s.",
+  "pattern": "note(\"a2 ~ a2 [~ a2] ~ a2 ~ c3\")",
+  "context": {"bass": null},
+  "ingredients": [
+    {"id": "sine", "name": "A sine wave", "code": ".s(\"sine\")", "required": true, "adds": "One pure tone per note."},
+    {
+      "id": "harm",
+      "name": "Pull out two drawbars",
+      "code": ".transpose(\"0,12,19\")",
+      "adds": "Every note also sounds an octave and an octave-and-a-fifth higher, the way an organ builds its tone.",
+      "listenFor": "It turns hollow and woody, like an organ."
+    },
+    {
+      "id": "short",
+      "name": "Short notes",
+      "code": ".decay({decay}).sustain(0)",
+      "adds": "Each note knocks and stops.",
+      "listenFor": "A held organ becomes a bassline.",
+      "knobs": [
+        {
+          "param": "decay",
+          "unit": "seconds",
+          "min": 0.04,
+          "max": 0.6,
+          "value": 0.15,
+          "sweet": [0.1, 0.22],
+          "below": "A click.",
+          "above": "It sounds like a church, not a club."
+        }
+      ]
+    },
+    {
+      "id": "lpf",
+      "name": "Soften it",
+      "code": ".lpf({lpf})",
+      "adds": "Rounds off the upper drawbars.",
+      "knobs": [
+        {
+          "param": "lpf",
+          "label": "cutoff",
+          "unit": "hz",
+          "log": true,
+          "min": 200,
+          "max": 6000,
+          "value": 1500,
+          "sweet": [900, 2500],
+          "below": "Back to a plain sub.",
+          "above": "Thin and whistly."
+        }
+      ]
+    }
+  ],
+  "lessons": ["08-first-bassline", "17-waveforms"]
+}

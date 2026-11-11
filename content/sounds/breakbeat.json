@@ -1,0 +1,60 @@
+{
+  "name": "Breakbeat",
+  "role": "drums",
+  "group": "groove",
+  "why": "A drum pattern that sounds like a funk drummer sped up: kick, snare, a late kick, snare, with quiet ghost snares and hats in between.",
+  "pattern": "s(\"bd ~ ~ ~ sd ~ ~ ~ ~ ~ bd ~ sd ~ ~ ~\")",
+  "context": {"kick": null, "tops": null},
+  "ingredients": [
+    {
+      "id": "skeleton",
+      "name": "The skeleton",
+      "required": true,
+      "adds": "Kick on 1, snare on 2, a kick just after 3, snare on 4. The late kick is what makes it a break and not a rock beat."
+    },
+    {"id": "kit", "name": "A sampler kit", "code": ".bank(\"AkaiMPC60\")", "adds": "The Akai MPC60's gritty sampled drums."},
+    {"id": "hats", "name": "Hats", "layer": "s(\"hh*8\").bank(\"AkaiMPC60\").gain(\"[.5 .3]*4\")", "adds": "Eighth-note hats, louder on the beat."},
+    {
+      "id": "ghost",
+      "name": "Ghost snares",
+      "layer": "s(\"~ ~ ~ sd ~ ~ ~ sd ~ sd ~ ~ ~ ~ ~ sd\").bank(\"AkaiMPC60\").gain({ghost})",
+      "adds": "Very quiet extra snares between the main hits.",
+      "listenFor": "The beat starts to roll and shuffle.",
+      "knobs": [
+        {
+          "param": "ghost",
+          "label": "ghost level",
+          "min": 0.05,
+          "max": 0.8,
+          "value": 0.25,
+          "sweet": [0.15, 0.35],
+          "below": "You can no longer hear them.",
+          "above": "They sound like mistakes."
+        }
+      ]
+    },
+    {
+      "id": "crush",
+      "name": "Sampler grit",
+      "code": ".crush({bits})",
+      "whole": true,
+      "adds": "Lowers the sound quality the way an old 12-bit sampler did.",
+      "knobs": [
+        {
+          "param": "bits",
+          "label": "bits",
+          "unit": "int",
+          "step": 1,
+          "min": 4,
+          "max": 16,
+          "value": 10,
+          "sweet": [8, 12],
+          "below": "Digital fuzz.",
+          "above": "Too clean: it sounds programmed."
+        }
+      ]
+    }
+  ],
+  "pitfalls": ["Ghost snares as loud as the main snare turn the groove into a drum fill."],
+  "lessons": ["06-sixteenths-and-dynamics", "12-off-the-grid"]
+}

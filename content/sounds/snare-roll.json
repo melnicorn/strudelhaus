@@ -1,0 +1,58 @@
+{
+  "name": "Snare roll",
+  "role": "fx",
+  "group": "hook",
+  "why": "A snare that doubles in speed every two bars while getting louder and thinner. It is the countdown to the drop.",
+  "pattern": "s(\"sd*4\")",
+  "ingredients": [
+    {"id": "sd", "name": "A snare on every beat", "required": true, "adds": "Four snares to the bar from the default kit."},
+    {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909's sharp, noisy snare."},
+    {
+      "id": "speed",
+      "name": "Double every two bars",
+      "pattern": "s(\"<sd*4 sd*4 sd*8 sd*8 sd*16 sd*16 sd*32 sd*32>\")",
+      "adds": "Quarter notes, then eighths, sixteenths, and finally thirty-seconds.",
+      "listenFor": "Eight bars that feel like they are accelerating."
+    },
+    {
+      "id": "ramp",
+      "name": "Get louder",
+      "code": ".gain(saw.range(.2, {gain}).slow(8))",
+      "adds": "Starts quiet and ends at full level.",
+      "knobs": [
+        {
+          "param": "gain",
+          "label": "peak level",
+          "min": 0.3,
+          "max": 1.2,
+          "value": 0.9,
+          "sweet": [0.7, 1],
+          "below": "The roll never arrives.",
+          "above": "Louder than the drop."
+        }
+      ]
+    },
+    {
+      "id": "thin",
+      "name": "Thin it as it rises",
+      "code": ".hpf(saw.range(100, {top}).slow(8))",
+      "adds": "The body of the snare is filtered away over the 8 bars.",
+      "listenFor": "It seems to lift off the ground.",
+      "knobs": [
+        {
+          "param": "top",
+          "label": "sweep top",
+          "unit": "hz",
+          "log": true,
+          "min": 300,
+          "max": 6000,
+          "value": 1500,
+          "sweet": [800, 2500],
+          "below": "The fast part is a low rumble.",
+          "above": "Only a tick is left by the end."
+        }
+      ]
+    }
+  ],
+  "lessons": ["13-every-fourth-bar", "30-tension-and-release"]
+}

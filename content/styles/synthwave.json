@@ -1,0 +1,246 @@
+{
+  "id": "synthwave",
+  "name": "Synthwave",
+  "family": "Synth",
+  "era": "2008–now",
+  "tempo": 100,
+  "key": "A minor",
+  "blurb": "The 1980s as remembered: big snares, pulsing bass and brassy leads.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd ~ bd ~\").bank(\"LinnDrum\")"},
+    {"id": "tops", "code": "s(\"~ sd ~ sd, hh*8\").bank(\"LinnDrum\").gain(.6)"},
+    {"id": "bass", "code": "note(\"<[a1 a2]*4 [f1 f2]*4 [c2 c3]*4 [g1 g2]*4>\").s(\"sawtooth\").lpf(600).decay(.15).sustain(0)"}
+  ],
+  "sounds": [
+    {
+      "id": "brass",
+      "name": "Brass lead",
+      "role": "lead",
+      "group": "hook",
+      "why": "A synth pretending to be a horn section. The filter opens a moment after each note starts, the way a brass player swells into a note.",
+      "pattern": "note(\"<[a4 ~ c5 e5] [d5 ~ c5 ~] [e5 ~ g5 e5] [d5 ~ ~ ~]>\")",
+      "ingredients": [
+        {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A bright, flat lead."},
+        {
+          "id": "wide",
+          "name": "Three saws",
+          "code": ".s(\"supersaw\").unison(3).detune(.15)",
+          "replaces": "saw",
+          "adds": "Three slightly detuned saws per note.",
+          "listenFor": "It gets wider and warmer."
+        },
+        {
+          "id": "swell",
+          "name": "Swell the filter",
+          "code": ".lpf({lpf}).lpenv({lpenv}).lpattack({lpattack})",
+          "adds": "Each note starts dull and opens up.",
+          "listenFor": "\"Bwaah\" where there was \"baaa\".",
+          "knobs": [
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 200,
+              "max": 4000,
+              "value": 800,
+              "sweet": [500, 1200],
+              "below": "The start of each note is missing.",
+              "above": "No swell: it starts bright."
+            },
+            {
+              "param": "lpenv",
+              "label": "swell depth",
+              "step": 0.1,
+              "min": 0,
+              "max": 8,
+              "value": 3,
+              "sweet": [2, 4],
+              "below": "Dull throughout.",
+              "above": "A harsh peak."
+            },
+            {
+              "param": "lpattack",
+              "label": "swell time",
+              "unit": "seconds",
+              "min": 0.01,
+              "max": 0.5,
+              "value": 0.08,
+              "sweet": [0.05, 0.15],
+              "below": "Too fast to hear.",
+              "above": "A slow fade-in, like strings."
+            }
+          ]
+        },
+        {
+          "id": "vib",
+          "name": "Vibrato",
+          "code": ".vib(5).vibmod({vibmod})",
+          "adds": "A slight wobble in pitch on every note.",
+          "knobs": [{"param": "vibmod", "label": "vibrato", "step": 0.05, "min": 0, "max": 1, "value": 0.2, "sweet": [0.1, 0.35], "below": "Stiff.", "above": "Seasick."}]
+        },
+        {
+          "id": "space",
+          "name": "Reverb and echo",
+          "code": ".room(.4).delay({delay}).delaysync(3/16)",
+          "adds": "A big, glossy 80s studio.",
+          "knobs": [{"param": "delay", "min": 0, "max": 1, "value": 0.3, "sweet": [0.2, 0.45], "below": "Small and dry.", "above": "The melody trips over its own echoes."}]
+        }
+      ],
+      "lessons": ["17-waveforms", "18-envelopes", "20-space"]
+    },
+    {
+      "id": "drums",
+      "name": "Drums with a gated snare",
+      "role": "drums",
+      "group": "groove",
+      "why": "The 80s snare: a huge burst of reverb that stops almost at once. Strudel has no true gate, so this uses a very loud, very short room.",
+      "pattern": "s(\"~ sd ~ sd\")",
+      "context": {"kick": null, "tops": null},
+      "ingredients": [
+        {"id": "sd", "name": "Snare on 2 and 4", "required": true, "adds": "A plain backbeat from the default kit."},
+        {"id": "bank", "name": "The LinnDrum", "code": ".bank(\"LinnDrum\")", "adds": "The drum machine on half the pop records of 1983."},
+        {
+          "id": "room",
+          "name": "A lot of reverb",
+          "code": ".room({room})",
+          "adds": "Far more than sounds natural.",
+          "listenFor": "The snare gets enormous.",
+          "knobs": [{"param": "room", "label": "reverb", "min": 0, "max": 1, "value": 0.8, "sweet": [0.6, 0.95], "below": "An ordinary snare.", "above": "All wash, no crack."}]
+        },
+        {
+          "id": "gate",
+          "name": "But a short one",
+          "code": ".roomsize({size})",
+          "needs": "room",
+          "adds": "A small room, so the burst ends quickly.",
+          "listenFor": "Big, then gone.",
+          "knobs": [
+            {
+              "param": "size",
+              "label": "room size",
+              "step": 0.5,
+              "min": 1,
+              "max": 10,
+              "value": 2,
+              "sweet": [1, 3],
+              "below": "As short as it goes.",
+              "above": "The tail runs over the next kick: big, but not gated."
+            }
+          ]
+        },
+        {"id": "kick", "name": "Kick on 1 and 3", "layer": "s(\"bd ~ bd ~\").bank(\"LinnDrum\")", "adds": "The other half of the beat."},
+        {"id": "hats", "name": "Hats", "layer": "s(\"hh*8\").bank(\"LinnDrum\").gain(.4)", "adds": "Steady eighth-note hats."}
+      ],
+      "lessons": ["07-drum-machine-shopping", "20-space"]
+    },
+    {
+      "id": "arp-bass",
+      "name": "Octave bass",
+      "role": "bass",
+      "group": "bass",
+      "why": "Eighth notes bouncing between a low note and the same note an octave up. It drives the track the way a rhythm guitar would.",
+      "pattern": "note(\"a1*8\")",
+      "context": {"bass": null},
+      "ingredients": [
+        {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "The same bass note eight times a bar."},
+        {
+          "id": "oct",
+          "name": "Bounce an octave",
+          "pattern": "note(\"[a1 a2]*4\")",
+          "adds": "Every second note is an octave higher.",
+          "listenFor": "A drone becomes a pulse."
+        },
+        {
+          "id": "filter",
+          "name": "Pluck the filter",
+          "code": ".lpf({lpf}).lpenv(2).lpdecay(.1)",
+          "adds": "Each note starts bright and closes.",
+          "knobs": [
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 100,
+              "max": 3000,
+              "value": 600,
+              "sweet": [400, 900],
+              "below": "A dull thump.",
+              "above": "It buzzes over the lead."
+            }
+          ]
+        },
+        {
+          "id": "short",
+          "name": "Short notes",
+          "code": ".decay({decay}).sustain(0)",
+          "adds": "A gap between each note.",
+          "knobs": [
+            {
+              "param": "decay",
+              "unit": "seconds",
+              "min": 0.03,
+              "max": 0.5,
+              "value": 0.15,
+              "sweet": [0.1, 0.22],
+              "below": "Ticks instead of notes.",
+              "above": "The notes join up."
+            }
+          ]
+        },
+        {
+          "id": "chords",
+          "name": "Follow the chords",
+          "pattern": "note(\"<[a1 a2]*4 [f1 f2]*4 [c2 c3]*4 [g1 g2]*4>\")",
+          "needs": "oct",
+          "adds": "The bass moves to a new note each bar.",
+          "listenFor": "Now there is a song under the lead."
+        }
+      ],
+      "lessons": ["08-first-bassline", "16-progressions"]
+    },
+    {
+      "id": "pad",
+      "extends": "string-pad",
+      "pattern": "note(\"<[a3,c4,e4] [f3,a3,c4] [c4,e4,g4] [g3,b3,d4]>\")",
+      "why": "Wide, slow chords under everything: the \"sunset\" in the sound."
+    },
+    {
+      "id": "stab",
+      "extends": "chord-stab",
+      "name": "Synth chords",
+      "pattern": "note(\"<[a3,c4,e4] [f3,a3,c4] [c4,e4,g4] [g3,b3,d4]>\").struct(\"x ~ ~ x ~ ~ x ~\")",
+      "why": "The same chords as the pad, played short in a pushed rhythm, like a rhythm guitar part on a keyboard.",
+      "set": {"lpf": 1400, "decay": 0.2},
+      "sweet": {"lpf": [900, 2200], "decay": [0.14, 0.3]}
+    },
+    {
+      "id": "tom-fill",
+      "name": "Electronic tom fill",
+      "role": "fx",
+      "group": "hook",
+      "why": "Simmons electronic toms falling in pitch: \"doo doo doo doom\". The sound of the last bar before every 80s chorus.",
+      "pattern": "s(\"~ ~ ~ [ht ht mt lt]\")",
+      "ingredients": [
+        {"id": "toms", "name": "Toms on the last beat", "required": true, "adds": "High, high, mid, low."},
+        {
+          "id": "bank",
+          "name": "Simmons toms",
+          "code": ".bank(\"SimmonsSDS5\")",
+          "adds": "Electronic drums whose pitch falls as they ring.",
+          "listenFor": "Each tom now says \"pew\"."
+        },
+        {"id": "fourth", "name": "Only every fourth bar", "code": ".mask(\"<0 0 0 1>\")", "adds": "Silent for three bars, then the fill."},
+        {
+          "id": "room",
+          "name": "The same big room",
+          "code": ".room({room})",
+          "adds": "Matches the snare.",
+          "knobs": [{"param": "room", "label": "reverb", "min": 0, "max": 1, "value": 0.5, "sweet": [0.35, 0.7], "below": "Small and dry next to the snare.", "above": "A wash."}]
+        }
+      ],
+      "lessons": ["13-every-fourth-bar"]
+    }
+  ]
+}

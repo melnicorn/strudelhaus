@@ -1,0 +1,176 @@
+{
+  "id": "drum-and-bass",
+  "name": "Drum and bass",
+  "family": "Breakbeat",
+  "era": "1994–now",
+  "tempo": 172,
+  "key": "F minor",
+  "blurb": "Fast, chopped breakbeats over bass that moves at half the speed.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd ~ ~ ~ sd ~ ~ ~ ~ ~ bd ~ sd ~ ~ ~\").bank(\"AkaiMPC60\")"},
+    {"id": "tops", "code": "s(\"hh*8\").bank(\"AkaiMPC60\").gain(\"[.5 .3]*4\")"},
+    {"id": "bass", "code": "note(\"f1 ~ ~ ~ ~ ~ f1 ~ ~ ~ ab1 ~ ~ ~ ~ ~\").s(\"sine\").decay(.5).sustain(0).distort(.4)"}
+  ],
+  "sounds": [
+    {
+      "id": "amen",
+      "name": "Chopped Amen break",
+      "role": "drums",
+      "group": "groove",
+      "why": "Six seconds of drumming from a 1969 record, cut into slices and played back in a new order. Most of jungle and drum and bass is built on this one loop.",
+      "pattern": "s(\"brk\").loopAt(2)",
+      "context": {"kick": null, "tops": null},
+      "ingredients": [
+        {
+          "id": "loop",
+          "name": "The break, fitted to two bars",
+          "required": true,
+          "adds": "The whole recording, sped up or slowed down to last exactly two bars at this tempo."
+        },
+        {
+          "id": "chop",
+          "name": "Cut it into eight",
+          "pattern": "s(\"brk\").splice(8, \"<[0 1 2 3] [4 5 6 7]>\")",
+          "adds": "Eight equal slices, played in their original order.",
+          "listenFor": "It should sound the same. But each slice is now a note you can move."
+        },
+        {
+          "id": "order",
+          "name": "Play the slices out of order",
+          "pattern": "s(\"brk\").splice(8, \"<[0 1 2 1] [4 1 6 [7 7]]>\")",
+          "replaces": "chop",
+          "adds": "Slices are repeated, skipped and doubled up.",
+          "listenFor": "The same drummer, playing a beat he never played."
+        },
+        {
+          "id": "thin",
+          "name": "Clear out the bottom",
+          "code": ".hpf({hpf})",
+          "adds": "Removes the lowest part of the break so the sub has that space alone.",
+          "knobs": [
+            {
+              "param": "hpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 30,
+              "max": 800,
+              "value": 120,
+              "sweet": [80, 200],
+              "below": "The break and the sub fight.",
+              "above": "Thin and tinny, all hats."
+            }
+          ]
+        },
+        {
+          "id": "drive",
+          "name": "Drive",
+          "code": ".distort({drive})",
+          "adds": "Pushes the break so the quiet hits come up.",
+          "knobs": [{"param": "drive", "step": 0.1, "min": 0, "max": 3, "value": 0.6, "sweet": [0.3, 1.2], "below": "Polite.", "above": "Crunch with no snare left in it."}]
+        }
+      ],
+      "pitfalls": ["Slicing into too many pieces loses the swing of the original drummer."],
+      "lessons": ["12-off-the-grid", "31-never-the-same-twice"]
+    },
+    {
+      "id": "break",
+      "extends": "breakbeat",
+      "name": "Two-step break",
+      "why": "The cleaner alternative to a chopped break: the same kick-snare-kick-snare skeleton, programmed from single hits."
+    },
+    {
+      "id": "reese",
+      "name": "Reese bass",
+      "role": "bass",
+      "group": "bass",
+      "why": "Two saws a hair out of tune, held on a long low note and filtered dark. As they drift against each other the bass slowly growls and churns.",
+      "pattern": "note(\"<f1 f1 ab1 eb1>\")",
+      "context": {"bass": null},
+      "ingredients": [
+        {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A long, static, buzzy bass note."},
+        {
+          "id": "two",
+          "name": "Two saws, slightly apart",
+          "code": ".s(\"supersaw\").unison(2).detune({detune})",
+          "replaces": "saw",
+          "adds": "A second saw plays the same note a little out of tune.",
+          "listenFor": "A slow beating inside the note. It moves though nothing is being played.",
+          "knobs": [{"param": "detune", "min": 0, "max": 1, "value": 0.25, "sweet": [0.15, 0.4], "below": "They line up: one saw again.", "above": "Two notes, out of tune."}]
+        },
+        {
+          "id": "dark",
+          "name": "Filter it dark",
+          "code": ".lpf({lpf})",
+          "adds": "Only the low growl is left.",
+          "knobs": [
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 80,
+              "max": 3000,
+              "value": 500,
+              "sweet": [300, 900],
+              "below": "A sub with no growl.",
+              "above": "A buzzing lead."
+            }
+          ]
+        },
+        {
+          "id": "phaser",
+          "name": "Slow phaser",
+          "code": ".phaser({rate})",
+          "adds": "A filter that sweeps up and down through the sound on its own.",
+          "listenFor": "The growl starts to twist.",
+          "knobs": [
+            {
+              "param": "rate",
+              "label": "phaser speed",
+              "step": 0.05,
+              "min": 0.1,
+              "max": 4,
+              "value": 0.5,
+              "sweet": [0.25, 1],
+              "below": "Too slow to notice.",
+              "above": "A fast wobble."
+            }
+          ]
+        },
+        {
+          "id": "drive",
+          "name": "Drive",
+          "code": ".distort({drive})",
+          "adds": "Makes the beating between the saws louder and rougher.",
+          "knobs": [{"param": "drive", "step": 0.1, "min": 0, "max": 3, "value": 0.8, "sweet": [0.4, 1.5], "below": "Smooth.", "above": "A wall of fuzz."}]
+        }
+      ],
+      "pitfalls": ["A Reese takes up a lot of room. Play one long note where you would play eight short ones."],
+      "lessons": ["17-waveforms", "21-grit-and-width", "22-movement"]
+    },
+    {
+      "id": "sub",
+      "extends": "sub-bass",
+      "pattern": "note(\"f1 ~ ~ ~ ~ ~ f1 ~ ~ ~ ab1 ~ ~ ~ ~ ~\")",
+      "why": "Long, deep notes at half the speed of the drums. The slow bass under the fast break is the whole trick.",
+      "set": {"decay": 0.5},
+      "sweet": {"decay": [0.35, 0.7]}
+    },
+    {
+      "id": "pad",
+      "extends": "string-pad",
+      "pattern": "note(\"<[f3,ab3,c4,eb4] [db3,f3,ab3,c4]>\")",
+      "why": "Slow, lush chords floating over frantic drums. The pad moves at a quarter of the speed of everything else."
+    },
+    {
+      "id": "stab",
+      "extends": "chord-stab",
+      "pattern": "note(\"[f4,ab4,c5]\").struct(\"~ ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\")",
+      "why": "A short, bright chord with a long echo, dropped into the gaps of the break.",
+      "set": {"delay": 0.45},
+      "sweet": {"delay": [0.3, 0.6]}
+    },
+    {"id": "impact", "extends": "impact", "why": "The crash and boom on the first beat of the drop, when the break and the bass come in together."}
+  ]
+}
