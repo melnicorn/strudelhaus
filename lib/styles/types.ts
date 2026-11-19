@@ -87,7 +87,7 @@ const soundFields = {
   ingredients: z.array(ingredientSchema).min(1),
   variations: z.array(variationSchema).optional(),
   pitfalls: z.array(z.string()).optional(),
-  /** Lesson ids (content/lessons) that teach the pieces. */
+  /** Core-curriculum lesson ids (content/packs/core.json) that teach the pieces. */
   lessons: z.array(z.string()).optional(),
   /** Changes to the style's backing loop whenever this sound is shown. */
   context: contextOverride.optional(),

@@ -3,7 +3,7 @@
 // adding a file; nothing here or in the routes names one.
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { getLesson } from '@/content/lessons';
+import { corePack } from '@/lib/lessons/packs';
 import { resolveSound } from './build';
 import { archetypeSchema, styleSchema, type Archetype, type Style, type StyleConfig } from './types';
 
@@ -28,8 +28,9 @@ function check<T>(schema: { safeParse(data: unknown): { success: true; data: T }
 /** Shared recipes, keyed by file name. */
 export const archetypes: Record<string, Archetype> = Object.fromEntries(readAll('sounds', check<Archetype>(archetypeSchema)));
 
+// Sounds link to core-curriculum lessons, whose runtime ids are their bare ids.
 const lessonOf = (id: string) => {
-  const lesson = getLesson(id);
+  const lesson = corePack.lessons.find((l) => l.id === id);
   return lesson && { id: lesson.id, number: lesson.number, title: lesson.title };
 };
 
