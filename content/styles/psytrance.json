@@ -1,0 +1,165 @@
+{
+  "id": "psytrance",
+  "name": "Psytrance",
+  "family": "Trance",
+  "era": "1997–now",
+  "tempo": 145,
+  "key": "E minor",
+  "blurb": "A clicky kick and a bass that fires three times between each one.",
+  "context": [
+    {"id": "kick", "code": "note(\"e1*4\").s(\"sine\").penv(30).pdecay(.04).decay(.18).sustain(0)"},
+    {"id": "tops", "code": "s(\"[~ oh]*4, ~ cp ~ cp\").bank(\"RolandTR909\").gain(.45)"},
+    {"id": "bass", "code": "note(\"[~ e1 e1 e1]*4\").s(\"sawtooth\").lpf(300).lpenv(3).lpdecay(.06).decay(.08).sustain(0)"}
+  ],
+  "sounds": [
+    {
+      "id": "psy-bass",
+      "name": "Rolling bass",
+      "role": "bass",
+      "group": "bass",
+      "why": "Three very short, plucked bass notes after every kick, all on one pitch. Kick and bass together make one galloping machine.",
+      "pattern": "note(\"e1*16\")",
+      "context": {"bass": null},
+      "ingredients": [
+        {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A bass note on every sixteenth."},
+        {
+          "id": "gap",
+          "name": "Leave the kick's slot empty",
+          "pattern": "note(\"[~ e1 e1 e1]*4\")",
+          "adds": "Drops the first sixteenth of every beat.",
+          "listenFor": "With In context on: kick, then three bass notes, over and over."
+        },
+        {
+          "id": "pluck",
+          "name": "Pluck the filter",
+          "code": ".lpf({lpf}).lpenv({lpenv}).lpdecay(.06)",
+          "adds": "Each note opens the filter for an instant, then it shuts.",
+          "listenFor": "A hard \"k\" on the front of every note.",
+          "knobs": [
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 80,
+              "max": 2000,
+              "value": 300,
+              "sweet": [200, 450],
+              "below": "Only the click is left.",
+              "above": "A buzz with no pluck."
+            },
+            {
+              "param": "lpenv",
+              "label": "pluck depth",
+              "step": 0.1,
+              "min": 0,
+              "max": 8,
+              "value": 3,
+              "sweet": [2, 4.5],
+              "below": "Soft and round: a trance bass.",
+              "above": "It quacks."
+            }
+          ]
+        },
+        {
+          "id": "short",
+          "name": "Very short notes",
+          "code": ".decay({decay}).sustain(0)",
+          "adds": "Each note is over long before the next starts.",
+          "knobs": [
+            {
+              "param": "decay",
+              "unit": "seconds",
+              "min": 0.02,
+              "max": 0.3,
+              "value": 0.08,
+              "sweet": [0.06, 0.11],
+              "below": "Clicks with no pitch.",
+              "above": "The notes touch and the gallop is gone."
+            }
+          ]
+        }
+      ],
+      "pitfalls": ["Bass notes long enough to touch the kick blur the one thing this style depends on."],
+      "lessons": ["08-first-bassline", "19-squelch", "28-kick-vs-bass"]
+    },
+    {
+      "id": "kick",
+      "extends": "kick-synth",
+      "pattern": "note(\"e1*4\")",
+      "why": "Short, clicky and tuned to the key of the track, so it reads as the first note of the bassline.",
+      "set": {"decay": 0.18, "pdecay": 0.04},
+      "sweet": {"decay": [0.12, 0.25]}
+    },
+    {
+      "id": "tops",
+      "extends": "tops-909",
+      "why": "Straight, simple and quiet. The kick and bass are the groove; the hats only mark time.",
+      "set": {"swing": 0, "clap": 0.5},
+      "sweet": {"swing": [0, 0.05], "clap": [0.35, 0.7]}
+    },
+    {
+      "id": "squelch",
+      "extends": "acid-line",
+      "name": "Squelch lead",
+      "pattern": "note(\"e3 e4 ~ e3 g3 ~ e4 b3\").fast(2)",
+      "why": "An acid line moved up into lead range, with more resonance, twisting over the top of the bass.",
+      "set": {"lpf": 900, "lpq": 13},
+      "sweet": {"lpf": [600, 1400], "lpq": [10, 16]}
+    },
+    {
+      "id": "zap",
+      "name": "Zap",
+      "role": "fx",
+      "group": "hook",
+      "why": "A tone that falls several octaves in a fraction of a second, thrown into an echo. Psytrance is full of these one-shot noises between phrases.",
+      "pattern": "note(\"e5\").struct(\"x ~ ~ ~ ~ ~ ~ ~\")",
+      "ingredients": [
+        {"id": "sine", "name": "A high sine", "code": ".s(\"sine\")", "required": true, "adds": "A plain beep at the start of each bar."},
+        {
+          "id": "fall",
+          "name": "Make it fall",
+          "code": ".penv({penv}).pdecay({pdecay})",
+          "adds": "The note starts far above its pitch and dives.",
+          "listenFor": "A beep becomes a laser.",
+          "knobs": [
+            {
+              "param": "penv",
+              "label": "fall",
+              "unit": "int",
+              "step": 1,
+              "min": 12,
+              "max": 60,
+              "value": 36,
+              "sweet": [28, 48],
+              "below": "A small droop.",
+              "above": "It starts above what you can hear."
+            },
+            {
+              "param": "pdecay",
+              "label": "fall time",
+              "unit": "seconds",
+              "min": 0.02,
+              "max": 0.6,
+              "value": 0.15,
+              "sweet": [0.1, 0.25],
+              "below": "A click.",
+              "above": "A slow slide, not a zap."
+            }
+          ]
+        },
+        {"id": "short", "name": "Cut it off", "code": ".decay(.3).sustain(0)", "adds": "The note ends as the fall ends."},
+        {
+          "id": "echo",
+          "name": "Throw it into an echo",
+          "code": ".delay({delay}).delaysync(3/16).delayfeedback(.6)",
+          "adds": "The zap repeats and fades across the bar.",
+          "knobs": [{"param": "delay", "min": 0, "max": 1, "value": 0.5, "sweet": [0.35, 0.65], "below": "One zap and silence.", "above": "The echoes are as loud as the zap."}]
+        },
+        {"id": "pan", "name": "Move it side to side", "code": ".pan(sine.fast(3))", "adds": "Each zap comes from a different place."}
+      ],
+      "lessons": ["18-envelopes", "20-space"]
+    },
+    {"id": "riser", "extends": "noise-riser", "why": "A long noise climb before the kick and bass slam back in."}
+  ]
+}

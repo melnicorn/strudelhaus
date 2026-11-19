@@ -1,0 +1,82 @@
+{
+  "name": "Impact",
+  "role": "fx",
+  "group": "hook",
+  "why": "A crash, a low boom and a falling hiss on the first beat of a new section. It marks the drop and covers the join.",
+  "pattern": "s(\"cr\").slow(8)",
+  "ingredients": [
+    {"id": "cr", "name": "A crash", "required": true, "adds": "One crash cymbal every eight bars, from the default kit."},
+    {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909's long, bright crash."},
+    {
+      "id": "tail",
+      "name": "A long tail",
+      "code": ".room({room}).roomsize(8)",
+      "adds": "Reverb that carries the crash on for bars.",
+      "knobs": [
+        {
+          "param": "room",
+          "label": "reverb",
+          "min": 0,
+          "max": 1,
+          "value": 0.7,
+          "sweet": [0.5, 0.9],
+          "below": "It is over in a beat.",
+          "above": "A wash under the whole next section."
+        }
+      ]
+    },
+    {
+      "id": "boom",
+      "name": "A boom underneath",
+      "layer": "note(\"a1\").s(\"sine\").penv({penv}).pdecay(.4).decay({decay}).sustain(0).slow(8)",
+      "adds": "A low sine that falls in pitch as it fades.",
+      "listenFor": "The floor drops away under the crash.",
+      "knobs": [
+        {
+          "param": "penv",
+          "label": "fall",
+          "unit": "int",
+          "step": 1,
+          "min": 0,
+          "max": 36,
+          "value": 18,
+          "sweet": [12, 24],
+          "below": "A plain bass note.",
+          "above": "A cartoon \"pew\"."
+        },
+        {
+          "param": "decay",
+          "label": "boom length",
+          "unit": "seconds",
+          "min": 0.3,
+          "max": 4,
+          "value": 1.5,
+          "sweet": [1, 2.5],
+          "below": "A thump, not a boom.",
+          "above": "It hums through the next section."
+        }
+      ]
+    },
+    {
+      "id": "down",
+      "name": "A falling hiss",
+      "layer": "s(\"white*16\").lpf(isaw.range(200, {top}).slow(8)).gain(isaw.range(0, .35).slow(8))",
+      "adds": "Noise that gets darker and quieter over the 8 bars: a riser played backwards.",
+      "knobs": [
+        {
+          "param": "top",
+          "label": "start",
+          "unit": "hz",
+          "log": true,
+          "min": 2000,
+          "max": 16000,
+          "value": 9000,
+          "sweet": [6000, 12000],
+          "below": "A dull whoosh with no sparkle.",
+          "above": "It hisses over the hats."
+        }
+      ]
+    }
+  ],
+  "lessons": ["27-the-sweep", "30-tension-and-release"]
+}

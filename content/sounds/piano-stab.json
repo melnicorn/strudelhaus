@@ -1,0 +1,57 @@
+{
+  "name": "Piano stabs",
+  "role": "chords",
+  "group": "harmony",
+  "why": "Bright piano chords banged out in a pushed, offbeat rhythm. Nothing says early-90s dance floor faster.",
+  "pattern": "note(\"[a3,c4,e4] ~ [a3,c4,e4] ~ ~ [g3,b3,d4] ~ [g3,b3,d4]\")",
+  "ingredients": [
+    {"id": "piano", "name": "A piano", "code": ".s(\"piano\")", "required": true, "adds": "Sampled grand piano chords, each held for its full step."},
+    {
+      "id": "short",
+      "name": "Play it short",
+      "code": ".clip({clip})",
+      "adds": "Fingers come off the keys early.",
+      "listenFor": "The riff starts to bounce.",
+      "knobs": [
+        {
+          "param": "clip",
+          "label": "note length",
+          "min": 0.1,
+          "max": 1,
+          "value": 0.5,
+          "sweet": [0.35, 0.7],
+          "below": "Pecks, with no chord in them.",
+          "above": "Chords run into each other."
+        }
+      ]
+    },
+    {
+      "id": "thin",
+      "name": "Thin it out",
+      "code": ".hpf({hpf})",
+      "adds": "Removes the low notes of the piano so the bass has the bottom to itself.",
+      "knobs": [
+        {
+          "param": "hpf",
+          "label": "cutoff",
+          "unit": "hz",
+          "log": true,
+          "min": 40,
+          "max": 1500,
+          "value": 250,
+          "sweet": [150, 400],
+          "below": "It muddies the bass.",
+          "above": "A toy piano."
+        }
+      ]
+    },
+    {
+      "id": "room",
+      "name": "Room",
+      "code": ".room({room})",
+      "adds": "Puts the piano in a hall.",
+      "knobs": [{"param": "room", "label": "reverb", "min": 0, "max": 1, "value": 0.2, "sweet": [0.1, 0.35], "below": "Dry, like a practice room.", "above": "The rhythm blurs."}]
+    }
+  ],
+  "lessons": ["15-minor-seventh-stab", "16-progressions"]
+}

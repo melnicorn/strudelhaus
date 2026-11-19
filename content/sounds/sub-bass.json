@@ -1,0 +1,70 @@
+{
+  "name": "Sub bass",
+  "role": "bass",
+  "group": "bass",
+  "why": "A sine wave: the lowest, plainest bass there is. You feel it more than you hear it, so it leaves the whole mix free for everything else.",
+  "pattern": "note(\"a1 ~ ~ a1 ~ ~ a1 ~\")",
+  "context": {"bass": null},
+  "ingredients": [
+    {"id": "sine", "name": "A sine wave", "code": ".s(\"sine\")", "required": true, "adds": "One pure low tone with no buzz."},
+    {
+      "id": "short",
+      "name": "Shape the note",
+      "code": ".decay({decay}).sustain(0)",
+      "adds": "Each note fades instead of holding at full level.",
+      "knobs": [
+        {
+          "param": "decay",
+          "unit": "seconds",
+          "min": 0.05,
+          "max": 1.5,
+          "value": 0.3,
+          "sweet": [0.2, 0.45],
+          "below": "A bump with no pitch.",
+          "above": "Notes run together into a drone."
+        }
+      ]
+    },
+    {
+      "id": "drive",
+      "name": "A little drive",
+      "code": ".distort({drive})",
+      "adds": "Adds overtones above the sine.",
+      "listenFor": "On small speakers the bass appears where there was none.",
+      "knobs": [
+        {
+          "param": "drive",
+          "step": 0.05,
+          "min": 0,
+          "max": 2,
+          "value": 0.4,
+          "sweet": [0.2, 0.8],
+          "below": "Gone on a phone or laptop.",
+          "above": "It stops being a sub and starts to buzz."
+        }
+      ]
+    },
+    {
+      "id": "lpf",
+      "name": "Tidy the top",
+      "code": ".lpf({lpf})",
+      "adds": "Takes back the highest of the overtones the drive added.",
+      "knobs": [
+        {
+          "param": "lpf",
+          "label": "cutoff",
+          "unit": "hz",
+          "log": true,
+          "min": 60,
+          "max": 2000,
+          "value": 300,
+          "sweet": [150, 500],
+          "below": "The drive is filtered away again.",
+          "above": "A fizzy edge on every note."
+        }
+      ]
+    }
+  ],
+  "pitfalls": ["A sub and a kick on the same step fight for the same space."],
+  "lessons": ["08-first-bassline", "28-kick-vs-bass"]
+}

@@ -1,0 +1,93 @@
+{
+  "name": "Acid line",
+  "role": "bass / lead",
+  "group": "hook",
+  "why": "A plain saw through a resonant filter that is pushed until it squeals. The notes matter less than how the filter moves.",
+  "pattern": "note(\"a1 a1 a2 a1 c2 a1 e2 g1\").fast(2)",
+  "ingredients": [
+    {"id": "saw", "name": "One sawtooth", "code": ".s(\"sawtooth\")", "required": true, "adds": "A buzzy bass note with nothing done to it."},
+    {
+      "id": "ladder",
+      "name": "Ladder filter",
+      "code": ".lpf({lpf}).ftype(\"ladder\")",
+      "adds": "Cuts the top off so there is room to open it later.",
+      "listenFor": "The buzz turns into a round thud.",
+      "knobs": [
+        {
+          "param": "lpf",
+          "label": "cutoff",
+          "unit": "hz",
+          "log": true,
+          "min": 80,
+          "max": 5000,
+          "value": 400,
+          "sweet": [250, 700],
+          "below": "Only a rumble is left.",
+          "above": "Already open, so the envelope has nowhere to go."
+        }
+      ]
+    },
+    {
+      "id": "res",
+      "name": "Resonance",
+      "code": ".lpq({lpq})",
+      "needs": "ladder",
+      "adds": "A whistling peak at the cutoff. This is the acid.",
+      "listenFor": "A vowel-like squelch on each note.",
+      "knobs": [
+        {
+          "param": "lpq",
+          "label": "resonance",
+          "min": 0,
+          "max": 20,
+          "step": 0.5,
+          "value": 10,
+          "sweet": [8, 14],
+          "below": "Just a muffled bass.",
+          "above": "The whistle drowns the note."
+        }
+      ]
+    },
+    {
+      "id": "env",
+      "name": "Filter envelope",
+      "code": ".lpenv({lpenv}).lpdecay({lpdecay})",
+      "needs": "ladder",
+      "adds": "The filter snaps open on each note and falls shut.",
+      "listenFor": "Each note says \"wow\".",
+      "knobs": [
+        {
+          "param": "lpenv",
+          "label": "env depth",
+          "min": 0,
+          "max": 8,
+          "step": 0.1,
+          "value": 4,
+          "sweet": [3, 5],
+          "below": "The filter barely moves.",
+          "above": "Every note is a harsh chirp."
+        },
+        {
+          "param": "lpdecay",
+          "label": "env decay",
+          "unit": "seconds",
+          "min": 0.02,
+          "max": 0.6,
+          "value": 0.15,
+          "sweet": [0.1, 0.25],
+          "below": "A click, no squelch.",
+          "above": "Notes run into each other."
+        }
+      ]
+    },
+    {
+      "id": "drive",
+      "name": "Drive",
+      "code": ".distort({drive})",
+      "adds": "Grit that makes the resonance scream.",
+      "knobs": [{"param": "drive", "min": 0, "max": 4, "step": 0.1, "value": 1.5, "sweet": [1, 2.5], "below": "Clean and polite.", "above": "Fuzz; the notes are lost."}]
+    }
+  ],
+  "pitfalls": ["High resonance with the cutoff too low gives a whistle and no bass."],
+  "lessons": ["19-squelch", "25-acid-line"]
+}

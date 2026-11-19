@@ -1,0 +1,125 @@
+{
+  "id": "hard-techno",
+  "name": "Hard techno",
+  "family": "Techno",
+  "era": "1995–now",
+  "tempo": 148,
+  "key": "A minor",
+  "blurb": "A distorted kick with a rumbling tail, and not much else.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR909\").distort(1.5)"},
+    {"id": "tops", "code": "s(\"[~ rd]*4, ~ cp ~ cp\").bank(\"RolandTR909\").gain(.4)"},
+    {"id": "bass", "code": "s(\"bd*4\").bank(\"RolandTR909\").lpf(110).room(1).roomsize(4).gain(.7)"}
+  ],
+  "sounds": [
+    {
+      "id": "rumble-kick",
+      "name": "Rumble kick",
+      "role": "drums",
+      "group": "kick",
+      "why": "The kick and the bass are the same sound. A copy of the kick is filtered down to a rumble, drowned in reverb, and ducked so it swells up between the hits.",
+      "pattern": "s(\"bd*4\")",
+      "context": {"kick": null, "bass": null},
+      "ingredients": [
+        {"id": "plain", "name": "A plain kick", "required": true, "adds": "Four kicks to the bar from the default kit."},
+        {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909: hard click, short body."},
+        {
+          "id": "drive",
+          "name": "Distort it",
+          "code": ".distort({drive})",
+          "adds": "Pushes the kick until it flattens and growls.",
+          "listenFor": "The kick gets longer, louder and angrier.",
+          "knobs": [{"param": "drive", "step": 0.1, "min": 0, "max": 4, "value": 2, "sweet": [1.2, 3], "below": "A house kick.", "above": "A burst of noise with no thump."}]
+        },
+        {
+          "id": "rumble",
+          "name": "Add the rumble",
+          "layer": "s(\"bd*4\").bank(\"RolandTR909\").lpf({tone}).room(1).roomsize({size}).orbit(3)",
+          "adds": "A second copy of the kick with only its lowest part left, in a huge reverb.",
+          "listenFor": "A low roar that fills the space between kicks. This is the bassline.",
+          "knobs": [
+            {
+              "param": "tone",
+              "label": "rumble tone",
+              "unit": "hz",
+              "log": true,
+              "min": 40,
+              "max": 400,
+              "value": 110,
+              "sweet": [80, 160],
+              "below": "Too low to hear on most speakers.",
+              "above": "The rumble turns into audible reverb."
+            },
+            {
+              "param": "size",
+              "label": "rumble length",
+              "step": 0.5,
+              "min": 1,
+              "max": 10,
+              "value": 4,
+              "sweet": [3, 6],
+              "below": "The rumble is over before the next kick.",
+              "above": "One endless drone."
+            }
+          ]
+        },
+        {
+          "id": "duck",
+          "name": "Duck the rumble",
+          "code": ".duckorbit(3).duckdepth({depth})",
+          "needs": "rumble",
+          "adds": "Each kick pushes the rumble down for a moment, so it swells back in after.",
+          "listenFor": "Kick, then roar, then kick. They stop overlapping.",
+          "knobs": [
+            {
+              "param": "depth",
+              "label": "duck depth",
+              "min": 0,
+              "max": 1,
+              "value": 0.8,
+              "sweet": [0.6, 0.9],
+              "below": "Kick and rumble are one long blur.",
+              "above": "The rumble barely gets back up before the next kick."
+            }
+          ]
+        }
+      ],
+      "pitfalls": ["Rumble without the duck: the low end is a wall and the kick has no punch."],
+      "lessons": ["21-grit-and-width", "28-kick-vs-bass"]
+    },
+    {
+      "id": "tops",
+      "extends": "tops-ride",
+      "why": "A loud ride on the offbeat and a clap. At this speed the ride is nearly a continuous wash.",
+      "set": {"ride": 0.6, "clap": 0.75},
+      "sweet": {"ride": [0.45, 0.75]}
+    },
+    {
+      "id": "screech",
+      "extends": "hoover",
+      "name": "Screech lead",
+      "pattern": "note(\"a4 ~ a4 a4 ~ a4 ~ c5\")",
+      "why": "The rave hoover, played higher, shorter and nastier. One or two notes, repeated until the room gives in.",
+      "set": {"detune": 0.75, "penv": -7, "pdecay": 0.08},
+      "sweet": {"detune": [0.6, 0.9], "penv": [-9, -4], "pdecay": [0.05, 0.12]}
+    },
+    {
+      "id": "stab",
+      "extends": "chord-stab",
+      "name": "Minor stab",
+      "pattern": "note(\"[a3,c4,e4]\").struct(\"x ~ ~ x ~ ~ x ~\")",
+      "why": "One bare minor chord in a three-against-four rhythm, so it keeps shifting against the kick.",
+      "set": {"decay": 0.1, "lpf": 1500},
+      "sweet": {"decay": [0.06, 0.15], "lpf": [900, 2500]}
+    },
+    {
+      "id": "sweep",
+      "extends": "noise-riser",
+      "name": "Noise sweep",
+      "why": "With no melody to build tension, a rising wall of noise does the job.",
+      "set": {"gain": 0.75},
+      "sweet": {"gain": [0.55, 0.9]}
+    },
+    {"id": "snare-roll", "extends": "snare-roll", "why": "The roll before the kick comes back. At 148 BPM the last two bars are a blur."}
+  ]
+}

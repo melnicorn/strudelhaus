@@ -1,0 +1,121 @@
+{
+  "id": "detroit-techno",
+  "name": "Detroit techno",
+  "family": "Techno",
+  "era": "1988–1996",
+  "tempo": 130,
+  "key": "D minor",
+  "blurb": "Machine drums under strings and bell tones that sound like the future.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR909\")"},
+    {"id": "tops", "code": "s(\"hh*8, [~ rd]*4\").bank(\"RolandTR909\").gain(.4)"},
+    {"id": "bass", "code": "note(\"d2 ~ ~ d2 ~ ~ d2 ~\").s(\"sine\").decay(.3).sustain(0)"}
+  ],
+  "sounds": [
+    {
+      "id": "fm-bell",
+      "name": "FM bell",
+      "role": "lead",
+      "group": "hook",
+      "why": "One sine wave bending the pitch of another very fast. The result is glassy and metallic, like a bell that was never struck.",
+      "pattern": "note(\"d5 ~ a4 ~ ~ f5 ~ ~\")",
+      "ingredients": [
+        {"id": "sine", "name": "A sine wave", "code": ".s(\"sine\")", "required": true, "adds": "A pure, plain tone."},
+        {
+          "id": "fm",
+          "name": "Add FM",
+          "code": ".fm({fm}).fmh(3.5)",
+          "adds": "A second, unheard sine wobbles the pitch of the first hundreds of times a second.",
+          "listenFor": "New, clangy overtones appear that are not in any normal waveform.",
+          "knobs": [
+            {
+              "param": "fm",
+              "label": "FM amount",
+              "step": 0.1,
+              "min": 0,
+              "max": 8,
+              "value": 3,
+              "sweet": [2, 4.5],
+              "below": "Still nearly a sine.",
+              "above": "Harsh, like a fax machine."
+            }
+          ]
+        },
+        {
+          "id": "fade",
+          "name": "Let the shimmer fade",
+          "code": ".fmdecay({fmdecay}).fmsustain(0)",
+          "needs": "fm",
+          "adds": "The FM is strong at the start of the note and dies away.",
+          "listenFor": "A bright \"ting\", then a pure tone.",
+          "knobs": [
+            {
+              "param": "fmdecay",
+              "label": "FM decay",
+              "unit": "seconds",
+              "min": 0.02,
+              "max": 1,
+              "value": 0.2,
+              "sweet": [0.1, 0.35],
+              "below": "Only a click of brightness.",
+              "above": "It stays metallic all the way through."
+            }
+          ]
+        },
+        {
+          "id": "short",
+          "name": "Ring out",
+          "code": ".decay({decay}).sustain(0)",
+          "adds": "The note fades like a struck bell.",
+          "knobs": [
+            {
+              "param": "decay",
+              "unit": "seconds",
+              "min": 0.1,
+              "max": 1.5,
+              "value": 0.5,
+              "sweet": [0.3, 0.8],
+              "below": "A blip.",
+              "above": "Notes pile on top of each other."
+            }
+          ]
+        },
+        {
+          "id": "delay",
+          "name": "Echo",
+          "code": ".delay({delay}).delaysync(3/16).delayfeedback(.5)",
+          "adds": "Repeats that fill the gaps in the melody.",
+          "knobs": [{"param": "delay", "min": 0, "max": 1, "value": 0.4, "sweet": [0.25, 0.55], "below": "The melody sounds sparse.", "above": "A cloud of bells."}]
+        }
+      ],
+      "lessons": ["17-waveforms", "18-envelopes"]
+    },
+    {"id": "kick", "extends": "kick-909", "why": "The same 909 as house, but drier and harder, with nothing soft around it."},
+    {
+      "id": "tops",
+      "extends": "tops-ride",
+      "why": "Hats and a ride cymbal straight from the 909. The ride on the offbeat is the sound of a Detroit track picking up speed."
+    },
+    {
+      "id": "sub",
+      "extends": "sub-bass",
+      "pattern": "note(\"d2 ~ ~ d2 ~ ~ d2 ~\")",
+      "why": "A plain low tone that stays out of the way. The bass supports; the strings and bells are the stars."
+    },
+    {
+      "id": "strings",
+      "extends": "string-pad",
+      "pattern": "note(\"<[d4,f4,a4,c5] [bb3,d4,f4,a4]>\")",
+      "why": "Cold, slow string chords over hard drums. That contrast, machine below and emotion above, is the Detroit sound."
+    },
+    {
+      "id": "stab",
+      "extends": "chord-stab",
+      "name": "Delayed chord stab",
+      "pattern": "note(\"[d4,f4,a4,c5]\").struct(\"~ ~ x ~ ~ x ~ ~\")",
+      "why": "A single minor seventh stab fed into a long echo, so two hits fill the whole bar.",
+      "set": {"delay": 0.45},
+      "sweet": {"delay": [0.35, 0.6]}
+    }
+  ]
+}

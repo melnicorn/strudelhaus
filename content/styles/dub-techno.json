@@ -1,0 +1,252 @@
+{
+  "id": "dub-techno",
+  "name": "Dub techno",
+  "family": "Techno",
+  "era": "1993–2000",
+  "tempo": 120,
+  "key": "C minor",
+  "blurb": "One chord, drowned in echo, over a soft kick.",
+  "context": [
+    {"id": "kick", "code": "s(\"bd*4\").bank(\"RolandTR808\").lpf(1200)"},
+    {"id": "tops", "code": "s(\"[~ hh]*4\").bank(\"RolandTR909\").gain(.3)"},
+    {"id": "bass", "code": "note(\"c2 ~ ~ ~ ~ ~ c2 ~\").s(\"sine\").decay(.4).sustain(0)"}
+  ],
+  "sounds": [
+    {
+      "id": "dub-chord",
+      "name": "Dub chord",
+      "role": "chords",
+      "group": "harmony",
+      "why": "A single dark minor chord sent through a long echo and a huge reverb. The chord is hit twice a bar; the echoes play the rest of the track.",
+      "pattern": "note(\"[c4,eb4,g4,bb4]\").struct(\"~ x ~ ~ ~ ~ x ~\")",
+      "ingredients": [
+        {"id": "saw", "name": "A sawtooth chord", "code": ".s(\"sawtooth\")", "required": true, "adds": "A bright, buzzy minor seventh."},
+        {
+          "id": "dark",
+          "name": "Make it dark",
+          "code": ".lpf({lpf})",
+          "adds": "Takes off most of the top.",
+          "listenFor": "It sounds like it is in the next room.",
+          "knobs": [
+            {
+              "param": "lpf",
+              "label": "cutoff",
+              "unit": "hz",
+              "log": true,
+              "min": 150,
+              "max": 5000,
+              "value": 700,
+              "sweet": [400, 1100],
+              "below": "A thud with no chord.",
+              "above": "Too bright: it is a house stab."
+            }
+          ]
+        },
+        {
+          "id": "short",
+          "name": "Stab it",
+          "code": ".decay({decay}).sustain(0)",
+          "adds": "A short hit, so the echoes are heard clearly.",
+          "knobs": [{"param": "decay", "unit": "seconds", "min": 0.05, "max": 0.8, "value": 0.2, "sweet": [0.12, 0.3], "below": "A click.", "above": "A pad; the echoes smear."}]
+        },
+        {
+          "id": "echo",
+          "name": "Long echo",
+          "code": ".delay({delay}).delaysync(3/16).delayfeedback({fb})",
+          "adds": "Each hit repeats many times, fading slowly.",
+          "listenFor": "The repeats become the rhythm.",
+          "knobs": [
+            {"param": "delay", "min": 0, "max": 1, "value": 0.6, "sweet": [0.45, 0.75], "below": "Too quiet to carry the track.", "above": "As loud as the chord itself."},
+            {
+              "param": "fb",
+              "label": "feedback",
+              "min": 0,
+              "max": 0.9,
+              "value": 0.65,
+              "sweet": [0.55, 0.75],
+              "below": "Two repeats and gone.",
+              "above": "The echoes never clear and build into a roar."
+            }
+          ]
+        },
+        {
+          "id": "room",
+          "name": "Deep reverb",
+          "code": ".room({room}).roomsize(8)",
+          "adds": "A very large, very wet room.",
+          "knobs": [
+            {
+              "param": "room",
+              "label": "reverb",
+              "min": 0,
+              "max": 1,
+              "value": 0.6,
+              "sweet": [0.45, 0.8],
+              "below": "The echoes sound dry and separate.",
+              "above": "Nothing but fog."
+            }
+          ]
+        },
+        {
+          "id": "drift",
+          "name": "Let the filter drift",
+          "code": ".lpf(sine.range(300, {top}).slow(16))",
+          "replaces": "dark",
+          "adds": "The cutoff rises and falls over 16 bars.",
+          "listenFor": "The same chord slowly opens and closes. This is the only thing that changes in the track.",
+          "knobs": [
+            {
+              "param": "top",
+              "label": "drift top",
+              "unit": "hz",
+              "log": true,
+              "min": 600,
+              "max": 6000,
+              "value": 1400,
+              "sweet": [1000, 2200],
+              "below": "The drift is too small to notice.",
+              "above": "It gets harsh at the peak."
+            }
+          ]
+        }
+      ],
+      "variations": [{"name": "Deep"}, {"name": "Dry stab", "off": ["echo", "room", "drift"]}, {"name": "Endless", "set": {"fb": 0.8, "room": 0.75}}],
+      "pitfalls": ["Feedback and reverb both high: the low end fills up and the kick disappears."],
+      "lessons": ["15-minor-seventh-stab", "20-space", "22-movement"]
+    },
+    {
+      "id": "kick",
+      "extends": "kick-808",
+      "name": "Soft kick",
+      "why": "A kick with the click filtered off, more a pulse than a hit. It has to sit under the echoes without cutting through them.",
+      "set": {"lpf": 800},
+      "sweet": {"lpf": [400, 1500]}
+    },
+    {
+      "id": "hats",
+      "name": "Sparse hats",
+      "role": "drums",
+      "group": "groove",
+      "why": "A quiet hat on the offbeat that sometimes just does not play. The gaps are part of the groove.",
+      "pattern": "s(\"[~ hh]*4\")",
+      "context": {"tops": null},
+      "ingredients": [
+        {"id": "hh", "name": "Offbeat hat", "required": true, "adds": "A closed hat between every pair of kicks, from the default kit."},
+        {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909's thin, crisp hat."},
+        {
+          "id": "quiet",
+          "name": "Turn it down",
+          "code": ".gain({gain})",
+          "adds": "The hat sits far behind the chord.",
+          "knobs": [
+            {
+              "param": "gain",
+              "label": "level",
+              "min": 0.05,
+              "max": 1,
+              "value": 0.3,
+              "sweet": [0.2, 0.4],
+              "below": "Inaudible.",
+              "above": "It drives the track like house."
+            }
+          ]
+        },
+        {
+          "id": "drop",
+          "name": "Drop some at random",
+          "code": ".degradeBy({drop})",
+          "adds": "Each hat has a chance of not playing.",
+          "listenFor": "The loop never repeats exactly.",
+          "knobs": [
+            {
+              "param": "drop",
+              "label": "chance of rest",
+              "min": 0,
+              "max": 0.9,
+              "value": 0.3,
+              "sweet": [0.2, 0.5],
+              "below": "A steady tick.",
+              "above": "Too few are left to feel a pulse."
+            }
+          ]
+        },
+        {
+          "id": "delay",
+          "name": "Echo",
+          "code": ".delay({delay}).delaysync(3/16).delayfeedback(.5)",
+          "adds": "The hats that do play leave a trail.",
+          "knobs": [{"param": "delay", "min": 0, "max": 1, "value": 0.4, "sweet": [0.25, 0.55], "below": "Dry ticks.", "above": "A constant rattle."}]
+        }
+      ],
+      "lessons": ["05-offbeat-hat", "31-never-the-same-twice"]
+    },
+    {
+      "id": "sub",
+      "extends": "sub-bass",
+      "pattern": "note(\"c2 ~ ~ ~ ~ ~ c2 ~\")",
+      "why": "Two soft low notes a bar. More would crowd the echoes.",
+      "set": {"decay": 0.4, "drive": 0.2},
+      "sweet": {"decay": [0.3, 0.6], "drive": [0.1, 0.4]}
+    },
+    {
+      "id": "pad",
+      "extends": "string-pad",
+      "name": "Dark pad",
+      "pattern": "note(\"<[c3,eb3,g3,bb3]>\")",
+      "why": "The same chord again, held and very dark, as a floor under the stabs.",
+      "set": {"lpf": 600, "attack": 1},
+      "sweet": {"lpf": [350, 1000], "attack": [0.6, 1.5]}
+    },
+    {
+      "id": "hiss",
+      "name": "Hiss and crackle",
+      "role": "fx",
+      "group": "hook",
+      "why": "Tape hiss and vinyl crackle, added on purpose. It makes a clean computer sound like an old, worn record.",
+      "pattern": "s(\"crackle*4\")",
+      "ingredients": [
+        {"id": "crackle", "name": "Vinyl crackle", "code": ".gain(.6)", "required": true, "adds": "Random clicks, like dust on a record."},
+        {
+          "id": "density",
+          "name": "How dusty",
+          "code": ".density({density})",
+          "adds": "More or fewer clicks.",
+          "knobs": [
+            {
+              "param": "density",
+              "label": "clicks",
+              "step": 0.01,
+              "min": 0.01,
+              "max": 0.6,
+              "value": 0.1,
+              "sweet": [0.04, 0.25],
+              "below": "A clean record.",
+              "above": "Rain on a tin roof."
+            }
+          ]
+        },
+        {
+          "id": "hiss",
+          "name": "Tape hiss",
+          "layer": "s(\"pink*4\").hpf(3000).gain({hiss})",
+          "adds": "A steady, soft noise underneath.",
+          "knobs": [
+            {
+              "param": "hiss",
+              "label": "hiss level",
+              "step": 0.01,
+              "min": 0,
+              "max": 0.5,
+              "value": 0.12,
+              "sweet": [0.06, 0.2],
+              "below": "You can't hear it, even in the gaps.",
+              "above": "It covers the hats."
+            }
+          ]
+        },
+        {"id": "room", "name": "Put it in the room", "code": ".room(.5)", "whole": true, "adds": "Sends the noise through the same reverb as the chord."}
+      ],
+      "lessons": ["32-mixing-in-strudel"]
+    }
+  ]
+}

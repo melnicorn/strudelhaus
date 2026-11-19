@@ -1,0 +1,67 @@
+{
+  "name": "Hats and clap",
+  "role": "drums",
+  "group": "groove",
+  "why": "An open hat between the kicks, a clap on beats 2 and 4, and quiet closed hats filling the gaps.",
+  "pattern": "s(\"[~ oh]*4\")",
+  "context": {"tops": null},
+  "ingredients": [
+    {"id": "oh", "name": "Offbeat open hat", "required": true, "adds": "A hat halfway between every pair of kicks, from the default kit."},
+    {"id": "bank", "name": "The 909", "code": ".bank(\"RolandTR909\")", "adds": "The 909 open hat: bright and metallic."},
+    {
+      "id": "choke",
+      "name": "Choke it",
+      "code": ".decay({decay}).sustain(0)",
+      "adds": "Cuts the hat off before the next kick.",
+      "listenFor": "The \"tsss\" becomes a \"tss\".",
+      "knobs": [
+        {
+          "param": "decay",
+          "unit": "seconds",
+          "min": 0.03,
+          "max": 0.5,
+          "value": 0.12,
+          "sweet": [0.08, 0.2],
+          "below": "A tick you can barely hear.",
+          "above": "It rings over the kick and blurs the beat."
+        }
+      ]
+    },
+    {
+      "id": "clap",
+      "name": "Clap on 2 and 4",
+      "layer": "s(\"~ cp ~ cp\").bank(\"RolandTR909\").gain({clap})",
+      "adds": "The backbeat.",
+      "knobs": [
+        {
+          "param": "clap",
+          "label": "clap level",
+          "min": 0,
+          "max": 1.2,
+          "value": 0.7,
+          "sweet": [0.5, 0.9],
+          "below": "The beat loses its backbone.",
+          "above": "It is louder than the kick."
+        }
+      ]
+    },
+    {
+      "id": "hats",
+      "name": "Sixteenth hats",
+      "layer": "s(\"hh*16\").bank(\"RolandTR909\").gain(\"[.2 .45]*8\")",
+      "adds": "Closed hats on every sixteenth, every second one louder.",
+      "listenFor": "The beat starts to feel faster though the tempo has not changed."
+    },
+    {
+      "id": "swing",
+      "name": "Swing",
+      "code": ".swingBy({swing}, 8)",
+      "whole": true,
+      "adds": "Every second sixteenth arrives a little late.",
+      "listenFor": "The hats stop sounding like a machine.",
+      "knobs": [{"param": "swing", "step": 0.01, "min": 0, "max": 0.5, "value": 0.1, "sweet": [0.05, 0.2], "below": "Stiff and dead straight.", "above": "It limps."}]
+    }
+  ],
+  "pitfalls": ["An open hat that rings into the kick makes the whole beat sound soft."],
+  "lessons": ["05-offbeat-hat", "06-sixteenths-and-dynamics", "11-swing-it"]
+}

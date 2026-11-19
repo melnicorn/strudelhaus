@@ -1,0 +1,89 @@
+{
+  "name": "Chord stab",
+  "role": "chords",
+  "group": "harmony",
+  "why": "One chord hit short and hard, off the beat. The rhythm matters more than the notes.",
+  "pattern": "note(\"[a3,c4,e4,g4]\").struct(\"~ x ~ [~ x] ~ x ~ ~\")",
+  "ingredients": [
+    {"id": "saw", "name": "A sawtooth chord", "code": ".s(\"sawtooth\")", "required": true, "adds": "Four notes at once, held for the whole step."},
+    {
+      "id": "short",
+      "name": "Stab it",
+      "code": ".decay({decay}).sustain(0)",
+      "adds": "The chord is cut off almost as soon as it starts.",
+      "listenFor": "A pad becomes a rhythm.",
+      "knobs": [
+        {
+          "param": "decay",
+          "unit": "seconds",
+          "min": 0.03,
+          "max": 0.6,
+          "value": 0.15,
+          "sweet": [0.1, 0.25],
+          "below": "A click with no chord in it.",
+          "above": "It smears into a pad."
+        }
+      ]
+    },
+    {
+      "id": "fenv",
+      "name": "Filter snap",
+      "code": ".lpf({lpf}).lpenv(3).lpdecay({lpdecay})",
+      "adds": "Each stab starts bright and closes at once.",
+      "listenFor": "A hard front edge on every hit.",
+      "knobs": [
+        {
+          "param": "lpf",
+          "label": "cutoff",
+          "unit": "hz",
+          "log": true,
+          "min": 150,
+          "max": 6000,
+          "value": 900,
+          "sweet": [500, 1500],
+          "below": "A dull thud.",
+          "above": "Buzzy and thin; it fights the hats."
+        },
+        {
+          "param": "lpdecay",
+          "label": "snap time",
+          "unit": "seconds",
+          "min": 0.02,
+          "max": 0.5,
+          "value": 0.12,
+          "sweet": [0.08, 0.2],
+          "below": "Only a tick gets through.",
+          "above": "The snap turns into a slow \"wow\"."
+        }
+      ]
+    },
+    {
+      "id": "delay",
+      "name": "Echo",
+      "code": ".delay({delay}).delaysync(3/16).delayfeedback(.4)",
+      "adds": "Repeats that land between the hits.",
+      "listenFor": "The stabs seem to answer themselves.",
+      "knobs": [{"param": "delay", "min": 0, "max": 1, "value": 0.3, "sweet": [0.2, 0.45], "below": "You can't hear the echo.", "above": "You can't tell hits from echoes."}]
+    },
+    {
+      "id": "room",
+      "name": "Room",
+      "code": ".room({room})",
+      "adds": "A little space around it.",
+      "knobs": [
+        {
+          "param": "room",
+          "label": "reverb",
+          "min": 0,
+          "max": 1,
+          "value": 0.25,
+          "sweet": [0.15, 0.4],
+          "below": "Dry and stuck to the speaker.",
+          "above": "It washes out the rhythm."
+        }
+      ]
+    }
+  ],
+  "pitfalls": ["A stab on every beat lands on the kick and loses its bounce."],
+  "lessons": ["15-minor-seventh-stab", "18-envelopes", "20-space"]
+}
